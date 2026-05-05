@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مولّد عروض Post With Passion</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      background: #fafafa;
+    }
+    header {
+      background: #222;
+      color: #fff;
+      padding: 1rem 1.5rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    header p {
+      margin: 0.25rem 0 0;
+      font-size: 0.875rem;
+      color: #ccc;
+    }
+    .container {
+      display: flex;
+      flex: 1;
+    }
+    .sidebar {
+      width: 320px;
+      max-height: 100vh;
+      overflow-y: auto;
+      border-left: 1px solid #ddd;
+      padding: 1rem;
+      background: #fff;
+    }
+    .sidebar h2 {
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.25rem;
+    }
+    .sidebar label {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+    }
+    .sidebar input,
+    .sidebar select,
+    .sidebar textarea {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .sidebar textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .preview {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .page {
+      background: #fff;
+      border: 1px solid #eee;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 1rem;
+      padding: 1.5rem;
+      min-height: 400px;
+    }
+    .page h2 {
+      margin-top: 0;
+    }
+    .btn-group {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn.primary {
+      background: #007bff;
+      color: #fff;
+    }
+    .btn.copy {
+      background: #6c757d;
+      color: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    .flex-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .flex-grid label {
+      width: calc(50% - 0.5rem);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>مولّد عروض Post With Passion</h1>
+    <p>أدخل بيانات العميل واختر الخدمات وسيتم توليد العرض.</p>
+  </header>
+  <div class="container">
+    <div class="sidebar">
+      <h2>بيانات العرض</h2>
+      <label>اسم العميل
+        <input id="clientName" type="text" value="اسم العميل">
+      </label>
+      <label>التاريخ
+        <input id="proposalDate" type="date">
+      </label>
+      <label>مدة المشروع
+        <input id="duration" type="text" value="3 أشهر">
+      </label>
+      <label>نوع العرض
+        <select id="proposalType">
+          <option>Small Offer</option>
+          <option>Growth Proposal</option>
+          <option>Strategic Proposal</option>
+        </select>
+      </label>
+      <label>فهم الاحتياج
+        <textarea id="needSummary">نرى أن المرحلة الحالية تتطلب توضيح قيمة العلامة التجارية، إنتاج محتوى مناسب للمنصات، واختبار الرسائل الإعلانية للوصول إلى الجمهور الأعلى قابلية للتحويل.</textarea>
+      </label>
+      <label>الهدف الرئيسي
+        <textarea id="mainGoal">بناء حضور رقمي أقوى وزيادة فرص الوصول إلى العملاء المحتملين من خلال محتوى محلي وحملات إعلانية قابلة للقياس.</textarea>
+      </label>
+      <h2>الخدمات</h2>
+      <div id="services"></div>
+      <h2>القنوات</h2>
+      <div id="channels" class="flex-grid"></div>
+      <h2>الباقة</h2>
+      <label>اختر الباقة
+        <select id="packageSelect">
+          <option value="startup">باقة الانطلاق</option>
+          <option value="growth" selected>باقة النمو</option>
+          <option value="scale">باقة التوسع</option>
+        </select>
+      </label>
+      <label>اسم الباقة
+        <input id="packageTitle" type="text">
+      </label>
+      <label>وصف الباقة
+        <textarea id="packageDesc"></textarea>
+      </label>
+      <label>عدد التصاميم
+        <input id="packageDesigns" type="text">
+      </label>
+      <label>عدد الفيديوهات القصيرة
+        <input id="packageVideos" type="text">
+      </label>
+      <label>UGC
+        <input id="packageUGC" type="text">
+      </label>
+      <label>فيديوهات AI
+        <input id="packageAI" type="text">
+      </label>
+      <label>المنصات
+        <input id="packagePlatforms" type="text">
+      </label>
+      <label>سعر الباقة الشهري (ريال)
+        <input id="packagePrice" type="number" min="0" step="100" value="0">
+      </label>
+      <h2>الإعلانات</h2>
+      <label>ميزانية الإعلانات الشهرية (ريال)
+        <input id="adBudget" type="number" min="0" step="100" value="5000">
+      </label>
+      <label>نوع الرسوم الإدارية
+        <select id="feeType">
+          <option value="fixed" selected>رسوم ثابتة</option>
+          <option value="percent">نسبة من الميزانية</option>
+        </select>
+      </label>
+      <label id="feeLabel">رسوم الإدارة (ريال)
+        <input id="managementFee" type="number" min="0" step="100" value="1500">
+      </label>
+      <label>
+        <input id="vatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%
+      </label>
+      <label>ملاحظات إضافية
+        <textarea id="notes">يتم تعديل توزيع الميزانية بناءً على أداء الحملات، مع رفع الصرف على القنوات الأعلى أداءً وتقليل الصرف على القنوات الأقل فعالية.</textarea>
+      </label>
+      <div class="btn-group">
+        <button class="btn copy" onclick="copySummary()">نسخ ملخص العرض</button>
+        <button class="btn primary" onclick="window.print()">طباعة / PDF</button>
+      </div>
+    </div>
+    <div class="preview" id="preview">
+      <!-- Pages will be rendered here -->
+    </div>
+  </div>
+
+  <script>
+    // Data arrays for services and channels
+    const servicesList = [
+      "خدمة 360 — تشغيل تسويقي متكامل",
+      "استراتيجية محتوى شهرية",
+      "إدارة حسابات التواصل الاجتماعي",
+      "تصاميم سوشيال ميديا",
+      "فيديوهات قصيرة Reels / TikTok / Shorts",
+      "فيديوهات UGC",
+      "فيديوهات مولدة بالذكاء الاصطناعي AI",
+      "كتابة المحتوى والكابشنز",
+      "إدارة الحملات الإعلانية",
+      "تقارير أداء وتوصيات شهرية",
+      "صفحة هبوط Landing Page",
+      "متابعة العملاء المحتملين عبر واتساب"
+    ];
+    const channelsList = [
+      "Instagram",
+      "TikTok",
+      "Snapchat",
+      "X / Twitter",
+      "Google Ads",
+      "LinkedIn",
+      "YouTube Shorts",
+      "WhatsApp"
+    ];
+    const defaultPackages = {
+      startup: {
+        title: "باقة الانطلاق",
+        description: "مناسبة للعلامات التي تحتاج حضورًا رقميًا منظمًا واختبارًا أوليًا للرسائل.",
+        designs: "8 تصاميم شهريًا",
+        videos: "4 فيديوهات قصيرة شهريًا",
+        ugc: "غير مشمول / حسب الطلب",
+        ai: "2 فيديو AI شهريًا",
+        platforms: "منصة إلى منصتين",
+        price: 0
+      },
+      growth: {
+        title: "باقة النمو",
+        description: "مناسبة للعلامات التي تحتاج محتوى مستمرًا مع حملات إعلانية وتحسين أداء.",
+        designs: "12 تصميمًا شهريًا",
+        videos: "6 فيديوهات قصيرة شهريًا",
+        ugc: "2 فيديو UGC شهريًا",
+        ai: "2–4 فيديوهات AI شهريًا",
+        platforms: "2–3 منصات",
+        price: 0
+      },
+      scale: {
+        title: "باقة التوسع",
+        description: "مناسبة للعلامات التي تحتاج تشغيلًا تسويقيًا أقوى ومحتوى متنوعًا للاختبار والنمو.",
+        designs: "16 تصميمًا شهريًا",
+        videos: "8–10 فيديوهات قصيرة شهريًا",
+        ugc: "4 فيديوهات UGC شهريًا",
+        ai: "4–6 فيديوهات AI شهريًا",
+        platforms: "3–4 منصات",
+        price: 0
+      }
+    };
+
+    // Populate services and channels as checkboxes
+    function populateOptions() {
+      const servicesDiv = document.getElementById('services');
+      servicesList.forEach(service => {
+        const label = document.createElement('label');
+        label.className = 'check-row';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = service;
+        input.checked = true;
+        input.onchange = renderProposal;
+        const span = document.createElement('span');
+        span.textContent = service;
+        label.appendChild(input);
+        label.appendChild(span);
+        servicesDiv.appendChild(label);
+      });
+      const channelsDiv = document.getElementById('channels');
+      channelsList.forEach(channel => {
+        const label = document.createElement('label');
+        label.className = 'check-row';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = channel;
+        if (["Instagram","TikTok","Snapchat","Google Ads"].includes(channel)) {
+          input.checked = true;
+        }
+        input.onchange = renderProposal;
+        const span = document.createElement('span');
+        span.textContent = channel;
+        label.appendChild(input);
+        label.appendChild(span);
+        channelsDiv.appendChild(label);
+      });
+    }
+
+    // Event listeners to update package fields based on selection
+    document.addEventListener('DOMContentLoaded', () => {
+      populateOptions();
+      updatePackageFields();
+      // set default date
+      const dateInput = document.getElementById('proposalDate');
+      dateInput.value = new Date().toISOString().slice(0,10);
+      // attach listeners
+      document.querySelectorAll('.sidebar input, .sidebar select, .sidebar textarea').forEach(elem => {
+        elem.addEventListener('input', () => {
+          if (elem.id === 'packageSelect') {
+            updatePackageFields();
+          }
+          renderProposal();
+        });
+      });
+      document.getElementById('feeType').addEventListener('change', updateFeeLabel);
+      renderProposal();
+    });
+
+    function updatePackageFields() {
+      const pkgKey = document.getElementById('packageSelect').value;
+      const pkg = defaultPackages[pkgKey];
+      document.getElementById('packageTitle').value = pkg.title;
+      document.getElementById('packageDesc').value = pkg.description;
+      document.getElementById('packageDesigns').value = pkg.designs;
+      document.getElementById('packageVideos').value = pkg.videos;
+      document.getElementById('packageUGC').value = pkg.ugc;
+      document.getElementById('packageAI').value = pkg.ai;
+      document.getElementById('packagePlatforms').value = pkg.platforms;
+      document.getElementById('packagePrice').value = pkg.price;
+    }
+
+    function updateFeeLabel() {
+      const feeType = document.getElementById('feeType').value;
+      const feeLabel = document.getElementById('feeLabel');
+      if (feeType === 'percent') {
+        feeLabel.innerHTML = 'نسبة الإدارة %<input id="managementFee" type="number" min="0" value="15">';
+      } else {
+        feeLabel.innerHTML = 'رسوم إدارة الإعلانات (ريال)<input id="managementFee" type="number" min="0" step="100" value="1500">';
+      }
+    }
+
+    function getSelectedValues(containerId) {
+      const inputs = document.querySelectorAll(`#${containerId} input[type=checkbox]:checked`);
+      return Array.from(inputs).map(input => input.value);
+    }
+
+    function renderProposal() {
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '';
+      // Gather data from inputs
+      const clientName = document.getElementById('clientName').value || 'اسم العميل';
+      const proposalDate = document.getElementById('proposalDate').value;
+      const duration = document.getElementById('duration').value;
+      const proposalType = document.getElementById('proposalType').value;
+      const needSummary = document.getElementById('needSummary').value;
+      const mainGoal = document.getElementById('mainGoal').value;
+      const services = getSelectedValues('services');
+      const channels = getSelectedValues('channels');
+      const pkgTitle = document.getElementById('packageTitle').value;
+      const pkgDesc = document.getElementById('packageDesc').value;
+      const pkgDesigns = document.getElementById('packageDesigns').value;
+      const pkgVideos = document.getElementById('packageVideos').value;
+      const pkgUGC = document.getElementById('packageUGC').value;
+      const pkgAI = document.getElementById('packageAI').value;
+      const pkgPlatforms = document.getElementById('packagePlatforms').value;
+      const pkgPrice = parseFloat(document.getElementById('packagePrice').value) || 0;
+      const adBudget = parseFloat(document.getElementById('adBudget').value) || 0;
+      const feeType = document.getElementById('feeType').value;
+      const managementFeeVal = parseFloat(document.getElementById('managementFee').value) || 0;
+      const vatEnabled = document.getElementById('vatEnabled').checked;
+      const notes = document.getElementById('notes').value;
+      // Compute totals
+      let mgmtFee = 0;
+      if (feeType === 'percent') {
+        mgmtFee = adBudget * (managementFeeVal / 100);
+      } else {
+        mgmtFee = managementFeeVal;
+      }
+      const subtotal = pkgPrice + adBudget + mgmtFee;
+      const vat = vatEnabled ? subtotal * 0.15 : 0;
+      const total = subtotal + vat;
+      // Ads distribution based on channels
+      const weights = channels.map(channel => {
+        if (channel.includes('Google')) return 30;
+        if (channel.includes('Instagram')) return 35;
+        if (channel.includes('TikTok')) return 25;
+        if (channel.includes('LinkedIn')) return 20;
+        return 10;
+      });
+      const sumWeights = weights.reduce((a,b) => a + b, 0);
+      const distribution = channels.map((channel, idx) => {
+        const percentage = sumWeights ? Math.round((weights[idx] / sumWeights) * 100) : 0;
+        const amount = Math.round(adBudget * (weights[idx] / sumWeights));
+        return { channel, percentage, amount };
+      });
+      // Format currency
+      const fmt = (val) => new Intl.NumberFormat('ar-EG').format(Math.round(val));
+      // Helper to add page
+      function addPage(html) {
+        const page = document.createElement('div');
+        page.className = 'page';
+        page.innerHTML = html;
+        preview.appendChild(page);
+      }
+      // Page 1: Cover
+      addPage(`
+        <div>
+          <h2>عرض تسويقي مقدم إلى <br>${clientName}</h2>
+          <p>مقدم من Post With Passion — بوست وذ باشن</p>
+          <p><strong>التاريخ:</strong> ${proposalDate}</p>
+          <p><strong>مدة المشروع:</strong> ${duration}</p>
+          <p><strong>نوع العرض:</strong> ${proposalType}</p>
+        </div>
+      `);
+      // Page 2: About
+      addPage(`
+        <h2>من نحن؟</h2>
+        <p>Post With Passion وكالة تسويق سعودية تساعد العلامات التجارية على بناء حضور رقمي مؤثر من خلال المحتوى، الحملات الإعلانية، وتجارب العملاء الواقعية.</p>
+        <p>نركز على صناعة محتوى يخدم أهداف واضحة: زيادة الوعي، جذب العملاء، تحسين الثقة، ودعم المبيعات.</p>
+        <p>نؤمن أن المحتوى اليوم لا يكفي أن يكون جميلًا فقط؛ بل يجب أن يكون مفهومًا، محليًا، قابلًا للقياس، وقادرًا على تحريك العميل للخطوة التالية.</p>
+      `);
+      // Page 3: Clients summary (static text)
+      addPage(`
+        <h2>عملاؤنا وتجاربنا</h2>
+        <p>عملنا مع علامات تجارية في قطاعات متعددة مثل الأغذية والمشروبات، التطبيقات التقنية، التجارة الإلكترونية، العيادات والخدمات، البناء والتصميم، والمنتجات الاستهلاكية.</p>
+        <p>ساعدنا عملاءنا في إنتاج محتوى محلي، إطلاق حملات ممولة، توليد عملاء محتملين، وبناء حضور رقمي أقوى على منصات التواصل.</p>
+      `);
+      // Page 4: Need summary
+      addPage(`
+        <h2>فهم الاحتياج</h2>
+        <p>${needSummary}</p>
+        <h3>الهدف الرئيسي</h3>
+        <p>${mainGoal}</p>
+      `);
+      // Page 5: Services and Channels
+      addPage(`
+        <h2>الخدمات المقترحة</h2>
+        <ul>${services.map(s => `<li>${s}</li>`).join('')}</ul>
+        <h2>القنوات المقترحة</h2>
+        <ul>${channels.map(c => `<li>${c}</li>`).join('')}</ul>
+      `);
+      // Page 6: Package
+      addPage(`
+        <h2>${pkgTitle}</h2>
+        <p>${pkgDesc}</p>
+        <table>
+          <tr><th>البند</th><th>التفاصيل</th></tr>
+          <tr><td>عدد التصاميم</td><td>${pkgDesigns}</td></tr>
+          <tr><td>عدد الفيديوهات القصيرة</td><td>${pkgVideos}</td></tr>
+          <tr><td>UGC</td><td>${pkgUGC}</td></tr>
+          <tr><td>فيديوهات AI</td><td>${pkgAI}</td></tr>
+          <tr><td>المنصات</td><td>${pkgPlatforms}</td></tr>
+          <tr><td>سعر الباقة</td><td>${fmt(pkgPrice)} ريال</td></tr>
+        </table>
+      `);
+      // Page 7: Ad fees summary
+      addPage(`
+        <h2>ميزانية الإعلانات والرسوم الإدارية</h2>
+        <table>
+          <tr><th>البند</th><th>المبلغ (ريال)</th></tr>
+          <tr><td>ميزانية الإعلانات الشهرية المقترحة</td><td>${fmt(adBudget)}</td></tr>
+          <tr><td>${feeType === 'percent' ? 'رسوم إدارة الحملات (' + managementFeeVal + '%)' : 'رسوم إدارة الحملات'}</td><td>${fmt(mgmtFee)}</td></tr>
+          <tr><td>المجموع الفرعي</td><td>${fmt(subtotal)}</td></tr>
+          <tr><td>الضريبة (${vatEnabled ? '15%' : '0%'})</td><td>${fmt(vat)}</td></tr>
+          <tr><td>الإجمالي الكلي</td><td>${fmt(total)}</td></tr>
+        </table>
+      `);
+      // Page 8: Ad distribution and notes
+      addPage(`
+        <h2>توزيع الصرف الإعلاني</h2>
+        <table>
+          <tr><th>المنصة</th><th>النسبة</th><th>المبلغ (ريال)</th></tr>
+          ${distribution.map(d => `<tr><td>${d.channel}</td><td>${d.percentage}%</td><td>${fmt(d.amount)}</td></tr>`).join('')}
+        </table>
+        <p>${notes}</p>
+      `);
+      // Page 9: Expected results and closing
+      addPage(`
+        <h2>النتائج المتوقعة</h2>
+        <ul>
+          <li>رفع جودة الظهور الرقمي للعلامة.</li>
+          <li>زيادة التفاعل مع المحتوى.</li>
+          <li>اختبار الرسائل التسويقية الأفضل أداءً.</li>
+          <li>جذب زيارات أو عملاء محتملين حسب هدف الحملة.</li>
+          <li>بناء مكتبة محتوى قابلة للاستخدام في الحملات القادمة.</li>
+          <li>تحسين فهم الجمهور والقنوات الأعلى فعالية.</li>
+        </ul>
+        <p>تعتمد النتائج النهائية على عدة عوامل، منها وضوح العرض، قوة المنتج أو الخدمة، الميزانية، سرعة الرد على العملاء المحتملين، وتجربة العميل بعد التواصل.</p>
+        <h2>الخاتمة</h2>
+        <p>يسعدنا في Post With Passion التعاون معكم لبناء حضور رقمي أقوى وأكثر تأثيرًا. نطمح أن نكون شريكًا يساعدكم على تحويل المحتوى من مجرد منشورات إلى أداة فعالة للوصول، الإقناع، وتحقيق نتائج قابلة للقياس.</p>
+      `);
+    }
+    function copySummary() {
+      const clientName = document.getElementById('clientName').value;
+      const duration = document.getElementById('duration').value;
+      const mainGoal = document.getElementById('mainGoal').value;
+      const services = getSelectedValues('services').join('، ');
+      const channels = getSelectedValues('channels').join('، ');
+      const pkgTitle = document.getElementById('packageTitle').value;
+      const pkgPrice = parseFloat(document.getElementById('packagePrice').value) || 0;
+      const adBudget = parseFloat(document.getElementById('adBudget').value) || 0;
+      const feeType = document.getElementById('feeType').value;
+      const managementFeeVal = parseFloat(document.getElementById('managementFee').value) || 0;
+      let mgmtFee = 0;
+      if (feeType === 'percent') {
+        mgmtFee = adBudget * (managementFeeVal / 100);
+      } else {
+        mgmtFee = managementFeeVal;
+      }
+      const subtotal = pkgPrice + adBudget + mgmtFee;
+      const vatEnabled = document.getElementById('vatEnabled').checked;
+      const vat = vatEnabled ? subtotal * 0.15 : 0;
+      const total = subtotal + vat;
+      const summary = `عرض تسويقي مقدم إلى ${clientName}\nالمدة: ${duration}\nالهدف: ${mainGoal}\nالخدمات: ${services}\nالقنوات: ${channels}\nالباقة: ${pkgTitle}\nرسوم الخدمات: ${fmt(pkgPrice)} ريال\nميزانية الإعلانات: ${fmt(adBudget)} ريال\nرسوم إدارة الإعلانات: ${fmt(mgmtFee)} ريال\nالإجمالي شامل الضريبة: ${fmt(total)} ريال`;
+      navigator.clipboard.writeText(summary);
+      alert('تم نسخ ملخص العرض');
+    }
+  </script>
+</body>
+</html>
