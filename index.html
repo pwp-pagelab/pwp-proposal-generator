@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PWP Proposal Builder</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,35 +10,447 @@
   <style>
     :root{
       --green:#0a4c3e;
-      --green-2:#07372e;
       --yellow:#e7bd52;
-      --yellow-2:#f3d77d;
-      --cream:#f7f1e4;
-      --paper:#fffdf7;
+      --cream:#f7f2e7;
+      --ink:#15372f;
+      --muted:#6b746f;
+      --line:#e7dfcf;
       --white:#ffffff;
-      --ink:#10231f;
-      --muted:#6c756f;
-      --line:#e8deca;
-      --soft:#f2eadb;
-      --soft-green:#e9f1ee;
-      --danger:#8f3f2d;
-      --shadow:0 18px 50px rgba(10,76,62,.10);
-      --radius:28px;
+      --soft:#fbf8f0;
+      --shadow:0 24px 70px rgba(10,76,62,.14);
     }
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;background:
-      radial-gradient(circle at top right,rgba(231,189,82,.22),transparent 26%),
-      linear-gradient(180deg,#fbf7ee 0%,var(--cream) 100%);
-      font-family:"Baloo Bhaijaan 2", Arial, Tahoma, sans-serif;color:var(--ink);font-size:15px}
-    button,input,textarea,select{font-family:inherit}
-    .app-header{position:sticky;top:0;z-index:20;background:rgba(10,76,62,.96);backdrop-filter:blur(12px);color:white;padding:14px 22px;box-shadow:0 14px 36px rgba(0,0,0,.16)}
-    .wrap{max-width:1480px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
-    .brand-lockup{display:flex;align-items:center;gap:14px}.mark{width:48px;height:48px;border-radius:16px;background:var(--yellow);color:var(--green);display:grid;place-items:center;font-weight:900;letter-spacing:-1px}.app-header h1{margin:0;font-size:23px;line-height:1.1}.app-header p{margin:4px 0 0;color:rgba(255,255,255,.76);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:800;cursor:pointer;transition:.2s ease;display:inline-flex;align-items:center;gap:7px}.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--yellow);color:var(--green)}.btn-dark{background:white;color:var(--green)}.btn-soft{background:rgba(255,255,255,.13);color:white;border:1px solid rgba(255,255,255,.22)}.btn-block{width:100%;justify-content:center;border-radius:18px;margin-top:12px}
-    .layout{max-width:1480px;margin:auto;display:grid;grid-template-columns:420px 1fr;gap:24px;padding:24px}.controls{display:flex;flex-direction:column;gap:14px}.panel{background:rgba(255,255,255,.82);border:1px solid rgba(232,222,202,.95);border-radius:26px;box-shadow:0 10px 28px rgba(10,76,62,.07);overflow:hidden}.panel summary{list-style:none;cursor:pointer;padding:18px 18px 16px;display:flex;align-items:center;justify-content:space-between;color:var(--green);font-size:17px;font-weight:900}.panel summary::-webkit-details-marker{display:none}.panel summary span{display:flex;align-items:center;gap:8px}.panel summary:after{content:"⌄";font-size:18px;color:var(--yellow);transition:.2s ease}.panel[open] summary:after{transform:rotate(180deg)}.panel-body{padding:0 18px 18px}.field{margin-top:12px}.field label{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:800;color:var(--ink);margin-bottom:7px}.field small{color:var(--muted);font-weight:600}.input,textarea,select{width:100%;border:1px solid var(--line);border-radius:16px;padding:12px 13px;font-size:15px;background:var(--paper);color:var(--ink);outline:none;transition:.2s ease}textarea{min-height:86px;resize:vertical;line-height:1.7}.input:focus,textarea:focus,select:focus{border-color:var(--yellow);box-shadow:0 0 0 4px rgba(231,189,82,.18)}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.check{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:10px;cursor:pointer;font-size:13px;font-weight:700;min-height:44px}.check input{accent-color:var(--green)}.quick-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.quick{border-radius:16px;background:var(--soft-green);color:var(--green);border:1px solid rgba(10,76,62,.12);padding:10px;font-weight:800}.mini-total{background:linear-gradient(135deg,var(--soft-green),#fff7e1);border:1px solid rgba(10,76,62,.14);border-radius:22px;padding:15px;margin-top:14px}.mini-total p{margin:0;color:var(--muted);font-weight:700}.mini-total strong{display:block;color:var(--green);font-size:25px;line-height:1.1;margin-top:4px}
-    .preview{display:flex;flex-direction:column;gap:20px}.page{background:var(--paper);min-height:980px;border:1px solid var(--line);border-radius:32px;padding:52px;position:relative;overflow:hidden;box-shadow:var(--shadow)}.page:before{content:"";position:absolute;top:0;right:0;width:240px;height:16px;background:var(--yellow);border-radius:0 0 0 22px}.page:after{content:"";position:absolute;bottom:0;left:0;width:260px;height:20px;background:var(--green);border-radius:0 24px 0 0}.footer-brand{position:absolute;bottom:24px;right:52px;color:var(--green);font-weight:900;font-size:13px}.page-num{position:absolute;bottom:24px;left:52px;color:var(--muted);font-weight:800;font-size:12px}.cover{background:linear-gradient(135deg,var(--green) 0%,var(--green-2) 58%,#0d604f 58%,#0d604f 76%,var(--yellow) 76%,var(--yellow) 100%);color:white;display:flex;flex-direction:column;justify-content:space-between}.cover:before,.cover:after{display:none}.cover-top{display:flex;justify-content:space-between;align-items:flex-start}.logo{color:var(--yellow);font-weight:900;font-size:34px;letter-spacing:-2px}.cover .tag{display:inline-block;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);border-radius:999px;padding:8px 14px;color:rgba(255,255,255,.83);font-weight:800}.cover h1{font-size:66px;line-height:1.02;margin:58px 0 20px;letter-spacing:-1px;max-width:820px}.cover p{font-size:22px;color:rgba(255,255,255,.86);line-height:1.7;margin:0}.cover-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cover-box{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.24);border-radius:24px;padding:19px}.cover-box small{display:block;color:rgba(255,255,255,.68);font-weight:700;margin-bottom:6px}.cover-box strong{font-size:20px}.kicker{color:var(--yellow);font-weight:900;font-size:13px;letter-spacing:.8px}.title{font-size:41px;color:var(--green);margin:8px 0 12px;line-height:1.18;letter-spacing:-.4px}.subtitle{font-size:18px;color:var(--muted);line-height:1.8;margin:0 0 28px;max-width:900px}.lead{font-size:22px;line-height:1.9;color:#273b36;margin-top:22px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.info{border:1px solid var(--line);border-radius:24px;background:white;padding:22px}.info.soft{background:var(--soft-green)}.info.yellow{background:#fff5d8}.info h3{margin:0 0 8px;color:var(--green);font-size:21px}.info p{margin:0;color:var(--muted);line-height:1.75}.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0}.stat{background:var(--green);color:white;border-radius:26px;padding:22px;border:1px solid rgba(255,255,255,.08)}.stat strong{font-size:36px;color:var(--yellow);display:block}.stat span{display:block;margin-top:8px;color:rgba(255,255,255,.82);font-weight:700}.service-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pill{padding:13px 15px;border-radius:999px;background:var(--soft-green);color:var(--green);font-weight:900;border:1px solid rgba(10,76,62,.12);line-height:1.35}.channel-list{display:flex;flex-wrap:wrap;gap:10px}.channel{background:var(--green);color:white;padding:10px 15px;border-radius:999px;font-weight:900}.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}.option-card{border:1.5px solid var(--line);border-radius:30px;padding:26px;background:white;position:relative;overflow:hidden}.option-card.featured{border-color:var(--green);background:linear-gradient(180deg,#ffffff 0%,#fbf6e9 100%)}.option-card:before{content:"";position:absolute;top:0;right:0;width:100%;height:8px;background:var(--yellow)}.option-card.featured:before{background:var(--green)}.option-card h3{font-size:31px;color:var(--green);margin:10px 0 6px}.option-card .desc{color:var(--muted);line-height:1.7;margin:0 0 18px}.amount{font-size:36px;font-weight:900;color:var(--green);line-height:1;margin:16px 0}.amount small{font-size:14px;color:var(--muted);font-weight:800}.spec-list{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:8px}.spec-list li{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line);padding-bottom:8px;color:var(--muted);font-weight:700}.spec-list strong{color:var(--ink);font-size:16px}table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:22px;border:1px solid var(--line);background:white}th{background:var(--green);color:white;padding:14px;text-align:right;font-size:15px}td{padding:14px;border-top:1px solid var(--line);vertical-align:top;font-weight:700}td:last-child{text-align:left;color:var(--green);font-weight:900}tr:nth-child(even) td{background:#fbf7ed}.summary-box{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.money{border-radius:24px;padding:22px;background:var(--soft-green);border:1px solid rgba(10,76,62,.15)}.money.yellow{background:#fff3d2}.money h3{margin:0;color:var(--green);font-size:18px}.money strong{font-size:31px;color:var(--green);display:block;margin-top:8px}.note{border-right:6px solid var(--yellow);background:#fff7df;border-radius:22px;padding:20px;color:#534624;line-height:1.8;font-weight:700}.payment-note{background:var(--green);color:white;border-radius:26px;padding:24px;margin-top:22px;border:1px solid rgba(255,255,255,.12)}.payment-note h3{color:var(--yellow);font-size:24px;margin:0 0 8px}.payment-note p{margin:0;color:rgba(255,255,255,.86);line-height:1.8}.signature{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}.sig-box{height:155px;border:1.5px dashed var(--green);border-radius:26px;padding:18px;background:white}.sig-line{margin-top:62px;border-top:1px solid var(--muted);padding-top:10px;color:var(--muted);font-weight:800}.dark-page{background:var(--green);color:white}.dark-page:before{background:var(--yellow)}.dark-page:after{background:white}.dark-page .title{color:white}.dark-page .subtitle{color:rgba(255,255,255,.82)}.dark-page .footer-brand{color:var(--yellow)}.dark-page .page-num{color:rgba(255,255,255,.55)}.acceptance-title{font-size:44px;color:white;margin:0 0 16px}.acceptance-text{font-size:21px;color:rgba(255,255,255,.86);line-height:1.8;max-width:850px}.divider{height:1px;background:var(--line);margin:26px 0}.micro{font-size:13px;color:var(--muted);line-height:1.7}.hidden{display:none!important}
-    @media print{body{background:white}.no-print,.app-header,.controls{display:none!important}.layout{display:block;padding:0;max-width:none}.preview{gap:0}.page{border:0;border-radius:0;box-shadow:none;min-height:100vh;page-break-after:always;padding:46px}.page:last-child{page-break-after:auto}@page{size:A4;margin:0}.footer-brand,.page-num{display:block}.cover h1{font-size:55px}.title{font-size:34px}.subtitle{font-size:16px}.grid-3{grid-template-columns:repeat(3,1fr)}.option-grid,.grid-2,.summary-box,.signature{grid-template-columns:1fr 1fr}}
-    @media (max-width:980px){.layout{grid-template-columns:1fr}.wrap{flex-direction:column;align-items:flex-start}.cover h1{font-size:42px}.page{padding:30px;min-height:auto}.grid-2,.grid-3,.service-list,.summary-box,.signature,.option-grid,.stat-row{grid-template-columns:1fr}.controls{order:1}.preview{order:2}.cover-grid{grid-template-columns:1fr}.check-grid,.two,.three{grid-template-columns:1fr}}
+    body{
+      margin:0;
+      font-family:"Baloo Bhaijaan 2", system-ui, sans-serif;
+      background:radial-gradient(circle at top left, rgba(231,189,82,.28), transparent 32%), linear-gradient(135deg,#fbf7ee,#f1eadb);
+      color:var(--ink);
+      line-height:1.6;
+    }
+    .app-header{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(10,76,62,.96);
+      color:white;
+      padding:16px 22px;
+      backdrop-filter:blur(12px);
+      box-shadow:0 12px 40px rgba(10,76,62,.2);
+    }
+    .wrap{
+      max-width:1440px;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+    }
+    .brand-lockup{display:flex;align-items:center;gap:14px}
+    .mark{
+      width:58px;
+      height:58px;
+      border-radius:18px;
+      background:var(--yellow);
+      color:var(--green);
+      display:grid;
+      place-items:center;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:-1px;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);
+    }
+    .app-header h1{font-size:24px;margin:0;font-weight:800}
+    .app-header p{font-size:14px;margin:2px 0 0;color:rgba(255,255,255,.76)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:0;
+      border-radius:999px;
+      padding:12px 18px;
+      font-family:inherit;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--yellow);color:var(--green)}
+    .btn-dark{background:white;color:var(--green)}
+    .btn-soft{background:rgba(255,255,255,.13);color:white;border:1px solid rgba(255,255,255,.22)}
+    .btn-block{width:100%;margin-top:14px}
+    .layout{
+      max-width:1440px;
+      margin:auto;
+      display:grid;
+      grid-template-columns:390px minmax(0,1fr);
+      gap:24px;
+      padding:24px;
+    }
+    .controls{
+      position:sticky;
+      top:105px;
+      align-self:start;
+      max-height:calc(100vh - 120px);
+      overflow:auto;
+      padding-left:4px;
+    }
+    .panel{
+      background:rgba(255,255,255,.86);
+      border:1px solid rgba(10,76,62,.12);
+      border-radius:26px;
+      box-shadow:0 16px 40px rgba(10,76,62,.08);
+      margin-bottom:16px;
+      overflow:hidden;
+    }
+    .panel summary{
+      cursor:pointer;
+      padding:18px 20px;
+      font-weight:800;
+      color:var(--green);
+      list-style:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .panel summary::-webkit-details-marker{display:none}
+    .panel-body{padding:0 20px 20px}
+    .field{margin:12px 0}
+    label{
+      display:block;
+      margin-bottom:6px;
+      color:var(--green);
+      font-weight:700;
+      font-size:14px;
+    }
+    .input, textarea, select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fffdf8;
+      padding:12px 14px;
+      font-family:inherit;
+      font-size:15px;
+      outline:none;
+      color:var(--ink);
+    }
+    textarea{min-height:92px;resize:vertical}
+    .two,.three{display:grid;gap:10px}
+    .two{grid-template-columns:1fr 1fr}
+    .three{grid-template-columns:1fr 1fr 1fr}
+    .check-grid{display:grid;grid-template-columns:1fr;gap:8px}
+    .check{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      background:#fffdf8;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:10px 12px;
+      color:var(--ink);
+      font-weight:600;
+      cursor:pointer;
+    }
+    .check input{accent-color:var(--green)}
+    .quick-row{display:flex;gap:8px;margin:10px 0 14px}
+    .quick{
+      flex:1;
+      border:1px solid rgba(10,76,62,.16);
+      background:#fffdf8;
+      color:var(--green);
+      border-radius:999px;
+      padding:9px 12px;
+      font-family:inherit;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .micro{margin:0;color:var(--muted);font-size:14px}
+    .preview{display:flex;flex-direction:column;gap:24px}
+    .page{
+      position:relative;
+      min-height:1122px;
+      background:white;
+      border-radius:34px;
+      padding:56px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      border:1px solid rgba(10,76,62,.08);
+    }
+    .page:before{
+      content:"";
+      position:absolute;
+      inset:0 auto 0 0;
+      width:11px;
+      background:linear-gradient(180deg,var(--yellow),var(--green));
+    }
+    .page:after{
+      content:"";
+      position:absolute;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:rgba(231,189,82,.13);
+      left:-90px;
+      top:-90px;
+      z-index:0;
+    }
+    .page > *{position:relative;z-index:1}
+    .cover{
+      background:
+        radial-gradient(circle at 18% 18%, rgba(231,189,82,.32), transparent 28%),
+        linear-gradient(135deg,var(--green),#05372d 72%);
+      color:white;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .cover:before{background:var(--yellow)}
+    .cover:after{background:rgba(255,255,255,.08)}
+    .cover-top{display:flex;align-items:center;justify-content:space-between}
+    .logo{
+      width:104px;
+      height:104px;
+      border-radius:30px;
+      background:var(--yellow);
+      color:var(--green);
+      display:grid;
+      place-items:center;
+      font-size:32px;
+      font-weight:800;
+      letter-spacing:-2px;
+    }
+    .tag{
+      border:1px solid rgba(255,255,255,.26);
+      border-radius:999px;
+      padding:10px 16px;
+      color:rgba(255,255,255,.78);
+      font-weight:700;
+    }
+    .cover h1{
+      font-size:62px;
+      line-height:1.12;
+      margin:90px 0 18px;
+      max-width:760px;
+      font-weight:800;
+    }
+    .cover p{font-size:22px;color:rgba(255,255,255,.82)}
+    .cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:720px}
+    .cover-box{
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:26px;
+      padding:22px;
+    }
+    .cover-box small{display:block;color:rgba(255,255,255,.62);font-size:14px}
+    .cover-box strong{display:block;font-size:25px;margin-top:6px;color:white}
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      border-radius:999px;
+      padding:8px 14px;
+      background:rgba(231,189,82,.18);
+      color:var(--green);
+      font-size:14px;
+      font-weight:800;
+      margin-bottom:18px;
+    }
+    .dark-page .kicker{background:rgba(231,189,82,.18);color:var(--yellow)}
+    .title{
+      font-size:42px;
+      line-height:1.2;
+      margin:0 0 14px;
+      color:var(--green);
+      font-weight:800;
+    }
+    .subtitle{
+      font-size:21px;
+      color:var(--muted);
+      max-width:860px;
+      margin:0 0 28px;
+      line-height:1.9;
+    }
+    .lead{
+      margin-top:28px;
+      background:var(--green);
+      color:white;
+      border-radius:28px;
+      padding:28px;
+      font-size:26px;
+      line-height:1.7;
+      font-weight:700;
+    }
+    .grid-2,.grid-3,.option-grid,.summary-box,.signature,.stat-row{
+      display:grid;
+      gap:18px;
+    }
+    .grid-2{grid-template-columns:1fr 1fr}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .stat-row{grid-template-columns:repeat(3,1fr);margin:34px 0}
+    .stat{
+      background:var(--soft);
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:24px;
+      text-align:center;
+    }
+    .stat strong{display:block;color:var(--green);font-size:38px;line-height:1;font-weight:800}
+    .stat span{display:block;color:var(--muted);font-weight:700;margin-top:8px}
+    .info{
+      background:#fffdf8;
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:24px;
+      min-height:158px;
+    }
+    .info.soft{background:#f7f4eb}
+    .info.yellow{background:rgba(231,189,82,.17)}
+    .info h3{font-size:24px;color:var(--green);margin:0 0 8px}
+    .info p{margin:0;color:var(--muted);font-size:17px;line-height:1.8}
+    h3{color:var(--green);font-size:24px;margin:24px 0 10px}
+    .service-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .pill{
+      background:#fffdf8;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px 16px;
+      font-weight:700;
+      color:var(--ink);
+    }
+    .channel-list{display:flex;flex-wrap:wrap;gap:10px}
+    .channel{
+      display:inline-flex;
+      align-items:center;
+      padding:11px 18px;
+      border-radius:999px;
+      background:var(--green);
+      color:white;
+      font-weight:800;
+    }
+    .divider{height:1px;background:var(--line);margin:28px 0}
+    .option-grid{grid-template-columns:1fr 1fr}
+    .option-card{
+      border:1px solid var(--line);
+      border-radius:34px;
+      padding:30px;
+      background:#fffdf8;
+      min-height:520px;
+      position:relative;
+      overflow:hidden;
+    }
+    .option-card.featured{
+      background:linear-gradient(180deg,rgba(231,189,82,.18),#fffdf8);
+      border-color:rgba(231,189,82,.55);
+    }
+    .option-card h3{font-size:34px;margin:0 0 10px;color:var(--green)}
+    .option-card .desc{color:var(--muted);font-size:18px;line-height:1.8}
+    .amount{
+      background:var(--green);
+      color:white;
+      border-radius:26px;
+      padding:18px;
+      font-size:31px;
+      font-weight:800;
+      margin:22px 0;
+    }
+    .amount small{display:block;font-size:14px;color:rgba(255,255,255,.7);font-weight:600}
+    .spec-list{padding:0;margin:0;list-style:none;display:grid;gap:10px}
+    .spec-list li{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      border-bottom:1px solid var(--line);
+      padding:11px 0;
+      color:var(--muted);
+      font-size:17px;
+    }
+    .spec-list strong{font-size:22px;color:var(--green)}
+    table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--line);border-radius:24px;background:white}
+    th,td{padding:16px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}
+    th{background:var(--green);color:white;font-size:16px}
+    td{font-size:17px;color:var(--ink)}
+    tr:last-child td{border-bottom:0}
+    .summary-box{grid-template-columns:1fr 1fr;margin-top:20px}
+    .money{
+      border-radius:24px;
+      padding:20px;
+      background:var(--green);
+      color:white;
+    }
+    .money.yellow{background:var(--yellow);color:var(--green)}
+    .money h3{margin:0 0 8px;color:inherit;font-size:18px}
+    .money strong{font-size:30px}
+    .note,.payment-note{
+      background:rgba(231,189,82,.16);
+      border:1px solid rgba(231,189,82,.38);
+      border-radius:24px;
+      padding:20px;
+      color:var(--ink);
+      font-size:18px;
+    }
+    .dark-page{
+      background:linear-gradient(135deg,var(--green),#04342b);
+      color:white;
+    }
+    .dark-page:before{background:var(--yellow)}
+    .dark-page .title,.dark-page h2,.dark-page h3{color:white}
+    .acceptance-title{font-size:50px;line-height:1.2;margin:0 0 20px}
+    .acceptance-text{font-size:22px;color:rgba(255,255,255,.82);max-width:860px}
+    .payment-note{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);color:white;margin:35px 0}
+    .payment-note h3{color:var(--yellow);margin-top:0}
+    .signature{grid-template-columns:1fr 1fr;margin-top:35px}
+    .sig-box{
+      border:1px solid rgba(255,255,255,.28);
+      border-radius:28px;
+      min-height:170px;
+      padding:24px;
+      background:rgba(255,255,255,.08);
+    }
+    .sig-line{
+      margin-top:68px;
+      border-top:1px solid rgba(255,255,255,.45);
+      padding-top:12px;
+      color:rgba(255,255,255,.74);
+    }
+    .footer-brand,.page-num{
+      position:absolute;
+      bottom:26px;
+      color:rgba(10,76,62,.45);
+      font-weight:800;
+      font-size:13px;
+    }
+    .footer-brand{right:56px}
+    .page-num{left:56px}
+    .dark-page .footer-brand,.dark-page .page-num{color:rgba(255,255,255,.45)}
+    @media print{
+      body{background:white}
+      .no-print,.app-header,.controls{display:none!important}
+      .layout{display:block;padding:0;max-width:none}
+      .preview{gap:0}
+      .page{
+        border:0;
+        border-radius:0;
+        box-shadow:none;
+        min-height:100vh;
+        page-break-after:always;
+        padding:46px;
+      }
+      .page:last-child{page-break-after:auto}
+      @page{size:A4;margin:0}
+      .cover h1{font-size:55px}
+      .title{font-size:34px}
+      .subtitle{font-size:16px}
+      .grid-3{grid-template-columns:repeat(3,1fr)}
+      .option-grid,.grid-2,.summary-box,.signature{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:980px){
+      .layout{grid-template-columns:1fr}
+      .wrap{flex-direction:column;align-items:flex-start}
+      .cover h1{font-size:42px}
+      .page{padding:30px;min-height:auto}
+      .grid-2,.grid-3,.service-list,.summary-box,.signature,.option-grid,.stat-row{grid-template-columns:1fr}
+      .controls{order:1;position:relative;top:auto;max-height:none}
+      .preview{order:2}
+      .cover-grid{grid-template-columns:1fr}
+      .two,.three{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
@@ -48,12 +460,12 @@
         <div class="mark">PWP</div>
         <div>
           <h1>مولّد عروض Post With Passion</h1>
-          <p>نسخة أكثر فخامة وسهولة — خيارين للعميل + عرض جاهز للتوقيع والطباعة.</p>
+          <p>نسخة فخمة وسهلة الاستخدام مع Option 1 و Option 2 وعرض جاهز للتوقيع والطباعة.</p>
         </div>
       </div>
       <div class="actions">
         <button class="btn btn-dark" onclick="renderProposal()">تحديث العرض</button>
-        <button class="btn btn-primary" onclick="window.print()">طباعة / حفظ PDF</button>
+        <button class="btn btn-primary" onclick="window.print()">طباعة أو حفظ PDF</button>
         <button class="btn btn-soft" onclick="copySummary()">نسخ الملخص</button>
       </div>
     </div>
@@ -62,19 +474,19 @@
   <main class="layout">
     <aside class="controls no-print">
       <details class="panel" open>
-        <summary><span>01 — بيانات العميل</span></summary>
+        <summary><span>01 بيانات العميل</span></summary>
         <div class="panel-body">
-          <div class="field"><label>اسم العميل</label><input class="input" id="clientName" value="اسم العميل" /></div>
+          <div class="field"><label>اسم العميل</label><input class="input" id="clientName" value="اسم العميل"></div>
           <div class="two">
-            <div class="field"><label>التاريخ</label><input class="input" id="proposalDate" type="date" /></div>
-            <div class="field"><label>مدة المشروع</label><input class="input" id="duration" value="3 أشهر" /></div>
+            <div class="field"><label>التاريخ</label><input class="input" id="proposalDate" type="date"></div>
+            <div class="field"><label>مدة المشروع</label><input class="input" id="duration" value="3 أشهر"></div>
           </div>
           <div class="field"><label>الهدف الرئيسي</label><textarea id="mainGoal">بناء حضور رقمي أقوى وزيادة فرص الوصول إلى العملاء المحتملين من خلال محتوى محلي وحملات إعلانية قابلة للقياس.</textarea></div>
         </div>
       </details>
 
       <details class="panel" open>
-        <summary><span>02 — الخدمات والقنوات</span></summary>
+        <summary><span>02 الخدمات والقنوات</span></summary>
         <div class="panel-body">
           <p class="micro">اختر الخدمات والقنوات التي تريد ظهورها في نطاق العمل.</p>
           <div class="quick-row">
@@ -87,56 +499,55 @@
       </details>
 
       <details class="panel" open>
-        <summary><span>03 — الخيار الأول</span></summary>
+        <summary><span>03 Option 1</span></summary>
         <div class="panel-body">
-          <div class="field"><label>اسم الخيار</label><input class="input" id="option1Title" value="الخيار الأول — باقة النمو" /></div>
+          <div class="field"><label>اسم الخيار</label><input class="input" id="option1Title" value="Option 1"></div>
           <div class="field"><label>وصف الخيار</label><textarea id="option1Desc">مناسب للعميل الذي يحتاج حضورًا منظمًا ومحتوى مستمرًا مع تشغيل إعلانات أساسي لاختبار الرسائل والقنوات الأعلى أداءً.</textarea></div>
           <div class="three">
-            <div class="field"><label>التصاميم</label><input class="input" id="option1Designs" type="number" value="12" /></div>
-            <div class="field"><label>الفيديوهات</label><input class="input" id="option1Videos" type="number" value="6" /></div>
-            <div class="field"><label>UGC</label><input class="input" id="option1Ugc" type="number" value="2" /></div>
+            <div class="field"><label>التصاميم</label><input class="input" id="option1Designs" type="number" value="12"></div>
+            <div class="field"><label>الفيديوهات القصيرة</label><input class="input" id="option1Videos" type="number" value="6"></div>
+            <div class="field"><label>UGC</label><input class="input" id="option1Ugc" type="number" value="2"></div>
           </div>
           <div class="three">
-            <div class="field"><label>AI Videos</label><input class="input" id="option1Ai" type="number" value="3" /></div>
-            <div class="field"><label>المنصات</label><input class="input" id="option1Platforms" type="number" value="3" /></div>
-            <div class="field"><label>رسوم الباقة</label><input class="input" id="option1Fee" type="number" value="12000" /></div>
+            <div class="field"><label>AI Videos</label><input class="input" id="option1Ai" type="number" value="3"></div>
+            <div class="field"><label>المنصات</label><input class="input" id="option1Platforms" type="number" value="3"></div>
+            <div class="field"><label>رسوم الباقة</label><input class="input" id="option1Fee" type="number" value="12000"></div>
           </div>
           <div class="two">
-            <div class="field"><label>ميزانية الإعلانات</label><input class="input" id="option1Ad" type="number" value="5000" /></div>
-            <div class="field"><label>رسوم إدارة الإعلانات</label><input class="input" id="option1Mgmt" type="number" value="1500" /></div>
+            <div class="field"><label>ميزانية الإعلانات</label><input class="input" id="option1Ad" type="number" value="5000"></div>
+            <div class="field"><label>رسوم إدارة الإعلانات</label><input class="input" id="option1Mgmt" type="number" value="1500"></div>
           </div>
         </div>
       </details>
 
       <details class="panel" open>
-        <summary><span>04 — الخيار الثاني</span></summary>
+        <summary><span>04 Option 2</span></summary>
         <div class="panel-body">
-          <div class="field"><label>اسم الخيار</label><input class="input" id="option2Title" value="الخيار الثاني — باقة التوسع" /></div>
+          <div class="field"><label>اسم الخيار</label><input class="input" id="option2Title" value="Option 2"></div>
           <div class="field"><label>وصف الخيار</label><textarea id="option2Desc">مناسب للعميل الذي يريد تشغيلًا أقوى ومحتوى أكثر تنوعًا لاختبار زوايا متعددة، مع مساحة أكبر للإعلانات والتحسين المستمر.</textarea></div>
           <div class="three">
-            <div class="field"><label>التصاميم</label><input class="input" id="option2Designs" type="number" value="16" /></div>
-            <div class="field"><label>الفيديوهات</label><input class="input" id="option2Videos" type="number" value="10" /></div>
-            <div class="field"><label>UGC</label><input class="input" id="option2Ugc" type="number" value="4" /></div>
+            <div class="field"><label>التصاميم</label><input class="input" id="option2Designs" type="number" value="16"></div>
+            <div class="field"><label>الفيديوهات القصيرة</label><input class="input" id="option2Videos" type="number" value="10"></div>
+            <div class="field"><label>UGC</label><input class="input" id="option2Ugc" type="number" value="4"></div>
           </div>
           <div class="three">
-            <div class="field"><label>AI Videos</label><input class="input" id="option2Ai" type="number" value="5" /></div>
-            <div class="field"><label>المنصات</label><input class="input" id="option2Platforms" type="number" value="4" /></div>
-            <div class="field"><label>رسوم الباقة</label><input class="input" id="option2Fee" type="number" value="18000" /></div>
+            <div class="field"><label>AI Videos</label><input class="input" id="option2Ai" type="number" value="5"></div>
+            <div class="field"><label>المنصات</label><input class="input" id="option2Platforms" type="number" value="4"></div>
+            <div class="field"><label>رسوم الباقة</label><input class="input" id="option2Fee" type="number" value="18000"></div>
           </div>
           <div class="two">
-            <div class="field"><label>ميزانية الإعلانات</label><input class="input" id="option2Ad" type="number" value="10000" /></div>
-            <div class="field"><label>رسوم إدارة الإعلانات</label><input class="input" id="option2Mgmt" type="number" value="2500" /></div>
+            <div class="field"><label>ميزانية الإعلانات</label><input class="input" id="option2Ad" type="number" value="10000"></div>
+            <div class="field"><label>رسوم إدارة الإعلانات</label><input class="input" id="option2Mgmt" type="number" value="2500"></div>
           </div>
         </div>
       </details>
 
       <details class="panel" open>
-        <summary><span>05 — الشروط والضريبة</span></summary>
+        <summary><span>05 الشروط والضريبة</span></summary>
         <div class="panel-body">
-          <label class="check"><input id="vatEnabled" type="checkbox" checked /> احتساب ضريبة القيمة المضافة 15%</label>
+          <label class="check"><input id="vatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%</label>
           <div class="field"><label>ملاحظة الإعلانات</label><textarea id="notes">يتم تعديل توزيع الميزانية بناءً على أداء الحملات، مع رفع الصرف على القنوات الأعلى أداءً وتقليل الصرف على القنوات الأقل فعالية.</textarea></div>
           <div class="field"><label>ملاحظة الدفع المقدّم</label><textarea id="paymentNote">يتم اعتماد المشروع وبدء العمل بعد سداد الدفعة المقدمة، وتكون المدفوعات الشهرية مقدمة قبل بداية كل شهر عمل.</textarea></div>
-          <div class="mini-total"><p>تذكير</p><strong>الخياران يظهران للعميل لاختيار الأنسب</strong></div>
           <button class="btn btn-primary btn-block" onclick="renderProposal()">تحديث العرض الآن</button>
         </div>
       </details>
@@ -147,7 +558,7 @@
 
 <script>
   const servicesList = [
-    "خدمة 360 — تشغيل تسويقي متكامل",
+    "خدمة 360 تشغيل تسويقي متكامل",
     "استراتيجية محتوى شهرية",
     "إدارة حسابات التواصل الاجتماعي",
     "تصاميم سوشيال ميديا",
@@ -167,15 +578,19 @@
   const esc = (str) => String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
   function buildChecks(containerId, list, selected){
-    const el = byId(containerId); el.innerHTML = '';
+    const el = byId(containerId);
+    el.innerHTML = '';
     list.forEach(item => {
-      const label = document.createElement('label'); label.className = 'check';
+      const label = document.createElement('label');
+      label.className = 'check';
       label.innerHTML = `<input type="checkbox" value="${esc(item)}" ${selected.includes(item) ? 'checked' : ''}> <span>${esc(item)}</span>`;
       el.appendChild(label);
     });
   }
 
-  function selected(containerId){return [...document.querySelectorAll(`#${containerId} input:checked`)].map(i=>i.value)}
+  function selected(containerId){
+    return [...document.querySelectorAll(`#${containerId} input:checked`)].map(i => i.value);
+  }
 
   function optionData(n){
     const fee = Number(byId(`option${n}Fee`).value || 0);
@@ -197,8 +612,8 @@
   }
 
   function selectRecommended(type){
-    const leanServices = ["خدمة 360 — تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية"];
-    const growthServices = ["خدمة 360 — تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","فيديوهات UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية","صفحة هبوط Landing Page"];
+    const leanServices = ["خدمة 360 تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية"];
+    const growthServices = ["خدمة 360 تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","فيديوهات UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية","صفحة هبوط Landing Page"];
     const servicePick = type === 'lean' ? leanServices : growthServices;
     const channelPick = type === 'lean' ? ["Instagram","TikTok","Google Ads"] : ["Instagram","TikTok","Snapchat","Google Ads","LinkedIn"];
     [...document.querySelectorAll('#services input')].forEach(i => i.checked = servicePick.includes(i.value));
@@ -208,10 +623,10 @@
 
   function optionCard(o, n, featured=false){
     return `<div class="option-card ${featured ? 'featured' : ''}">
-      <div class="kicker">الخيار ${n}</div>
+      <div class="kicker">Option ${n}</div>
       <h3>${esc(o.title)}</h3>
       <p class="desc">${esc(o.desc)}</p>
-      <div class="amount">${money(o.fee)} <small>/ رسوم الباقة</small></div>
+      <div class="amount">${money(o.fee)} <small>رسوم الباقة</small></div>
       <ul class="spec-list">
         <li><span>تصاميم شهرية</span><strong>${o.designs}</strong></li>
         <li><span>فيديوهات قصيرة</span><strong>${o.videos}</strong></li>
@@ -219,18 +634,18 @@
         <li><span>فيديوهات AI</span><strong>${o.ai}</strong></li>
         <li><span>منصات يتم إدارتها</span><strong>${o.platforms}</strong></li>
       </ul>
-    </div>`
+    </div>`;
   }
 
   function distribution(channels, budget){
     const filtered = channels.filter(c => c !== 'WhatsApp' && c !== 'YouTube Shorts');
     const weights = filtered.map(c => c.includes('Google') ? 30 : c.includes('Instagram') ? 35 : c.includes('TikTok') ? 25 : c.includes('LinkedIn') ? 20 : 10);
-    const sum = weights.reduce((a,b)=>a+b,0) || 1;
-    return filtered.map((c,i)=>({channel:c, pct:Math.round(weights[i]/sum*100), amount:Math.round(budget*weights[i]/sum)}));
+    const sum = weights.reduce((a,b) => a + b, 0) || 1;
+    return filtered.map((c,i) => ({channel:c, pct:Math.round(weights[i] / sum * 100), amount:Math.round(budget * weights[i] / sum)}));
   }
 
   function addPage(html, num, cls=''){
-    return `<article class="page ${cls}">${html}<div class="footer-brand">Post With Passion</div><div class="page-num">${String(num).padStart(2,'0')}</div></article>`
+    return `<article class="page ${cls}">${html}<div class="footer-brand">Post With Passion</div><div class="page-num">${String(num).padStart(2,'0')}</div></article>`;
   }
 
   function renderProposal(){
@@ -240,32 +655,36 @@
     const goal = byId('mainGoal').value;
     const services = selected('services');
     const channels = selected('channels');
-    const opt1 = optionData(1), opt2 = optionData(2);
+    const opt1 = optionData(1);
+    const opt2 = optionData(2);
     const notes = byId('notes').value;
     const paymentNote = byId('paymentNote').value;
-    const dist1 = distribution(channels,opt1.ad), dist2 = distribution(channels,opt2.ad);
+    const dist1 = distribution(channels,opt1.ad);
+    const dist2 = distribution(channels,opt2.ad);
 
     const pages = [];
+
     pages.push(`<article class="page cover">
-      <div class="cover-top"><div class="logo">PWP</div><div class="tag">Proposal Builder</div></div>
-      <div><h1>عرض تسويقي مقدم إلى<br>${esc(client)}</h1><p>مقدم من Post With Passion — بوست وذ باشن</p></div>
-      <div class="cover-grid"><div class="cover-box"><small>التاريخ</small><strong>${esc(date)}</strong></div><div class="cover-box"><small>مدة المشروع</small><strong>${esc(duration)}</strong></div><div class="cover-box"><small>الاختيارات</small><strong>خياران حسب الميزانية</strong></div></div>
+      <div class="cover-top"><div class="logo">PWP</div><div class="tag">Client Proposal</div></div>
+      <div><h1>عرض تسويقي مقدم إلى<br>${esc(client)}</h1><p>مقدم من Post With Passion بوست وذ باشن</p></div>
+      <div class="cover-grid"><div class="cover-box"><small>التاريخ</small><strong>${esc(date)}</strong></div><div class="cover-box"><small>مدة المشروع</small><strong>${esc(duration)}</strong></div></div>
     </article>`);
 
-    pages.push(addPage(`<div class="kicker">عن الشركة</div><h2 class="title">من نحن؟</h2><p class="subtitle">Post With Passion وكالة تسويق سعودية تساعد العلامات التجارية على بناء حضور رقمي مؤثر من خلال المحتوى، الحملات الإعلانية، وتجارب العملاء الواقعية.</p>
+    pages.push(addPage(`<div class="kicker">عن الشركة</div><h2 class="title">من نحن؟</h2><p class="subtitle">Post With Passion شريك تسويقي سعودي يساعد العلامات على تحويل الحضور الرقمي من منشورات متفرقة إلى منظومة محتوى وإعلانات تقرّب العلامة من جمهورها وتدعم قراراته.</p>
       <div class="stat-row"><div class="stat"><strong>+80M</strong><span>وصول رقمي تراكمي</span></div><div class="stat"><strong>+2000</strong><span>صانع محتوى سعودي</span></div><div class="stat"><strong>+600</strong><span>فيديو تم إنتاجه</span></div></div>
+      <div class="grid-2" style="margin-top:28px"><div class="info soft"><h3>فهم محلي</h3><p>نصنع محتوى يتحدث بلغة الجمهور السعودي ويأخذ في الاعتبار طريقة تفاعله مع المنصات والعروض والخدمات.</p></div><div class="info yellow"><h3>تشغيل متكامل</h3><p>نجمع بين التخطيط، الإنتاج، النشر، الإعلانات، وقراءة الأداء حتى لا يكون العمل منفصلًا عن هدف المبيعات والنمو.</p></div></div>
       <p class="lead">نحوّل العفوية إلى قوة تسويقية تعكس هوية العلامة، وتخدم الوعي، الإقناع، والتحويل.</p>`,2));
 
-    pages.push(addPage(`<div class="kicker">طريقة العمل</div><h2 class="title">منظومة تشغيل وليست منشورات فقط</h2><p class="subtitle">نعمل على بناء رسالة واضحة، تحويلها إلى محتوى مناسب، تشغيلها على القنوات الصحيحة، ثم تحسين الأداء بناءً على النتائج.</p>
-      <div class="grid-2"><div class="info soft"><h3>خدمة 360</h3><p>تشغيل تسويقي متكامل يشمل التخطيط، المحتوى، النشر، الإعلانات، التقارير، والتحسين.</p></div><div class="info yellow"><h3>UGC + AI Videos</h3><p>نستخدم UGC عندما نحتاج تجربة بشرية وثقة، ونستخدم AI عندما نحتاج سرعة ومرونة ومشاهد يصعب تصويرها.</p></div><div class="info"><h3>Paid Media</h3><p>إدارة الحملات على المنصات المناسبة حسب هدف العميل وطبيعة الجمهور.</p></div><div class="info"><h3>Performance</h3><p>قراءة النتائج وتحسين الرسائل والقنوات بدل الاستمرار على افتراضات غير مثبتة.</p></div></div>`,3));
+    pages.push(addPage(`<div class="kicker">طريقة العمل</div><h2 class="title">كيف نعمل؟</h2><p class="subtitle">نبدأ بفهم الهدف التجاري للعميل، ثم نترجمه إلى رسائل ومحتوى وقنوات إعلانية واضحة. بعدها نراقب الأداء ونحسن الصرف والرسائل بناءً على البيانات.</p>
+      <div class="grid-2"><div class="info soft"><h3>1. تحديد الاتجاه</h3><p>نحدد الهدف، الجمهور، الرسائل الأساسية، والقنوات الأنسب قبل بدء الإنتاج.</p></div><div class="info yellow"><h3>2. إنتاج المحتوى</h3><p>ننفذ محتوى مناسب للمنصات، ويشمل التصاميم، الفيديوهات القصيرة، UGC، وفيديوهات AI حسب احتياج الحملة.</p></div><div class="info"><h3>3. تشغيل الحملات</h3><p>نطلق الإعلانات على القنوات المختارة مع توزيع ميزانية واضح ومتابعة يومية للأداء.</p></div><div class="info"><h3>4. التحسين والتقرير</h3><p>نراجع النتائج ونقدم توصيات عملية لتحسين الرسائل، الكرييتف، والقنوات في الشهر التالي.</p></div></div>`,3));
 
     pages.push(addPage(`<div class="kicker">هدف المشروع</div><h2 class="title">التركيز المقترح لـ ${esc(client)}</h2><p class="subtitle">${esc(goal)}</p>
       <div class="grid-3"><div class="info"><h3>رسالة أوضح</h3><p>تحويل قيمة الخدمة إلى محتوى مفهوم وسهل التفاعل معه.</p></div><div class="info"><h3>قنوات مناسبة</h3><p>اختيار المنصات حسب الجمهور وليس بناءً على الحضور فقط.</p></div><div class="info"><h3>نتائج قابلة للقياس</h3><p>متابعة الظهور، التفاعل، العملاء المحتملين، وجودة النتائج.</p></div></div>`,4));
 
     pages.push(addPage(`<div class="kicker">نطاق العمل</div><h2 class="title">الخدمات والقنوات المقترحة</h2><p class="subtitle">سيتم اعتماد التنفيذ النهائي حسب الخيار المختار والميزانية المعتمدة.</p>
-      <h3>الخدمات</h3><div class="service-list">${services.map(s=>`<div class="pill">${esc(s)}</div>`).join('')}</div><div class="divider"></div><h3>القنوات</h3><div class="channel-list">${channels.map(c=>`<span class="channel">${esc(c)}</span>`).join('')}</div>`,5));
+      <h3>الخدمات</h3><div class="service-list">${services.map(s => `<div class="pill">${esc(s)}</div>`).join('')}</div><div class="divider"></div><h3>القنوات</h3><div class="channel-list">${channels.map(c => `<span class="channel">${esc(c)}</span>`).join('')}</div>`,5));
 
-    pages.push(addPage(`<div class="kicker">اختيار العميل</div><h2 class="title">خياران حسب الميزانية</h2><p class="subtitle">يمكن للعميل اختيار الخيار الأنسب حسب الميزانية والمرحلة الحالية. الخيار الأول أخف للتجربة المنظمة، والخيار الثاني أقوى للتوسع والاختبار المتعدد.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>`,6));
+    pages.push(addPage(`<div class="kicker">اختيار العميل</div><h2 class="title">Option 1 و Option 2</h2><p class="subtitle">يمكن للعميل اختيار الخيار الأنسب حسب الميزانية والمرحلة الحالية. Option 1 مناسب للتشغيل المنظم، و Option 2 مناسب للتوسع والاختبار المتعدد.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>`,6));
 
     pages.push(addPage(`<div class="kicker">تفاصيل الأسعار</div><h2 class="title">الفصل بين قيمة الباقة والإعلانات</h2><p class="subtitle">تم فصل رسوم الخدمات عن ميزانية الإعلانات الممولة حتى يكون إجمالي كل جزء واضحًا.</p>
       <table><thead><tr><th>البند</th><th>${esc(opt1.title)}</th><th>${esc(opt2.title)}</th></tr></thead><tbody>
@@ -276,10 +695,10 @@
       <tr><td>الضريبة 15%</td><td>${money(opt1.vat)}</td><td>${money(opt2.vat)}</td></tr>
       <tr><td><strong>الإجمالي الشهري</strong></td><td><strong>${money(opt1.total)}</strong></td><td><strong>${money(opt2.total)}</strong></td></tr>
       </tbody></table>
-      <div class="summary-box"><div class="money"><h3>إجمالي الباقة — الخيار الأول</h3><strong>${money(opt1.fee)}</strong></div><div class="money yellow"><h3>إجمالي الإعلانات — الخيار الأول</h3><strong>${money(opt1.mediaTotal)}</strong></div><div class="money"><h3>إجمالي الباقة — الخيار الثاني</h3><strong>${money(opt2.fee)}</strong></div><div class="money yellow"><h3>إجمالي الإعلانات — الخيار الثاني</h3><strong>${money(opt2.mediaTotal)}</strong></div></div>`,7));
+      <div class="summary-box"><div class="money"><h3>إجمالي الباقة Option 1</h3><strong>${money(opt1.fee)}</strong></div><div class="money yellow"><h3>إجمالي الإعلانات Option 1</h3><strong>${money(opt1.mediaTotal)}</strong></div><div class="money"><h3>إجمالي الباقة Option 2</h3><strong>${money(opt2.fee)}</strong></div><div class="money yellow"><h3>إجمالي الإعلانات Option 2</h3><strong>${money(opt2.mediaTotal)}</strong></div></div>`,7));
 
     pages.push(addPage(`<div class="kicker">Paid Media</div><h2 class="title">توزيع الصرف الإعلاني المقترح</h2><p class="subtitle">التوزيع تقديري ويتم تحسينه بعد إطلاق الحملات وظهور النتائج الفعلية.</p>
-      <div class="grid-2"><div><h3>${esc(opt1.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${dist1.map(d=>`<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div><div><h3>${esc(opt2.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${dist2.map(d=>`<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div></div><div class="note" style="margin-top:20px">${esc(notes)}</div>`,8));
+      <div class="grid-2"><div><h3>${esc(opt1.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${dist1.map(d => `<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div><div><h3>${esc(opt2.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${dist2.map(d => `<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div></div><div class="note" style="margin-top:20px">${esc(notes)}</div>`,8));
 
     pages.push(addPage(`<div class="kicker">النتائج المتوقعة</div><h2 class="title">ماذا نتوقع من العمل؟</h2><p class="subtitle">لا نبيع وعودًا غير واقعية. نركز على مؤشرات تسويقية قابلة للإدارة والتحسين، مع ربطها بجودة تجربة العميل بعد التواصل.</p>
       <div class="grid-3"><div class="info"><h3>ظهور أفضل</h3><p>تحسين جودة حضور العلامة على القنوات المختارة.</p></div><div class="info"><h3>اختبار الرسائل</h3><p>معرفة الزوايا الأعلى تفاعلًا والأقرب للتحويل.</p></div><div class="info"><h3>عملاء محتملون</h3><p>جذب زيارات أو Leads حسب هدف الحملة.</p></div><div class="info"><h3>مكتبة محتوى</h3><p>بناء أصول قابلة للاستخدام في الحملات القادمة.</p></div><div class="info"><h3>تحسين مستمر</h3><p>تعديل الصرف بناءً على النتائج لا الافتراضات.</p></div><div class="info"><h3>وضوح أعلى</h3><p>فهم القنوات الأعلى فعالية للمرحلة القادمة.</p></div></div>`,9));
@@ -287,7 +706,7 @@
     pages.push(addPage(`<h2 class="acceptance-title">اعتماد العرض</h2><p class="acceptance-text">يسعدنا التعاون معكم لبناء حضور رقمي أقوى وأكثر تأثيرًا. باعتماد هذا العرض، يختار العميل أحد الخيارين الموضحين أعلاه ويوافق على نطاق العمل، الميزانية، وآلية الدفع.</p>
       <div class="payment-note"><h3>ملاحظة الدفع</h3><p>${esc(paymentNote)}</p></div>
       <div class="signature"><div class="sig-box"><strong>موافقة العميل</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div><div class="sig-box"><strong>Post With Passion</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div></div>
-      <p class="acceptance-text" style="margin-top:38px;color:rgba(255,255,255,.75)">Post With Passion — نحوّل المحتوى العفوي إلى مبيعات فعلية تنمّي علامتك.</p>`,10,'dark-page'));
+      <p class="acceptance-text" style="margin-top:38px;color:rgba(255,255,255,.75)">Post With Passion نحوّل المحتوى العفوي إلى مبيعات فعلية تنمّي علامتك.</p>`,10,'dark-page'));
 
     byId('preview').innerHTML = pages.join('');
   }
@@ -295,13 +714,24 @@
   function copySummary(){
     const client = byId('clientName').value || 'اسم العميل';
     const o1 = optionData(1), o2 = optionData(2);
-    const txt = `عرض تسويقي مقدم إلى ${client}\n\nالخيار الأول: ${o1.title}\nرسوم الباقة: ${money(o1.fee)}\nالإعلانات الممولة: ${money(o1.mediaTotal)}\nالإجمالي الشهري شامل الضريبة: ${money(o1.total)}\n\nالخيار الثاني: ${o2.title}\nرسوم الباقة: ${money(o2.fee)}\nالإعلانات الممولة: ${money(o2.mediaTotal)}\nالإجمالي الشهري شامل الضريبة: ${money(o2.total)}`;
-    navigator.clipboard.writeText(txt); alert('تم نسخ ملخص العرض');
+    const txt = `عرض تسويقي مقدم إلى ${client}
+
+Option 1: ${o1.title}
+رسوم الباقة: ${money(o1.fee)}
+الإعلانات الممولة: ${money(o1.mediaTotal)}
+الإجمالي الشهري شامل الضريبة: ${money(o1.total)}
+
+Option 2: ${o2.title}
+رسوم الباقة: ${money(o2.fee)}
+الإعلانات الممولة: ${money(o2.mediaTotal)}
+الإجمالي الشهري شامل الضريبة: ${money(o2.total)}`;
+    navigator.clipboard.writeText(txt);
+    alert('تم نسخ ملخص العرض');
   }
 
-  document.addEventListener('DOMContentLoaded',()=>{
+  document.addEventListener('DOMContentLoaded', () => {
     byId('proposalDate').value = new Date().toISOString().slice(0,10);
-    buildChecks('services', servicesList, ["خدمة 360 — تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","فيديوهات UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية"]);
+    buildChecks('services', servicesList, ["خدمة 360 تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","فيديوهات UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية"]);
     buildChecks('channels', channelsList, ["Instagram","TikTok","Snapchat","Google Ads"]);
     renderProposal();
   });
