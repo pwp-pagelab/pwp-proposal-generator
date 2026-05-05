@@ -1,590 +1,105 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مولّد عروض Post With Passion</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PWP Proposal Builder</title>
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      background: #fafafa;
+    :root{
+      --green:#0a4c3e;
+      --yellow:#e7bd52;
+      --cream:#f8f3e7;
+      --light:#fffaf0;
+      --ink:#10231f;
+      --muted:#6d746f;
+      --line:#e5dcc8;
+      --soft-green:#e8f0ed;
     }
-    header {
-      background: #222;
-      color: #fff;
-      padding: 1rem 1.5rem;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-    header p {
-      margin: 0.25rem 0 0;
-      font-size: 0.875rem;
-      color: #ccc;
-    }
-    .container {
-      display: flex;
-      flex: 1;
-    }
-    .sidebar {
-      width: 320px;
-      max-height: 100vh;
-      overflow-y: auto;
-      border-left: 1px solid #ddd;
-      padding: 1rem;
-      background: #fff;
-    }
-    .sidebar h2 {
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-      font-size: 1rem;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 0.25rem;
-    }
-    .sidebar label {
-      display: block;
-      margin-top: 0.5rem;
-      font-size: 0.875rem;
-    }
-    .sidebar input,
-    .sidebar select,
-    .sidebar textarea {
-      width: 100%;
-      padding: 0.5rem;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .sidebar textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-    .preview {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-    }
-    .page {
-      background: #fff;
-      border: 1px solid #eee;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      margin-bottom: 1rem;
-      padding: 1.5rem;
-      min-height: 400px;
-    }
-    .page h2 {
-      margin-top: 0;
-    }
-    .btn-group {
-      margin-top: 1rem;
-      display: flex;
-      gap: 0.5rem;
-    }
-    .btn {
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    .btn.primary {
-      background: #007bff;
-      color: #fff;
-    }
-    .btn.copy {
-      background: #6c757d;
-      color: #fff;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.5rem;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 0.5rem;
-      font-size: 0.8rem;
-      text-align: center;
-    }
-    .flex-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .flex-grid label {
-      width: calc(50% - 0.5rem);
-      white-space: nowrap;
-    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--cream);font-family:Helvetica,Arial,Tahoma,sans-serif;color:var(--ink)}
+    .app-header{position:sticky;top:0;z-index:10;background:var(--green);color:white;padding:16px 22px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+    .app-header .wrap{max-width:1400px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .app-header h1{margin:0;font-size:24px;letter-spacing:-.5px}.app-header p{margin:4px 0 0;color:rgba(255,255,255,.78);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+    button{border:0;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer}.btn-primary{background:var(--yellow);color:var(--green)}.btn-dark{background:white;color:var(--green)}.btn-soft{background:rgba(255,255,255,.13);color:white;border:1px solid rgba(255,255,255,.25)}
+    .layout{max-width:1400px;margin:auto;display:grid;grid-template-columns:390px 1fr;gap:20px;padding:20px}.controls{display:flex;flex-direction:column;gap:14px}.card{background:white;border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 8px 24px rgba(10,76,62,.06)}.card h2{font-size:16px;margin:0 0 12px;color:var(--green)}.hint{font-size:12px;color:var(--muted);line-height:1.6;margin-top:0}
+    label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:10px 0 6px}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 12px;font-size:14px;background:#fff;color:var(--ink);font-family:inherit}textarea{min-height:82px;resize:vertical}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.check{display:flex;align-items:center;gap:7px;background:var(--light);border:1px solid var(--line);border-radius:14px;padding:9px;font-size:12px;font-weight:600}.check input{width:auto}.mini-total{background:var(--soft-green);border:1px solid rgba(10,76,62,.16);border-radius:18px;padding:14px;margin-top:12px}.mini-total strong{display:block;color:var(--green);font-size:22px;margin-top:5px}
+    .preview{display:flex;flex-direction:column;gap:18px}.page{background:white;min-height:960px;border:1px solid var(--line);border-radius:28px;padding:46px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(10,76,62,.07)}.page:before{content:"";position:absolute;top:0;right:0;width:190px;height:12px;background:var(--yellow);border-radius:0 0 0 16px}.page:after{content:"";position:absolute;bottom:0;left:0;width:230px;height:18px;background:var(--green);border-radius:0 22px 0 0}.cover{background:linear-gradient(145deg,var(--green) 0%,#0c5d4d 58%,var(--yellow) 58%,var(--yellow) 100%);color:white;display:flex;flex-direction:column;justify-content:space-between}.cover:before,.cover:after{display:none}.logo-mark{font-weight:900;color:var(--yellow);font-size:26px;letter-spacing:1px}.cover h1{font-size:58px;line-height:1.1;margin:42px 0 14px;letter-spacing:-1.5px}.cover p{font-size:20px;color:rgba(255,255,255,.86);line-height:1.8}.cover-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cover-box{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:22px;padding:18px}.cover-box small{display:block;color:rgba(255,255,255,.7);margin-bottom:6px}.cover-box strong{font-size:18px}.kicker{color:var(--yellow);font-weight:900;font-size:13px;letter-spacing:1px;text-transform:uppercase}.title{font-size:36px;color:var(--green);margin:8px 0 12px;line-height:1.25}.subtitle{font-size:17px;color:var(--muted);line-height:1.9;margin:0 0 24px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.info{border:1px solid var(--line);border-radius:22px;background:var(--light);padding:20px}.info h3{margin:0 0 9px;color:var(--green);font-size:19px}.info p{margin:0;color:var(--muted);line-height:1.7}.stat{background:var(--green);color:white;border-radius:24px;padding:22px}.stat strong{font-size:34px;color:var(--yellow)}.stat span{display:block;margin-top:8px;color:rgba(255,255,255,.82)}.service-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pill{padding:13px 15px;border-radius:999px;background:var(--soft-green);color:var(--green);font-weight:800;border:1px solid rgba(10,76,62,.14)}table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:20px;border:1px solid var(--line);background:white}th{background:var(--green);color:white;padding:14px;text-align:right}td{padding:14px;border-top:1px solid var(--line);vertical-align:top}tr:nth-child(even) td{background:#fbf8ef}.price-card{border:2px solid var(--green);border-radius:28px;padding:26px;background:white}.price-card.featured{background:var(--green);color:white}.price-card h3{font-size:28px;margin:0 0 8px}.price-card.featured h3,.price-card.featured .amount{color:var(--yellow)}.amount{font-size:34px;font-weight:900;color:var(--green);margin:14px 0}.price-card ul{line-height:2;margin:0;padding-right:20px}.summary-box{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.money{border-radius:22px;padding:20px;background:var(--soft-green);border:1px solid rgba(10,76,62,.15)}.money h3{margin:0;color:var(--green)}.money strong{font-size:28px;color:var(--green);display:block;margin-top:10px}.note{border-right:5px solid var(--yellow);background:#fff7df;border-radius:20px;padding:20px;color:#4d432a;line-height:1.8}.signature{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}.sig-box{height:150px;border:1px dashed var(--green);border-radius:24px;padding:18px;background:var(--light)}.sig-line{margin-top:56px;border-top:1px solid var(--muted);padding-top:10px;color:var(--muted)}.footer-brand{position:absolute;bottom:22px;right:46px;color:var(--green);font-weight:900}.dark-page{background:var(--green);color:white}.dark-page:before{background:var(--yellow)}.dark-page:after{background:white}.dark-page .title{color:white}.dark-page .subtitle{color:rgba(255,255,255,.8)}.dark-page .footer-brand{color:var(--yellow)}
+    @media print{.no-print,.app-header,.controls{display:none!important}.layout{display:block;padding:0}.preview{gap:0}.page{border:0;border-radius:0;box-shadow:none;min-height:100vh;page-break-after:always}.page:last-child{page-break-after:auto}body{background:white}.footer-brand{display:block}}
+    @media (max-width:900px){.layout{grid-template-columns:1fr}.cover h1{font-size:40px}.grid-2,.grid-3,.service-list,.summary-box,.signature{grid-template-columns:1fr}.controls{order:1}.preview{order:2}}
   </style>
 </head>
 <body>
-  <header>
-    <h1>مولّد عروض Post With Passion</h1>
-    <p>أدخل بيانات العميل واختر الخدمات وسيتم توليد العرض.</p>
+  <header class="app-header no-print">
+    <div class="wrap">
+      <div><h1>مولّد عروض Post With Passion</h1><p>اختر خيارين للعميل، ثم اطبع العرض كـ PDF أو ارفعه على GitHub Pages.</p></div>
+      <div class="actions"><button class="btn-dark" onclick="renderProposal()">تحديث العرض</button><button class="btn-primary" onclick="window.print()">طباعة / حفظ PDF</button><button class="btn-soft" onclick="copySummary()">نسخ الملخص</button></div>
+    </div>
   </header>
-  <div class="container">
-    <div class="sidebar">
-      <h2>بيانات العرض</h2>
-      <label>اسم العميل
-        <input id="clientName" type="text" value="اسم العميل">
-      </label>
-      <label>التاريخ
-        <input id="proposalDate" type="date">
-      </label>
-      <label>مدة المشروع
-        <input id="duration" type="text" value="3 أشهر">
-      </label>
-      <label>نوع العرض
-        <select id="proposalType">
-          <option>Small Offer</option>
-          <option>Growth Proposal</option>
-          <option>Strategic Proposal</option>
-        </select>
-      </label>
-      <label>فهم الاحتياج
-        <textarea id="needSummary">نرى أن المرحلة الحالية تتطلب توضيح قيمة العلامة التجارية، إنتاج محتوى مناسب للمنصات، واختبار الرسائل الإعلانية للوصول إلى الجمهور الأعلى قابلية للتحويل.</textarea>
-      </label>
-      <label>الهدف الرئيسي
-        <textarea id="mainGoal">بناء حضور رقمي أقوى وزيادة فرص الوصول إلى العملاء المحتملين من خلال محتوى محلي وحملات إعلانية قابلة للقياس.</textarea>
-      </label>
-      <h2>الخدمات</h2>
-      <div id="services"></div>
-      <h2>القنوات</h2>
-      <div id="channels" class="flex-grid"></div>
-      <h2>الباقة</h2>
-      <label>اختر الباقة
-        <select id="packageSelect">
-          <option value="startup">باقة الانطلاق</option>
-          <option value="growth" selected>باقة النمو</option>
-          <option value="scale">باقة التوسع</option>
-        </select>
-      </label>
-      <label>اسم الباقة
-        <input id="packageTitle" type="text">
-      </label>
-      <label>وصف الباقة
-        <textarea id="packageDesc"></textarea>
-      </label>
-      <label>عدد التصاميم
-        <input id="packageDesigns" type="text">
-      </label>
-      <label>عدد الفيديوهات القصيرة
-        <input id="packageVideos" type="text">
-      </label>
-      <label>UGC
-        <input id="packageUGC" type="text">
-      </label>
-      <label>فيديوهات AI
-        <input id="packageAI" type="text">
-      </label>
-      <label>المنصات
-        <input id="packagePlatforms" type="text">
-      </label>
-      <label>سعر الباقة الشهري (ريال)
-        <input id="packagePrice" type="number" min="0" step="100" value="0">
-      </label>
-      <h2>الإعلانات</h2>
-      <label>ميزانية الإعلانات الشهرية (ريال)
-        <input id="adBudget" type="number" min="0" step="100" value="5000">
-      </label>
-      <label>نوع الرسوم الإدارية
-        <select id="feeType">
-          <option value="fixed" selected>رسوم ثابتة</option>
-          <option value="percent">نسبة من الميزانية</option>
-        </select>
-      </label>
-      <label id="feeLabel">رسوم الإدارة (ريال)
-        <input id="managementFee" type="number" min="0" step="100" value="1500">
-      </label>
-      <label>
-        <input id="vatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%
-      </label>
-      <label>ملاحظات إضافية
-        <textarea id="notes">يتم تعديل توزيع الميزانية بناءً على أداء الحملات، مع رفع الصرف على القنوات الأعلى أداءً وتقليل الصرف على القنوات الأقل فعالية.</textarea>
-      </label>
-      <div class="btn-group">
-        <button class="btn copy" onclick="copySummary()">نسخ ملخص العرض</button>
-        <button class="btn primary" onclick="renderProposal()">تحديث العرض</button>
-        <button class="btn" onclick="window.print()">طباعة / PDF</button>
-      </div>
-    </div>
-    <div class="preview" id="preview">
-      <!-- Pages will be rendered here -->
-    </div>
-  </div>
-
+  <main class="layout">
+    <aside class="controls no-print">
+      <section class="card">
+        <h2>1) بيانات العميل</h2>
+        <label>اسم العميل</label><input id="clientName" value="اسم العميل">
+        <div class="two"><div><label>التاريخ</label><input id="proposalDate" type="date"></div><div><label>مدة العقد</label><input id="duration" value="3 أشهر"></div></div>
+        <label>هدف المشروع</label><textarea id="mainGoal">بناء حضور رقمي أقوى، وإنتاج محتوى محلي قابل للاستخدام في الحملات، مع إدارة إعلانات مدفوعة تساعد على الوصول لعملاء أكثر قابلية للتحويل.</textarea>
+      </section>
+      <section class="card">
+        <h2>2) الخدمات والقنوات</h2><p class="hint">عدّل الاختيارات حسب احتياج العميل. لا تضع كل القنوات إذا ما تخدم الهدف.</p>
+        <div id="services"></div>
+        <h2 style="margin-top:18px">القنوات</h2><div id="channels" class="check-grid"></div>
+      </section>
+      <section class="card">
+        <h2>3) الخيار الأول</h2>
+        <label>اسم الخيار</label><input id="optionATitle" value="الخيار الأول — باقة النمو">
+        <label>وصف الخيار</label><textarea id="optionADesc">خيار مناسب للعميل الذي يحتاج محتوى مستمر مع تشغيل إعلاني واضح، واختبار رسائل أساسي على القنوات الأعلى أولوية.</textarea>
+        <div class="two"><div><label>تصاميم</label><input id="aDesigns" type="number" value="12"></div><div><label>فيديوهات قصيرة</label><input id="aVideos" type="number" value="6"></div></div>
+        <div class="two"><div><label>UGC</label><input id="aUgc" type="number" value="2"></div><div><label>AI Videos</label><input id="aAi" type="number" value="3"></div></div>
+        <div class="two"><div><label>منشورات/ستوريات إضافية</label><input id="aStories" type="number" value="8"></div><div><label>سعر الباقة</label><input id="aPackage" type="number" value="12000"></div></div>
+        <div class="two"><div><label>ميزانية الإعلانات</label><input id="aAdBudget" type="number" value="5000"></div><div><label>رسوم إدارة الإعلانات</label><input id="aAdFee" type="number" value="1500"></div></div>
+        <div class="mini-total">إجمالي الخيار الأول قبل الضريبة <strong id="aMini">0 ريال</strong></div>
+      </section>
+      <section class="card">
+        <h2>4) الخيار الثاني</h2>
+        <label>اسم الخيار</label><input id="optionBTitle" value="الخيار الثاني — باقة التوسع">
+        <label>وصف الخيار</label><textarea id="optionBDesc">خيار أقوى للعميل الذي يحتاج إنتاج محتوى أعلى، زوايا إعلانية أكثر، وتشغيل 360 أوسع على المنصات المناسبة.</textarea>
+        <div class="two"><div><label>تصاميم</label><input id="bDesigns" type="number" value="16"></div><div><label>فيديوهات قصيرة</label><input id="bVideos" type="number" value="10"></div></div>
+        <div class="two"><div><label>UGC</label><input id="bUgc" type="number" value="4"></div><div><label>AI Videos</label><input id="bAi" type="number" value="6"></div></div>
+        <div class="two"><div><label>منشورات/ستوريات إضافية</label><input id="bStories" type="number" value="12"></div><div><label>سعر الباقة</label><input id="bPackage" type="number" value="18000"></div></div>
+        <div class="two"><div><label>ميزانية الإعلانات</label><input id="bAdBudget" type="number" value="10000"></div><div><label>رسوم إدارة الإعلانات</label><input id="bAdFee" type="number" value="2500"></div></div>
+        <div class="mini-total">إجمالي الخيار الثاني قبل الضريبة <strong id="bMini">0 ريال</strong></div>
+      </section>
+      <section class="card"><h2>5) شروط الدفع</h2><label>ملاحظة الدفعة المقدمة</label><textarea id="paymentNote">يتم اعتماد المشروع وبدء العمل بعد سداد الدفعة المقدمة. جميع الدفعات الشهرية تكون مقدمة قبل بداية كل شهر عمل، ولا تشمل ميزانية الإعلانات إلا إذا تم تحويلها أو اعتمادها بشكل منفصل.</textarea></section>
+    </aside>
+    <section class="preview" id="preview"></section>
+  </main>
   <script>
-    // Data arrays for services and channels
-    const servicesList = [
-      "خدمة 360 — تشغيل تسويقي متكامل",
-      "استراتيجية محتوى شهرية",
-      "إدارة حسابات التواصل الاجتماعي",
-      "تصاميم سوشيال ميديا",
-      "فيديوهات قصيرة Reels / TikTok / Shorts",
-      "فيديوهات UGC",
-      "فيديوهات مولدة بالذكاء الاصطناعي AI",
-      "كتابة المحتوى والكابشنز",
-      "إدارة الحملات الإعلانية",
-      "تقارير أداء وتوصيات شهرية",
-      "صفحة هبوط Landing Page",
-      "متابعة العملاء المحتملين عبر واتساب"
-    ];
-    const channelsList = [
-      "Instagram",
-      "TikTok",
-      "Snapchat",
-      "X / Twitter",
-      "Google Ads",
-      "LinkedIn",
-      "YouTube Shorts",
-      "WhatsApp"
-    ];
-    const defaultPackages = {
-      startup: {
-        title: "باقة الانطلاق",
-        description: "مناسبة للعلامات التي تحتاج حضورًا رقميًا منظمًا واختبارًا أوليًا للرسائل.",
-        designs: "8 تصاميم شهريًا",
-        videos: "4 فيديوهات قصيرة شهريًا",
-        ugc: "غير مشمول / حسب الطلب",
-        ai: "2 فيديو AI شهريًا",
-        platforms: "منصة إلى منصتين",
-        price: 0
-      },
-      growth: {
-        title: "باقة النمو",
-        description: "مناسبة للعلامات التي تحتاج محتوى مستمرًا مع حملات إعلانية وتحسين أداء.",
-        designs: "12 تصميمًا شهريًا",
-        videos: "6 فيديوهات قصيرة شهريًا",
-        ugc: "2 فيديو UGC شهريًا",
-        ai: "2–4 فيديوهات AI شهريًا",
-        platforms: "2–3 منصات",
-        price: 0
-      },
-      scale: {
-        title: "باقة التوسع",
-        description: "مناسبة للعلامات التي تحتاج تشغيلًا تسويقيًا أقوى ومحتوى متنوعًا للاختبار والنمو.",
-        designs: "16 تصميمًا شهريًا",
-        videos: "8–10 فيديوهات قصيرة شهريًا",
-        ugc: "4 فيديوهات UGC شهريًا",
-        ai: "4–6 فيديوهات AI شهريًا",
-        platforms: "3–4 منصات",
-        price: 0
-      }
-    };
-
-    // Populate services and channels as checkboxes
-    function populateOptions() {
-      const servicesDiv = document.getElementById('services');
-      servicesList.forEach(service => {
-        const label = document.createElement('label');
-        label.className = 'check-row';
-        const input = document.createElement('input');
-        input.type = 'checkbox';
-        input.value = service;
-        input.checked = true;
-        input.onchange = renderProposal;
-        const span = document.createElement('span');
-        span.textContent = service;
-        label.appendChild(input);
-        label.appendChild(span);
-        servicesDiv.appendChild(label);
-      });
-      const channelsDiv = document.getElementById('channels');
-      channelsList.forEach(channel => {
-        const label = document.createElement('label');
-        label.className = 'check-row';
-        const input = document.createElement('input');
-        input.type = 'checkbox';
-        input.value = channel;
-        if (["Instagram","TikTok","Snapchat","Google Ads"].includes(channel)) {
-          input.checked = true;
-        }
-        input.onchange = renderProposal;
-        const span = document.createElement('span');
-        span.textContent = channel;
-        label.appendChild(input);
-        label.appendChild(span);
-        channelsDiv.appendChild(label);
-      });
+    const servicesList=["خدمة 360 — تشغيل تسويقي متكامل","إنتاج المحتوى العفوي UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","إدارة السوشيال ميديا","الإعلانات المدفوعة","استراتيجية البراند والرسائل","تصميم المواقع أو صفحة هبوط","كتابة المقالات والمدونات","تقارير أداء وتوصيات شهرية"];
+    const channelsList=["Instagram","TikTok","Snapchat","X / Twitter","Google Ads","LinkedIn","YouTube Shorts","WhatsApp"];
+    const checkedServices=["خدمة 360 — تشغيل تسويقي متكامل","إنتاج المحتوى العفوي UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","إدارة السوشيال ميديا","الإعلانات المدفوعة","تقارير أداء وتوصيات شهرية"];
+    const checkedChannels=["Instagram","TikTok","Snapchat","Google Ads"];
+    const fmt=(n)=>`${Number(n||0).toLocaleString('en-US')} ريال`;
+    function init(){document.getElementById('proposalDate').value=new Date().toISOString().slice(0,10);const s=document.getElementById('services');servicesList.forEach(x=>{s.insertAdjacentHTML('beforeend',`<label class="check"><input type="checkbox" value="${x}" ${checkedServices.includes(x)?'checked':''}> <span>${x}</span></label>`)});const c=document.getElementById('channels');channelsList.forEach(x=>{c.insertAdjacentHTML('beforeend',`<label class="check"><input type="checkbox" value="${x}" ${checkedChannels.includes(x)?'checked':''}> <span>${x}</span></label>`)});document.querySelectorAll('input,textarea,select').forEach(e=>e.addEventListener('input',renderProposal));renderProposal()}
+    function getChecked(id){return [...document.querySelectorAll(`#${id} input:checked`)].map(i=>i.value)}
+    function val(id){return document.getElementById(id).value}
+    function num(id){return Number(val(id)||0)}
+    function adDist(amount){const channels=getChecked('channels').filter(c=>!['WhatsApp','YouTube Shorts'].includes(c));const weights=channels.map(c=>c.includes('Google')?30:c.includes('Instagram')?35:c.includes('TikTok')?25:c.includes('LinkedIn')?20:10);const sum=weights.reduce((a,b)=>a+b,0)||1;return channels.map((c,i)=>({channel:c,pct:Math.round(weights[i]/sum*100),amount:Math.round(amount*weights[i]/sum)}))}
+    function optionData(prefix){const packageFee=num(prefix+'Package'),adBudget=num(prefix+'AdBudget'),adFee=num(prefix+'AdFee'),subtotal=packageFee+adBudget+adFee,vat=subtotal*.15,total=subtotal+vat;return{title:val('option'+prefix.toUpperCase()+'Title'),desc:val('option'+prefix.toUpperCase()+'Desc'),designs:num(prefix+'Designs'),videos:num(prefix+'Videos'),ugc:num(prefix+'Ugc'),ai:num(prefix+'Ai'),stories:num(prefix+'Stories'),packageFee,adBudget,adFee,subtotal,vat,total,dist:adDist(adBudget)}}
+    function renderProposal(){const client=val('clientName'),date=val('proposalDate'),duration=val('duration'),goal=val('mainGoal'),services=getChecked('services'),channels=getChecked('channels'),A=optionData('a'),B=optionData('b');document.getElementById('aMini').textContent=fmt(A.subtotal);document.getElementById('bMini').textContent=fmt(B.subtotal);const preview=document.getElementById('preview');preview.innerHTML='';const page=(html,cls='')=>preview.insertAdjacentHTML('beforeend',`<article class="page ${cls}">${html}<div class="footer-brand">Post With Passion</div></article>`);
+      page(`<div><div class="logo-mark">PWP</div><h1>عرض تسويقي<br>مقدم إلى ${client}</h1><p>شريكك التسويقي السعودي لبناء محتوى حقيقي، حملات مدفوعة، ورسائل تشبه جمهورك.</p></div><div class="cover-grid"><div class="cover-box"><small>التاريخ</small><strong>${date}</strong></div><div class="cover-box"><small>مدة العقد</small><strong>${duration}</strong></div><div class="cover-box"><small>نوع العرض</small><strong>عرض قابل للتوقيع</strong></div></div>`, 'cover');
+      page(`<div class="kicker">ABOUT · من نحن</div><h2 class="title">نحوّل العفوية إلى قوة تسويقية تعكس هويتك</h2><p class="subtitle">في Post With Passion، نؤمن أن جمهور العلامة ليس مجرد متابع؛ بل جزء من القصة. نمزج الفهم المحلي بأحدث استراتيجيات التسويق، ونبني محتوى يشبه الناس ويصدّقهم.</p><div class="grid-3"><div class="stat"><strong>+80M</strong><span>ظهور رقمي</span></div><div class="stat"><strong>+2000</strong><span>صانع محتوى سعودي</span></div><div class="stat"><strong>+600</strong><span>فيديو منتج</span></div></div><div class="grid-2" style="margin-top:18px"><div class="info"><h3>خبرة محلية</h3><p>خبرة متراكمة تتجاوز 17 سنة عبر قطاعات متعددة، مع فهم حقيقي للسوق السعودي.</p></div><div class="info"><h3>فريق أقرب للداخل</h3><p>نشتغل كأننا فريق العميل الداخلي، مو وكالة بعيدة عن تفاصيل المشروع.</p></div></div>`);
+      page(`<div class="kicker">SERVICES · خدماتنا</div><h2 class="title">خدماتنا تعكس هويتك، وتحرّك جمهورك</h2><p class="subtitle">لا نقدم حلولاً جاهزة. نصمّم تجربة تسويقية كاملة تبدأ من المحتوى العفوي، وتكتمل بخطط مدروسة تعتمد على فهم الجمهور وتحليل البيانات.</p><div class="service-list">${services.map(s=>`<div class="pill">${s}</div>`).join('')}</div><h3 style="color:var(--green);margin-top:32px">القنوات المقترحة</h3><div class="service-list">${channels.map(c=>`<div class="pill">${c}</div>`).join('')}</div>`);
+      page(`<div class="kicker">PROJECT GOAL · هدف المشروع</div><h2 class="title">ما الذي سنعمل عليه؟</h2><p class="subtitle">${goal}</p><div class="grid-2"><div class="info"><h3>الاستراتيجية</h3><p>نبدأ من الصورة الكاملة: تموضع العلامة، فهم الجمهور، تحليل المنافسين، ورسم الفرص.</p></div><div class="info"><h3>التواصل</h3><p>نترجم الاستراتيجية إلى صوت أصيل، سرد قصصي، ورسائل متعددة القنوات.</p></div><div class="info"><h3>بناء البراند</h3><p>ننّفذ بثبات، نتفاعل مع المجتمع، ونبني الولاء وصولاً لتموضع أقوى في السوق.</p></div><div class="info"><h3>الأداء والتحسين</h3><p>نقيس النتائج ونحسّن الحملات بناءً على الأرقام، لا الانطباعات.</p></div></div>`);
+      function optionCard(o,label,featured=false){return `<div class="price-card ${featured?'featured':''}"><div class="kicker">${label}</div><h3>${o.title}</h3><p>${o.desc}</p><div class="amount">${fmt(o.packageFee)}</div><ul><li>${o.designs} تصاميم شهرية</li><li>${o.videos} فيديوهات قصيرة</li><li>${o.ugc} فيديوهات UGC</li><li>${o.ai} فيديوهات AI</li><li>${o.stories} منشورات أو ستوريات إضافية</li></ul></div>`}
+      page(`<div class="kicker">OPTIONS · الخيارات المقترحة</div><h2 class="title">خياران حسب الميزانية ومستوى التشغيل</h2><p class="subtitle">تم تصميم العرض ليمنح العميل خيارين واضحين: خيار عملي للانطلاق، وخيار أوسع للنمو والتوسع.</p><div class="grid-2">${optionCard(A,'الخيار الأول',false)}${optionCard(B,'الخيار الثاني',true)}</div>`);
+      function moneyTable(o,label){return `<h3 style="color:var(--green);margin-top:18px">${label}</h3><table><tr><th>البند</th><th>المبلغ</th></tr><tr><td>قيمة الباقة الشهرية</td><td>${fmt(o.packageFee)}</td></tr><tr><td>ميزانية الإعلانات المدفوعة</td><td>${fmt(o.adBudget)}</td></tr><tr><td>رسوم إدارة الإعلانات</td><td>${fmt(o.adFee)}</td></tr><tr><td>الإجمالي قبل الضريبة</td><td>${fmt(o.subtotal)}</td></tr><tr><td>ضريبة القيمة المضافة 15%</td><td>${fmt(o.vat)}</td></tr><tr><td><strong>الإجمالي شامل الضريبة</strong></td><td><strong>${fmt(o.total)}</strong></td></tr></table>`}
+      page(`<div class="kicker">INVESTMENT · الاستثمار</div><h2 class="title">تفصيل السعر بشكل منفصل</h2><p class="subtitle">تم فصل قيمة الباقة عن الإعلانات المدفوعة حتى تكون الميزانية واضحة: ما يذهب للعمل التشغيلي، وما يذهب للمنصات الإعلانية.</p>${moneyTable(A,'الخيار الأول')}${moneyTable(B,'الخيار الثاني')}`);
+      function distTable(o,label){return `<h3 style="color:var(--green);margin-top:18px">${label}</h3><table><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr>${o.dist.map(d=>`<tr><td>${d.channel}</td><td>${d.pct}%</td><td>${fmt(d.amount)}</td></tr>`).join('')}</table>`}
+      page(`<div class="kicker">PAID MEDIA · الإعلانات المدفوعة</div><h2 class="title">توزيع الصرف الإعلاني المقترح</h2><p class="subtitle">التوزيع تقديري ويتم تعديله حسب أداء الحملات، مع رفع الصرف على القنوات الأعلى أداءً وتقليل الصرف على القنوات الأقل فعالية.</p>${distTable(A,'الخيار الأول')}${distTable(B,'الخيار الثاني')}`);
+      page(`<div class="kicker">EXPECTED OUTCOMES · النتائج المتوقعة</div><h2 class="title">نتائج قابلة للقياس وليست وعودًا مفتوحة</h2><div class="grid-2"><div class="info"><h3>رفع جودة الظهور</h3><p>ظهور أوضح وأكثر اتساقًا مع هوية العلامة.</p></div><div class="info"><h3>اختبار الرسائل</h3><p>معرفة الزوايا والمحتوى الأعلى تأثيرًا.</p></div><div class="info"><h3>جذب عملاء محتملين</h3><p>حسب هدف الحملة والمنصات المعتمدة.</p></div><div class="info"><h3>مكتبة محتوى</h3><p>مواد قابلة لإعادة الاستخدام في حملات لاحقة.</p></div></div><div class="note" style="margin-top:22px">تعتمد النتائج النهائية على عدة عوامل، منها وضوح العرض، قوة المنتج أو الخدمة، الميزانية، سرعة الرد على العملاء المحتملين، وتجربة العميل بعد التواصل.</div>`);
+      page(`<div class="kicker">APPROVAL · اعتماد العرض</div><h2 class="title">هذا العرض قابل للاعتماد والتوقيع</h2><p class="subtitle">بالتوقيع أدناه، يوافق العميل على نطاق العمل، الخيار المختار، آلية الدفع، وبدء الإجراءات التشغيلية بعد استلام الدفعة المقدمة.</p><div class="note">${val('paymentNote')}</div><h3 style="color:var(--green);margin-top:24px">الخيار المختار</h3><div class="grid-2"><div class="info"><h3>الخيار الأول</h3><p>${A.title} — ${fmt(A.total)} شامل الضريبة</p></div><div class="info"><h3>الخيار الثاني</h3><p>${B.title} — ${fmt(B.total)} شامل الضريبة</p></div></div><div class="signature"><div class="sig-box"><strong>توقيع العميل</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div><div class="sig-box"><strong>Post With Passion</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div></div>`, 'dark-page');
     }
-
-    // Event listeners to update package fields based on selection
-    document.addEventListener('DOMContentLoaded', () => {
-      populateOptions();
-      updatePackageFields();
-      updateRecommended();
-      updateFeeLabel();
-      // set default date
-      const dateInput = document.getElementById('proposalDate');
-      dateInput.value = new Date().toISOString().slice(0,10);
-      // attach listeners
-      document.querySelectorAll('.sidebar input, .sidebar select, .sidebar textarea').forEach(elem => {
-        elem.addEventListener('input', () => {
-          if (elem.id === 'packageSelect') {
-            updatePackageFields();
-            updateRecommended();
-          }
-          if (elem.id === 'feeType') {
-            updateFeeLabel();
-          }
-        });
-      });
-      renderProposal();
-    });
-
-    function updatePackageFields() {
-      const pkgKey = document.getElementById('packageSelect').value;
-      const pkg = defaultPackages[pkgKey];
-      document.getElementById('packageTitle').value = pkg.title;
-      document.getElementById('packageDesc').value = pkg.description;
-      document.getElementById('packageDesigns').value = pkg.designs;
-      document.getElementById('packageVideos').value = pkg.videos;
-      document.getElementById('packageUGC').value = pkg.ugc;
-      document.getElementById('packageAI').value = pkg.ai;
-      document.getElementById('packagePlatforms').value = pkg.platforms;
-      document.getElementById('packagePrice').value = pkg.price;
-    }
-
-    // Automatically select recommended services and channels based on package
-    function updateRecommended() {
-      const pkgKey = document.getElementById('packageSelect').value;
-      const serviceInputs = document.querySelectorAll('#services input[type=checkbox]');
-      const channelInputs = document.querySelectorAll('#channels input[type=checkbox]');
-      // Default: deselect all
-      serviceInputs.forEach(inp => inp.checked = false);
-      channelInputs.forEach(inp => inp.checked = false);
-      let recommendedServices = [];
-      let recommendedChannels = [];
-      if (pkgKey === 'startup') {
-        recommendedServices = [
-          'خدمة 360 — تشغيل تسويقي متكامل',
-          'استراتيجية محتوى شهرية',
-          'تصاميم سوشيال ميديا',
-          'فيديوهات قصيرة Reels / TikTok / Shorts',
-          'كتابة المحتوى والكابشنز'
-        ];
-        recommendedChannels = ['Instagram', 'TikTok'];
-      } else if (pkgKey === 'growth') {
-        recommendedServices = [
-          'خدمة 360 — تشغيل تسويقي متكامل',
-          'استراتيجية محتوى شهرية',
-          'إدارة حسابات التواصل الاجتماعي',
-          'تصاميم سوشيال ميديا',
-          'فيديوهات قصيرة Reels / TikTok / Shorts',
-          'فيديوهات UGC',
-          'فيديوهات مولدة بالذكاء الاصطناعي AI',
-          'كتابة المحتوى والكابشنز',
-          'إدارة الحملات الإعلانية',
-          'تقارير أداء وتوصيات شهرية'
-        ];
-        recommendedChannels = ['Instagram', 'TikTok', 'Snapchat', 'Google Ads'];
-      } else if (pkgKey === 'scale') {
-        // select all services and channels
-        recommendedServices = servicesList.slice();
-        recommendedChannels = channelsList.slice();
-      }
-      serviceInputs.forEach(inp => {
-        if (recommendedServices.includes(inp.value)) inp.checked = true;
-      });
-      channelInputs.forEach(inp => {
-        if (recommendedChannels.includes(inp.value)) inp.checked = true;
-      });
-    }
-
-    function updateFeeLabel() {
-      const feeType = document.getElementById('feeType').value;
-      const feeLabel = document.getElementById('feeLabel');
-      if (feeType === 'percent') {
-        feeLabel.innerHTML = 'نسبة الإدارة %<input id="managementFee" type="number" min="0" value="15">';
-      } else {
-        feeLabel.innerHTML = 'رسوم إدارة الإعلانات (ريال)<input id="managementFee" type="number" min="0" step="100" value="1500">';
-      }
-    }
-
-    function getSelectedValues(containerId) {
-      const inputs = document.querySelectorAll(`#${containerId} input[type=checkbox]:checked`);
-      return Array.from(inputs).map(input => input.value);
-    }
-
-    function renderProposal() {
-      const preview = document.getElementById('preview');
-      preview.innerHTML = '';
-      // Gather data from inputs
-      const clientName = document.getElementById('clientName').value || 'اسم العميل';
-      const proposalDate = document.getElementById('proposalDate').value;
-      const duration = document.getElementById('duration').value;
-      const proposalType = document.getElementById('proposalType').value;
-      const needSummary = document.getElementById('needSummary').value;
-      const mainGoal = document.getElementById('mainGoal').value;
-      const services = getSelectedValues('services');
-      const channels = getSelectedValues('channels');
-      const pkgTitle = document.getElementById('packageTitle').value;
-      const pkgDesc = document.getElementById('packageDesc').value;
-      const pkgDesigns = document.getElementById('packageDesigns').value;
-      const pkgVideos = document.getElementById('packageVideos').value;
-      const pkgUGC = document.getElementById('packageUGC').value;
-      const pkgAI = document.getElementById('packageAI').value;
-      const pkgPlatforms = document.getElementById('packagePlatforms').value;
-      const pkgPrice = parseFloat(document.getElementById('packagePrice').value) || 0;
-      const adBudget = parseFloat(document.getElementById('adBudget').value) || 0;
-      const feeType = document.getElementById('feeType').value;
-      const managementFeeVal = parseFloat(document.getElementById('managementFee').value) || 0;
-      const vatEnabled = document.getElementById('vatEnabled').checked;
-      const notes = document.getElementById('notes').value;
-      // Compute totals
-      let mgmtFee = 0;
-      if (feeType === 'percent') {
-        mgmtFee = adBudget * (managementFeeVal / 100);
-      } else {
-        mgmtFee = managementFeeVal;
-      }
-      const subtotal = pkgPrice + adBudget + mgmtFee;
-      const vat = vatEnabled ? subtotal * 0.15 : 0;
-      const total = subtotal + vat;
-      // Ads distribution based on channels
-      const weights = channels.map(channel => {
-        if (channel.includes('Google')) return 30;
-        if (channel.includes('Instagram')) return 35;
-        if (channel.includes('TikTok')) return 25;
-        if (channel.includes('LinkedIn')) return 20;
-        return 10;
-      });
-      const sumWeights = weights.reduce((a,b) => a + b, 0);
-      const distribution = channels.map((channel, idx) => {
-        const percentage = sumWeights ? Math.round((weights[idx] / sumWeights) * 100) : 0;
-        const amount = Math.round(adBudget * (weights[idx] / sumWeights));
-        return { channel, percentage, amount };
-      });
-      // Format currency
-      const fmt = (val) => new Intl.NumberFormat('ar-EG').format(Math.round(val));
-      // Helper to add page
-      function addPage(html) {
-        const page = document.createElement('div');
-        page.className = 'page';
-        page.innerHTML = html;
-        preview.appendChild(page);
-      }
-      // Page 1: Cover
-      addPage(`
-        <div>
-          <h2>عرض تسويقي مقدم إلى <br>${clientName}</h2>
-          <p>مقدم من Post With Passion — بوست وذ باشن</p>
-          <p><strong>التاريخ:</strong> ${proposalDate}</p>
-          <p><strong>مدة المشروع:</strong> ${duration}</p>
-          <p><strong>نوع العرض:</strong> ${proposalType}</p>
-        </div>
-      `);
-      // Page 2: About
-      addPage(`
-        <h2>من نحن؟</h2>
-        <p>Post With Passion وكالة تسويق سعودية تساعد العلامات التجارية على بناء حضور رقمي مؤثر من خلال المحتوى، الحملات الإعلانية، وتجارب العملاء الواقعية.</p>
-        <p>نركز على صناعة محتوى يخدم أهداف واضحة: زيادة الوعي، جذب العملاء، تحسين الثقة، ودعم المبيعات.</p>
-        <p>نؤمن أن المحتوى اليوم لا يكفي أن يكون جميلًا فقط؛ بل يجب أن يكون مفهومًا، محليًا، قابلًا للقياس، وقادرًا على تحريك العميل للخطوة التالية.</p>
-      `);
-      // Page 3: Clients summary (static text)
-      addPage(`
-        <h2>عملاؤنا وتجاربنا</h2>
-        <p>عملنا مع علامات تجارية في قطاعات متعددة مثل الأغذية والمشروبات، التطبيقات التقنية، التجارة الإلكترونية، العيادات والخدمات، البناء والتصميم، والمنتجات الاستهلاكية.</p>
-        <p>ساعدنا عملاءنا في إنتاج محتوى محلي، إطلاق حملات ممولة، توليد عملاء محتملين، وبناء حضور رقمي أقوى على منصات التواصل.</p>
-      `);
-      // Page 4: Need summary
-      addPage(`
-        <h2>فهم الاحتياج</h2>
-        <p>${needSummary}</p>
-        <h3>الهدف الرئيسي</h3>
-        <p>${mainGoal}</p>
-      `);
-      // Page 5: Services and Channels
-      addPage(`
-        <h2>الخدمات المقترحة</h2>
-        <ul>${services.map(s => `<li>${s}</li>`).join('')}</ul>
-        <h2>القنوات المقترحة</h2>
-        <ul>${channels.map(c => `<li>${c}</li>`).join('')}</ul>
-      `);
-      // Page 6: Package
-      addPage(`
-        <h2>${pkgTitle}</h2>
-        <p>${pkgDesc}</p>
-        <table>
-          <tr><th>البند</th><th>التفاصيل</th></tr>
-          <tr><td>عدد التصاميم</td><td>${pkgDesigns}</td></tr>
-          <tr><td>عدد الفيديوهات القصيرة</td><td>${pkgVideos}</td></tr>
-          <tr><td>UGC</td><td>${pkgUGC}</td></tr>
-          <tr><td>فيديوهات AI</td><td>${pkgAI}</td></tr>
-          <tr><td>المنصات</td><td>${pkgPlatforms}</td></tr>
-          <tr><td>سعر الباقة</td><td>${fmt(pkgPrice)} ريال</td></tr>
-        </table>
-      `);
-      // Page 7: Ad fees summary
-      addPage(`
-        <h2>ميزانية الإعلانات والرسوم الإدارية</h2>
-        <table>
-          <tr><th>البند</th><th>المبلغ (ريال)</th></tr>
-          <tr><td>ميزانية الإعلانات الشهرية المقترحة</td><td>${fmt(adBudget)}</td></tr>
-          <tr><td>${feeType === 'percent' ? 'رسوم إدارة الحملات (' + managementFeeVal + '%)' : 'رسوم إدارة الحملات'}</td><td>${fmt(mgmtFee)}</td></tr>
-          <tr><td>المجموع الفرعي</td><td>${fmt(subtotal)}</td></tr>
-          <tr><td>الضريبة (${vatEnabled ? '15%' : '0%'})</td><td>${fmt(vat)}</td></tr>
-          <tr><td>الإجمالي الكلي</td><td>${fmt(total)}</td></tr>
-        </table>
-      `);
-      // Page 8: Ad distribution and notes
-      addPage(`
-        <h2>توزيع الصرف الإعلاني</h2>
-        <table>
-          <tr><th>المنصة</th><th>النسبة</th><th>المبلغ (ريال)</th></tr>
-          ${distribution.map(d => `<tr><td>${d.channel}</td><td>${d.percentage}%</td><td>${fmt(d.amount)}</td></tr>`).join('')}
-        </table>
-        <p>${notes}</p>
-      `);
-      // Page 9: Expected results and closing
-      addPage(`
-        <h2>النتائج المتوقعة</h2>
-        <ul>
-          <li>رفع جودة الظهور الرقمي للعلامة.</li>
-          <li>زيادة التفاعل مع المحتوى.</li>
-          <li>اختبار الرسائل التسويقية الأفضل أداءً.</li>
-          <li>جذب زيارات أو عملاء محتملين حسب هدف الحملة.</li>
-          <li>بناء مكتبة محتوى قابلة للاستخدام في الحملات القادمة.</li>
-          <li>تحسين فهم الجمهور والقنوات الأعلى فعالية.</li>
-        </ul>
-        <p>تعتمد النتائج النهائية على عدة عوامل، منها وضوح العرض، قوة المنتج أو الخدمة، الميزانية، سرعة الرد على العملاء المحتملين، وتجربة العميل بعد التواصل.</p>
-        <h2>الخاتمة</h2>
-        <p>يسعدنا في Post With Passion التعاون معكم لبناء حضور رقمي أقوى وأكثر تأثيرًا. نطمح أن نكون شريكًا يساعدكم على تحويل المحتوى من مجرد منشورات إلى أداة فعالة للوصول، الإقناع، وتحقيق نتائج قابلة للقياس.</p>
-      `);
-    }
-    function copySummary() {
-      const clientName = document.getElementById('clientName').value;
-      const duration = document.getElementById('duration').value;
-      const mainGoal = document.getElementById('mainGoal').value;
-      const services = getSelectedValues('services').join('، ');
-      const channels = getSelectedValues('channels').join('، ');
-      const pkgTitle = document.getElementById('packageTitle').value;
-      const pkgPrice = parseFloat(document.getElementById('packagePrice').value) || 0;
-      const adBudget = parseFloat(document.getElementById('adBudget').value) || 0;
-      const feeType = document.getElementById('feeType').value;
-      const managementFeeVal = parseFloat(document.getElementById('managementFee').value) || 0;
-      let mgmtFee = 0;
-      if (feeType === 'percent') {
-        mgmtFee = adBudget * (managementFeeVal / 100);
-      } else {
-        mgmtFee = managementFeeVal;
-      }
-      const subtotal = pkgPrice + adBudget + mgmtFee;
-      const vatEnabled = document.getElementById('vatEnabled').checked;
-      const vat = vatEnabled ? subtotal * 0.15 : 0;
-      const total = subtotal + vat;
-      const summary = `عرض تسويقي مقدم إلى ${clientName}\nالمدة: ${duration}\nالهدف: ${mainGoal}\nالخدمات: ${services}\nالقنوات: ${channels}\nالباقة: ${pkgTitle}\nرسوم الخدمات: ${fmt(pkgPrice)} ريال\nميزانية الإعلانات: ${fmt(adBudget)} ريال\nرسوم إدارة الإعلانات: ${fmt(mgmtFee)} ريال\nالإجمالي شامل الضريبة: ${fmt(total)} ريال`;
-      navigator.clipboard.writeText(summary);
-      alert('تم نسخ ملخص العرض');
-    }
+    function copySummary(){const client=val('clientName'),A=optionData('a'),B=optionData('b');navigator.clipboard.writeText(`عرض Post With Passion إلى ${client}\nالخيار الأول: ${A.title} — ${fmt(A.total)} شامل الضريبة\nالخيار الثاني: ${B.title} — ${fmt(B.total)} شامل الضريبة`);alert('تم نسخ الملخص')}
+    init();
   </script>
 </body>
 </html>
