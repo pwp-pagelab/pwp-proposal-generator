@@ -212,7 +212,8 @@
       </label>
       <div class="btn-group">
         <button class="btn copy" onclick="copySummary()">نسخ ملخص العرض</button>
-        <button class="btn primary" onclick="window.print()">طباعة / PDF</button>
+        <button class="btn primary" onclick="renderProposal()">تحديث العرض</button>
+        <button class="btn" onclick="window.print()">طباعة / PDF</button>
       </div>
     </div>
     <div class="preview" id="preview">
@@ -319,6 +320,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       populateOptions();
       updatePackageFields();
+      updateRecommended();
+      updateFeeLabel();
       // set default date
       const dateInput = document.getElementById('proposalDate');
       dateInput.value = new Date().toISOString().slice(0,10);
@@ -327,11 +330,13 @@
         elem.addEventListener('input', () => {
           if (elem.id === 'packageSelect') {
             updatePackageFields();
+            updateRecommended();
           }
-          renderProposal();
+          if (elem.id === 'feeType') {
+            updateFeeLabel();
+          }
         });
       });
-      document.getElementById('feeType').addEventListener('change', updateFeeLabel);
       renderProposal();
     });
 
@@ -346,6 +351,52 @@
       document.getElementById('packageAI').value = pkg.ai;
       document.getElementById('packagePlatforms').value = pkg.platforms;
       document.getElementById('packagePrice').value = pkg.price;
+    }
+
+    // Automatically select recommended services and channels based on package
+    function updateRecommended() {
+      const pkgKey = document.getElementById('packageSelect').value;
+      const serviceInputs = document.querySelectorAll('#services input[type=checkbox]');
+      const channelInputs = document.querySelectorAll('#channels input[type=checkbox]');
+      // Default: deselect all
+      serviceInputs.forEach(inp => inp.checked = false);
+      channelInputs.forEach(inp => inp.checked = false);
+      let recommendedServices = [];
+      let recommendedChannels = [];
+      if (pkgKey === 'startup') {
+        recommendedServices = [
+          'خدمة 360 — تشغيل تسويقي متكامل',
+          'استراتيجية محتوى شهرية',
+          'تصاميم سوشيال ميديا',
+          'فيديوهات قصيرة Reels / TikTok / Shorts',
+          'كتابة المحتوى والكابشنز'
+        ];
+        recommendedChannels = ['Instagram', 'TikTok'];
+      } else if (pkgKey === 'growth') {
+        recommendedServices = [
+          'خدمة 360 — تشغيل تسويقي متكامل',
+          'استراتيجية محتوى شهرية',
+          'إدارة حسابات التواصل الاجتماعي',
+          'تصاميم سوشيال ميديا',
+          'فيديوهات قصيرة Reels / TikTok / Shorts',
+          'فيديوهات UGC',
+          'فيديوهات مولدة بالذكاء الاصطناعي AI',
+          'كتابة المحتوى والكابشنز',
+          'إدارة الحملات الإعلانية',
+          'تقارير أداء وتوصيات شهرية'
+        ];
+        recommendedChannels = ['Instagram', 'TikTok', 'Snapchat', 'Google Ads'];
+      } else if (pkgKey === 'scale') {
+        // select all services and channels
+        recommendedServices = servicesList.slice();
+        recommendedChannels = channelsList.slice();
+      }
+      serviceInputs.forEach(inp => {
+        if (recommendedServices.includes(inp.value)) inp.checked = true;
+      });
+      channelInputs.forEach(inp => {
+        if (recommendedChannels.includes(inp.value)) inp.checked = true;
+      });
     }
 
     function updateFeeLabel() {
