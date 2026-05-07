@@ -564,6 +564,7 @@
           </div>
           <div class="field"><label>الخدمات</label><div id="services" class="check-grid"></div></div>
           <div class="field"><label>القنوات</label><div id="channels" class="check-grid"></div></div>
+          <div class="field"><label>وصف نطاق العمل</label><textarea id="scopeDesc">تم اختيار هذه الخدمات والقنوات كنطاق مقترح قابل للتخصيص، ويتم ضبط تفاصيل التنفيذ النهائية بعد اعتماد الخطة بما يتوافق مع أهداف العميل وأولويات المرحلة. الحد الأدنى للخدمات التسويقية هو 3 أشهر، بينما يمكن تنفيذ مشاريع UGC Content كنطاق مستقل عند الحاجة.</textarea></div>
           <div class="field"><label>خدمة إضافية اختيارية</label><input class="input" id="extraServiceName" value="" placeholder="مثال: تصوير منتجات، صفحة هبوط، جلسة استراتيجية"></div>
           <div class="field"><label>وصف الخدمة الإضافية</label><textarea id="extraServiceDesc" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
         </div>
@@ -756,6 +757,7 @@
     const goal = byId('mainGoal').value;
     const services = selected('services');
     const channels = selected('channels');
+    const scopeDesc = byId('scopeDesc').value;
     const opt1 = optionData(1);
     const opt2 = optionData(2);
     const notes = byId('notes').value;
@@ -789,7 +791,7 @@
     if(pageEnabled('showGoal')) pages.push(addPage(`<div class="kicker">هدف المشروع</div><h2 class="title">التركيز المقترح لـ ${esc(client)}</h2><p class="subtitle">${esc(goal)}</p>
       <div class="grid-3"><div class="info"><h3>رسالة أوضح</h3><p>تحويل قيمة الخدمة إلى محتوى مفهوم وسهل التفاعل معه.</p></div><div class="info"><h3>قنوات مناسبة</h3><p>اختيار المنصات حسب الجمهور وليس بناءً على الحضور فقط.</p></div><div class="info"><h3>نتائج قابلة للقياس</h3><p>متابعة الظهور، التفاعل، العملاء المحتملين، وجودة النتائج.</p></div></div>`,5));
 
-    if(pageEnabled('showScope')) pages.push(addPage(`<div class="kicker">نطاق العمل</div><h2 class="title">الخدمات والقنوات المقترحة</h2><p class="subtitle">تم اختيار هذه الخدمات والقنوات كنطاق مقترح قابل للتخصيص، ويتم ضبط تفاصيل التنفيذ النهائية بعد اعتماد الخطة بما يتوافق مع أهداف العميل وأولويات المرحلة. الحد الأدنى للخدمات التسويقية هو 3 أشهر، بينما يمكن تنفيذ مشاريع UGC Content كنطاق مستقل عند الحاجة.</p>
+    if(pageEnabled('showScope')) pages.push(addPage(`<div class="kicker">نطاق العمل</div><h2 class="title">الخدمات والقنوات المقترحة</h2><p class="subtitle">${esc(scopeDesc)}</p>
       <h3>الخدمات</h3><div class="service-list">${services.map(s => `<div class="pill">${esc(s)}</div>`).join('')}</div><div class="divider"></div><h3>القنوات</h3><div class="channel-list">${channels.map(c => `<span class="channel">${esc(c)}</span>`).join('')}</div>`,6));
 
     if(pageEnabled('showPlans')) pages.push(addPage(`<div class="kicker">اختيار العميل</div><h2 class="title">الخطط التسويقية</h2><p class="subtitle">تم تصميم هذه الخطط للشركات الجادة في بناء نتائج تسويقية قابلة للقياس من خلال شراكة لا تقل عن 3 أشهر. نوصي بخطة 6 أشهر للحصول على تعلم أعمق وتحسين مستمر، وخطة 12 شهر للعلامات التي تستهدف نموًا طويل المدى.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>${extraServiceName ? `<div class="note" style="margin-top:20px"><strong>${esc(extraServiceName)}</strong>${extraServiceDesc ? `<br>${esc(extraServiceDesc)}` : ''}</div>` : ''}`,7));
