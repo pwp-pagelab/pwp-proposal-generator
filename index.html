@@ -631,7 +631,10 @@
       <div class="actions">
         <button class="btn btn-dark" onclick="renderProposal()">تحديث العرض</button>
         <button class="btn btn-primary" onclick="printProposal()">طباعة أو حفظ PDF</button>
+        <button class="btn btn-soft" onclick="downloadProposalCopy()">تحميل نسخة</button>
+        <button class="btn btn-soft" onclick="byId('proposalImport').click()">استيراد نسخة</button>
         <button class="btn btn-soft" onclick="copySummary()">نسخ الملخص</button>
+        <input id="proposalImport" type="file" accept="application/json,.json" hidden onchange="importProposalCopy(event)">
       </div>
     </div>
   </header>
@@ -960,6 +963,75 @@
     document.querySelectorAll('.controls details.panel').forEach(panel => {
       panel.open = open;
     });
+  }
+
+  function collectProposalData(){
+    const data = {};
+    document.querySelectorAll('.controls input[id], .controls textarea[id], .controls select[id]').forEach(field => {
+      if (field.type === 'file') return;
+      data[field.id] = field.type === 'checkbox' ? field.checked : field.value;
+    });
+    data.selectedServices = selected('services');
+    data.selectedChannels = selected('channels');
+    return {
+      version: 1,
+      savedAt: new Date().toISOString(),
+      data
+    };
+  }
+
+  function safeFileName(value){
+    return String(value || 'proposal').trim().replace(/[^\u0600-\u06FF\w-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'proposal';
+  }
+
+  function downloadProposalCopy(){
+    if (!renderProposal()) return;
+    const payload = collectProposalData();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    const link = document.createElement('a');
+    const client = byId('clientName').value || 'client';
+    const date = byId('proposalDate').value || new Date().toISOString().slice(0,10);
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = `${safeFileName(client)}-${date}-proposal.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function applyProposalData(payload){
+    const data = payload?.data || payload;
+    Object.entries(data || {}).forEach(([id, value]) => {
+      const field = byId(id);
+      if (!field) return;
+      if (field.type === 'checkbox') field.checked = Boolean(value);
+      else field.value = value;
+    });
+    if (Array.isArray(data.selectedServices)) {
+      document.querySelectorAll('#services input').forEach(input => input.checked = data.selectedServices.includes(input.value));
+    }
+    if (Array.isArray(data.selectedChannels)) {
+      document.querySelectorAll('#channels input').forEach(input => input.checked = data.selectedChannels.includes(input.value));
+    }
+    updateAdPercentTotal();
+    renderProposal();
+  }
+
+  function importProposalCopy(event){
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        applyProposalData(JSON.parse(reader.result));
+        alert('تم استيراد نسخة العرض');
+      } catch (err) {
+        alert('تعذر استيراد الملف. تأكدي أنه نسخة عرض بصيغة JSON.');
+      }
+      event.target.value = '';
+    };
+    reader.readAsText(file);
   }
 
   function printProposal(){
