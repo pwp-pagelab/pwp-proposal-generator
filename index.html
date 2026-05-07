@@ -822,6 +822,10 @@
     return `<tr><td>${label}</td><td>${money(a)}</td><td>${money(b)}</td></tr>`;
   }
 
+  function paidMediaBlock(option, distributionRows){
+    return `<div><h3>${esc(option.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${distributionRows.map(d => `<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+
   function durationMonths(value){
     const text = String(value || '');
     if (/12|١٢/.test(text)) return 12;
@@ -907,6 +911,10 @@
     const extraServiceDesc = (byId('extraServiceDesc')?.value || '').trim();
     const dist1 = distribution(channels,opt1.ad);
     const dist2 = distribution(channels,opt2.ad);
+    const paidMediaOptions = [
+      {option: opt1, rows: dist1},
+      {option: opt2, rows: dist2}
+    ].filter(item => Number(item.option.ad || 0) > 0);
     const months = durationMonths(duration);
     const durationLabel = months > 1 ? `${months} أشهر` : esc(duration);
     const opt1ContractTotal = opt1.total * months + setupTotal;
@@ -954,7 +962,7 @@
       <div class="note" style="margin-top:20px"><strong>${esc(pricingNoteTitle)}:</strong> ${esc(pricingNoteBody)}${esc(pricingSetupNote)}</div>`,8));
 
     if(pageEnabled('showPaidMedia')) pages.push(addPage(`<div class="kicker">Paid Media</div><h2 class="title">توزيع الصرف الإعلاني المقترح</h2><p class="subtitle">توزيع الميزانية الإعلانية يتم بشكل مبدئي بناءً على طبيعة الجمهور والقنوات الأنسب للهدف، ثم يتم تحسينه بعد الإطلاق وفق أداء كل منصة وجودة النتائج القادمة منها.</p>
-      <div class="grid-2"><div><h3>${esc(opt1.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${dist1.map(d => `<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div><div><h3>${esc(opt2.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${dist2.map(d => `<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div></div><div class="note" style="margin-top:20px">${esc(notes)}</div>`,9));
+      <div class="${paidMediaOptions.length > 1 ? 'grid-2' : ''}">${paidMediaOptions.map(item => paidMediaBlock(item.option, item.rows)).join('')}</div><div class="note" style="margin-top:20px">${esc(notes)}</div>`,9));
 
     if(pageEnabled('showResults')) pages.push(addPage(`<div class="kicker">النتائج المتوقعة</div><h2 class="title">ماذا نتوقع من العمل؟</h2><p class="subtitle">لا نبيع وعودًا غير واقعية. نركز على مؤشرات تسويقية قابلة للإدارة والتحسين، مع ربطها بجودة تجربة العميل بعد التواصل. تبدأ النتائج القابلة للتعلم عادةً بعد مرور 6-8 أسابيع من التشغيل، حيث تكون الفترة الأولى مخصصة لاختبار الرسائل، الجمهور، الكرييتف، والقنوات.</p>
       <div class="grid-3"><div class="info"><h3>ظهور أفضل</h3><p>تحسين جودة حضور العلامة على القنوات المختارة.</p></div><div class="info"><h3>اختبار الرسائل</h3><p>معرفة الزوايا الأعلى تفاعلًا والأقرب للتحويل.</p></div><div class="info"><h3>عملاء محتملون</h3><p>جذب زيارات أو Leads حسب هدف الحملة.</p></div><div class="info"><h3>مكتبة محتوى</h3><p>بناء أصول قابلة للاستخدام في الحملات القادمة.</p></div><div class="info"><h3>تحسين مستمر</h3><p>تعديل الصرف بناءً على النتائج لا الافتراضات.</p></div><div class="info"><h3>وضوح أعلى</h3><p>فهم القنوات الأعلى فعالية للمرحلة القادمة.</p></div></div>`,10));
