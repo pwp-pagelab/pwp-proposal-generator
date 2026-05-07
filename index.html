@@ -963,7 +963,7 @@
       ${rowIf(esc(pricingLabelFee), opt1.fee, opt2.fee)}
       ${rowIf(esc(pricingLabelAd), opt1.ad, opt2.ad)}
       ${rowIf(esc(pricingLabelMgmt), opt1.mgmt, opt2.mgmt)}
-      ${rowIf(esc(pricingLabelMediaTotal), opt1.mediaTotal, opt2.mediaTotal)}
+      ${rowIf(esc(pricingLabelMediaTotal), opt1.subtotal, opt2.subtotal)}
       ${rowIf(esc(pricingLabelVat), opt1.vat, opt2.vat)}
       ${rowIf(`<strong>${esc(pricingLabelMonthlyTotal)}</strong>`, opt1.total, opt2.total)}
       ${rowIf(`<strong>${esc(templateText(pricingLabelContractTotal, pricingTokens))}</strong>`, opt1ContractTotal, opt2ContractTotal)}
