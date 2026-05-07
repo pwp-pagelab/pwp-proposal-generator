@@ -172,8 +172,6 @@
       color:#9d2b21;
     }
     .preview{display:flex;flex-direction:column;gap:24px}
-    .layout.controls-collapsed{grid-template-columns:minmax(0,1fr)}
-    .layout.controls-collapsed .controls{display:none}
     .page{
       position:relative;
       min-height:1122px;
@@ -631,7 +629,6 @@
         </div>
       </div>
       <div class="actions">
-        <button class="btn btn-soft" id="toggleControlsBtn" onclick="toggleControls()">إخفاء القائمة</button>
         <button class="btn btn-dark" onclick="renderProposal()">تحديث العرض</button>
         <button class="btn btn-primary" onclick="printProposal()">طباعة أو حفظ PDF</button>
         <button class="btn btn-soft" onclick="copySummary()">نسخ الملخص</button>
@@ -641,6 +638,10 @@
 
   <main class="layout" id="appLayout">
     <aside class="controls no-print">
+      <div class="quick-row">
+        <button class="quick" onclick="setPanels(true)">فتح كل القوائم</button>
+        <button class="quick" onclick="setPanels(false)">إغلاق كل القوائم</button>
+      </div>
       <details class="panel" open>
         <summary><span>01 بيانات العميل</span></summary>
         <div class="panel-body">
@@ -955,11 +956,10 @@
       .filter(row => row.pct > 0);
   }
 
-  function toggleControls(){
-    const layout = byId('appLayout');
-    const btn = byId('toggleControlsBtn');
-    const collapsed = layout.classList.toggle('controls-collapsed');
-    if (btn) btn.textContent = collapsed ? 'إظهار القائمة' : 'إخفاء القائمة';
+  function setPanels(open){
+    document.querySelectorAll('.controls details.panel').forEach(panel => {
+      panel.open = open;
+    });
   }
 
   function printProposal(){
