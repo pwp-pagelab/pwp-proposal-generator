@@ -646,8 +646,12 @@
           <div class="field"><label>الخدمات</label><div id="services" class="check-grid"></div></div>
           <div class="field"><label>القنوات</label><div id="channels" class="check-grid"></div></div>
           <div class="field"><label>وصف نطاق العمل</label><textarea id="scopeDesc">تم اختيار هذه الخدمات والقنوات كنطاق مقترح قابل للتخصيص، ويتم ضبط تفاصيل التنفيذ النهائية بعد اعتماد الخطة بما يتوافق مع أهداف العميل وأولويات المرحلة.</textarea></div>
-          <div class="field"><label>خدمة إضافية اختيارية</label><input class="input" id="extraServiceName" value="" placeholder="مثال: تصوير منتجات، صفحة هبوط، جلسة استراتيجية"></div>
-          <div class="field"><label>وصف الخدمة الإضافية</label><textarea id="extraServiceDesc" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
+          <div class="field"><label>خدمة إضافية اختيارية 1</label><input class="input" id="extraServiceName1" value="" placeholder="مثال: تصوير منتجات، صفحة هبوط، جلسة استراتيجية"></div>
+          <div class="field"><label>وصف الخدمة الإضافية 1</label><textarea id="extraServiceDesc1" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
+          <div class="field"><label>خدمة إضافية اختيارية 2</label><input class="input" id="extraServiceName2" value="" placeholder="مثال: إدارة واتساب، تصوير ريلز، جلسة استراتيجية"></div>
+          <div class="field"><label>وصف الخدمة الإضافية 2</label><textarea id="extraServiceDesc2" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
+          <div class="field"><label>خدمة إضافية اختيارية 3</label><input class="input" id="extraServiceName3" value="" placeholder="مثال: Influencer Marketing، إنتاج UGC إضافي"></div>
+          <div class="field"><label>وصف الخدمة الإضافية 3</label><textarea id="extraServiceDesc3" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
         </div>
       </details>
 
@@ -877,6 +881,13 @@
     return Object.entries(data).reduce((text, [key, val]) => text.replaceAll(`{${key}}`, val), String(value || ''));
   }
 
+  function additionalServices(){
+    return [1,2,3].map(n => ({
+      name: (byId(`extraServiceName${n}`)?.value || '').trim(),
+      desc: (byId(`extraServiceDesc${n}`)?.value || '').trim()
+    })).filter(service => service.name);
+  }
+
   function renderProposal(){
     const client = byId('clientName').value || 'اسم العميل';
     const date = byId('proposalDate').value;
@@ -907,8 +918,7 @@
     const setupFee = Number(byId('setupFee')?.value || 0);
     const setupVat = byId('vatEnabled').checked ? setupFee * .15 : 0;
     const setupTotal = setupFee + setupVat;
-    const extraServiceName = (byId('extraServiceName')?.value || '').trim();
-    const extraServiceDesc = (byId('extraServiceDesc')?.value || '').trim();
+    const extraServices = additionalServices();
     const dist1 = distribution(channels,opt1.ad);
     const dist2 = distribution(channels,opt2.ad);
     const paidMediaOptions = [
@@ -946,7 +956,7 @@
     if(pageEnabled('showScope')) pages.push(addPage(`<div class="kicker">نطاق العمل</div><h2 class="title">الخدمات والقنوات المقترحة</h2><p class="subtitle">${esc(scopeDesc)}</p>
       <h3>الخدمات</h3><div class="service-list">${services.map(s => `<div class="pill">${esc(s)}</div>`).join('')}</div><div class="divider"></div><h3>القنوات</h3><div class="channel-list">${channels.map(c => `<span class="channel">${esc(c)}</span>`).join('')}</div>`,6));
 
-    if(pageEnabled('showPlans')) pages.push(addPage(`<div class="kicker">اختيار العميل</div><h2 class="title">الخطط التسويقية</h2><p class="subtitle">تم تصميم هذه الخطط للشركات الجادة في بناء نتائج تسويقية قابلة للقياس، مع مساحة كافية لاختبار الرسائل، قراءة البيانات، وتحسين الأداء بشكل مستمر.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>${extraServiceName ? `<div class="note" style="margin-top:20px"><strong>${esc(extraServiceName)}</strong>${extraServiceDesc ? `<br>${esc(extraServiceDesc)}` : ''}</div>` : ''}`,7));
+    if(pageEnabled('showPlans')) pages.push(addPage(`<div class="kicker">اختيار العميل</div><h2 class="title">الخطط التسويقية</h2><p class="subtitle">تم تصميم هذه الخطط للشركات الجادة في بناء نتائج تسويقية قابلة للقياس، مع مساحة كافية لاختبار الرسائل، قراءة البيانات، وتحسين الأداء بشكل مستمر.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>${extraServices.map(service => `<div class="note" style="margin-top:20px"><strong>${esc(service.name)}</strong>${service.desc ? `<br>${esc(service.desc)}` : ''}</div>`).join('')}`,7));
 
     if(pageEnabled('showPricing')) pages.push(addPage(`<div class="kicker">${esc(pricingKicker)}</div><h2 class="title">${esc(pricingTitle)}</h2><p class="subtitle">${esc(templateText(pricingDesc, pricingTokens))}</p>
       <table><thead><tr><th>${esc(pricingHeaderItem)}</th><th>${esc(opt1.title)}</th><th>${esc(opt2.title)}</th></tr></thead><tbody>
