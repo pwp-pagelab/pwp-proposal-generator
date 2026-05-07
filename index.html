@@ -772,7 +772,7 @@
     "صفحة هبوط Landing Page",
     "متابعة العملاء المحتملين عبر واتساب"
   ];
-  const channelsList = ["Instagram","TikTok","Snapchat","X / Twitter","Google Ads","LinkedIn","YouTube Shorts","WhatsApp"];
+  const channelsList = ["Instagram/Meta","TikTok","Snapchat","X / Twitter","Google Ads","LinkedIn","YouTube Shorts","WhatsApp"];
 
   const byId = (id) => document.getElementById(id);
   const money = (n) => `${Number(n || 0).toLocaleString('en-US')} ريال`;
@@ -838,7 +838,7 @@
     const leanServices = ["خدمة 360 تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية"];
     const growthServices = ["خدمة 360 تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","فيديوهات UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية","صفحة هبوط Landing Page"];
     const servicePick = type === 'lean' ? leanServices : growthServices;
-    const channelPick = type === 'lean' ? ["Instagram","TikTok","Google Ads"] : ["Instagram","TikTok","Snapchat","Google Ads","LinkedIn"];
+    const channelPick = type === 'lean' ? ["Instagram/Meta","TikTok","Google Ads"] : ["Instagram/Meta","TikTok","Snapchat","Google Ads","LinkedIn"];
     byId('duration').value = type === 'lean' ? '3 أشهر - الحد الأدنى' : '6 أشهر - موصى به';
     [...document.querySelectorAll('#services input')].forEach(i => i.checked = servicePick.includes(i.value));
     [...document.querySelectorAll('#channels input')].forEach(i => i.checked = channelPick.includes(i.value));
@@ -864,7 +864,7 @@
 
   function distribution(channels, budget){
     const filtered = channels.filter(c => c !== 'WhatsApp' && c !== 'YouTube Shorts');
-    const weights = filtered.map(c => c.includes('Google') ? 30 : c.includes('Instagram') ? 35 : c.includes('TikTok') ? 25 : c.includes('LinkedIn') ? 20 : 10);
+    const weights = filtered.map(c => c.includes('Google') ? 30 : c.includes('Instagram') || c.includes('Meta') ? 35 : c.includes('TikTok') ? 25 : c.includes('LinkedIn') ? 20 : 10);
     const sum = weights.reduce((a,b) => a + b, 0) || 1;
     return filtered.map((c,i) => ({channel:c, pct:Math.round(weights[i] / sum * 100), amount:Math.round(budget * weights[i] / sum)}));
   }
@@ -1014,7 +1014,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     byId('proposalDate').value = new Date().toISOString().slice(0,10);
     buildChecks('services', servicesList, ["خدمة 360 تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","فيديوهات UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية"]);
-    buildChecks('channels', channelsList, ["Instagram","TikTok","Snapchat","Google Ads"]);
+    buildChecks('channels', channelsList, ["Instagram/Meta","TikTok","Snapchat","Google Ads"]);
     renderProposal();
   });
 </script>
