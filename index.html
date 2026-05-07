@@ -156,7 +156,24 @@
       cursor:pointer;
     }
     .micro{margin:0;color:var(--muted);font-size:14px}
+    .percent-total{
+      margin-top:10px;
+      border:1px solid rgba(10,76,62,.14);
+      border-radius:16px;
+      background:#fffdf8;
+      padding:10px 12px;
+      color:var(--green);
+      font-weight:800;
+      text-align:center;
+    }
+    .percent-total.bad{
+      border-color:rgba(171,46,46,.28);
+      background:#fff4f1;
+      color:#9d2b21;
+    }
     .preview{display:flex;flex-direction:column;gap:24px}
+    .layout.controls-collapsed{grid-template-columns:minmax(0,1fr)}
+    .layout.controls-collapsed .controls{display:none}
     .page{
       position:relative;
       min-height:1122px;
@@ -614,14 +631,15 @@
         </div>
       </div>
       <div class="actions">
+        <button class="btn btn-soft" id="toggleControlsBtn" onclick="toggleControls()">إخفاء القائمة</button>
         <button class="btn btn-dark" onclick="renderProposal()">تحديث العرض</button>
-        <button class="btn btn-primary" onclick="window.print()">طباعة أو حفظ PDF</button>
+        <button class="btn btn-primary" onclick="printProposal()">طباعة أو حفظ PDF</button>
         <button class="btn btn-soft" onclick="copySummary()">نسخ الملخص</button>
       </div>
     </div>
   </header>
 
-  <main class="layout">
+  <main class="layout" id="appLayout">
     <aside class="controls no-print">
       <details class="panel" open>
         <summary><span>01 بيانات العميل</span></summary>
@@ -717,6 +735,7 @@
               <div class="field"><label>LinkedIn</label><input class="input" id="adPctLinkedIn" type="number" value="0"></div>
               <div class="field"><label>X / Twitter</label><input class="input" id="adPctX" type="number" value="0"></div>
             </div>
+            <div class="percent-total" id="adPctTotal">مجموع النسب: 100%</div>
           </div>
           <div class="field"><label>ملاحظة الإعلانات</label><textarea id="notes">يتم تعديل توزيع الميزانية بناءً على أداء الحملات، مع رفع الصرف على القنوات الأعلى أداءً وتقليل الصرف على القنوات الأقل فعالية.</textarea></div>
           <div class="field"><label>ملاحظة الدفع المقدّم</label><textarea id="paymentNote">يتم اعتماد المشروع وبدء العمل بعد سداد الدفعة المقدمة، وتكون المدفوعات الشهرية مقدمة قبل بداية كل شهر عمل.</textarea></div>
@@ -811,6 +830,10 @@
     return [...document.querySelectorAll(`#${containerId} input:checked`)].map(i => i.value);
   }
 
+  function paidChannels(channels){
+    return channels.filter(c => c !== 'WhatsApp' && c !== 'YouTube Shorts');
+  }
+
   function optionData(n){
     const fee = Number(byId(`option${n}Fee`).value || 0);
     const ad = Number(byId(`option${n}Ad`).value || 0);
@@ -896,6 +919,29 @@
     return Number(byId(ids[channel])?.value || 0);
   }
 
+  function adPercentTotal(channels = selected('channels')){
+    return paidChannels(channels).reduce((sum, channel) => sum + channelPercent(channel), 0);
+  }
+
+  function updateAdPercentTotal(){
+    const total = adPercentTotal();
+    const el = byId('adPctTotal');
+    if (!el) return total;
+    el.textContent = `مجموع النسب: ${total}%`;
+    el.classList.toggle('bad', total !== 100);
+    return total;
+  }
+
+  function validateAdPercentages(channels = selected('channels')){
+    const total = adPercentTotal(channels);
+    updateAdPercentTotal();
+    if (paidChannels(channels).length && total !== 100) {
+      alert(`مجموع نسب توزيع الصرف الإعلاني يجب أن يكون 100%. المجموع الحالي ${total}%.`);
+      return false;
+    }
+    return true;
+  }
+
   function setChannelPercentages(values){
     Object.entries(values).forEach(([id, value]) => {
       if (byId(id)) byId(id).value = value;
@@ -903,10 +949,22 @@
   }
 
   function distribution(channels, budget){
-    const filtered = channels.filter(c => c !== 'WhatsApp' && c !== 'YouTube Shorts');
+    const filtered = paidChannels(channels);
     return filtered
       .map(c => ({channel:c, pct:channelPercent(c), amount:Math.round(budget * channelPercent(c) / 100)}))
       .filter(row => row.pct > 0);
+  }
+
+  function toggleControls(){
+    const layout = byId('appLayout');
+    const btn = byId('toggleControlsBtn');
+    const collapsed = layout.classList.toggle('controls-collapsed');
+    if (btn) btn.textContent = collapsed ? 'إظهار القائمة' : 'إخفاء القائمة';
+  }
+
+  function printProposal(){
+    if (!renderProposal()) return;
+    window.print();
   }
 
   function addPage(html, num, cls=''){
@@ -931,6 +989,7 @@
     const goal = byId('mainGoal').value;
     const services = selected('services');
     const channels = selected('channels');
+    if (!validateAdPercentages(channels)) return false;
     const scopeDesc = byId('scopeDesc').value;
     const opt1 = optionData(1);
     const opt2 = optionData(2);
@@ -1026,6 +1085,8 @@
     </article>`);
 
     byId('preview').innerHTML = pages.join('');
+    updateAdPercentTotal();
+    return true;
   }
 
   function copySummary(){
@@ -1061,6 +1122,9 @@
     byId('proposalDate').value = new Date().toISOString().slice(0,10);
     buildChecks('services', servicesList, ["خدمة 360 تشغيل تسويقي متكامل","استراتيجية محتوى شهرية","إدارة حسابات التواصل الاجتماعي","تصاميم سوشيال ميديا","فيديوهات قصيرة Reels / TikTok / Shorts","فيديوهات UGC","فيديوهات مولدة بالذكاء الاصطناعي AI","كتابة المحتوى والكابشنز","إدارة الحملات الإعلانية","تقارير أداء وتوصيات شهرية"]);
     buildChecks('channels', channelsList, ["Instagram/Meta","TikTok","Snapchat","Google Ads"]);
+    document.querySelectorAll('[id^="adPct"]').forEach(input => input.addEventListener('input', updateAdPercentTotal));
+    document.querySelectorAll('#channels input').forEach(input => input.addEventListener('change', updateAdPercentTotal));
+    updateAdPercentTotal();
     renderProposal();
   });
 </script>
