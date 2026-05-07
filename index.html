@@ -704,6 +704,20 @@
         <div class="panel-body">
           <label class="check"><input id="vatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%</label>
           <div class="field"><label>رسوم ربط مدير الحسابات وأدوات التتبع</label><input class="input" id="setupFee" type="number" value="1500"></div>
+          <div class="field">
+            <label>نسب توزيع الصرف الإعلاني</label>
+            <p class="micro">عدلي نسب القنوات المختارة. يفضل أن يكون مجموع القنوات المستخدمة 100%.</p>
+            <div class="three">
+              <div class="field"><label>Instagram/Meta</label><input class="input" id="adPctInstagramMeta" type="number" value="35"></div>
+              <div class="field"><label>TikTok</label><input class="input" id="adPctTikTok" type="number" value="25"></div>
+              <div class="field"><label>Snapchat</label><input class="input" id="adPctSnapchat" type="number" value="10"></div>
+            </div>
+            <div class="three">
+              <div class="field"><label>Google Ads</label><input class="input" id="adPctGoogle" type="number" value="30"></div>
+              <div class="field"><label>LinkedIn</label><input class="input" id="adPctLinkedIn" type="number" value="0"></div>
+              <div class="field"><label>X / Twitter</label><input class="input" id="adPctX" type="number" value="0"></div>
+            </div>
+          </div>
           <div class="field"><label>ملاحظة الإعلانات</label><textarea id="notes">يتم تعديل توزيع الميزانية بناءً على أداء الحملات، مع رفع الصرف على القنوات الأعلى أداءً وتقليل الصرف على القنوات الأقل فعالية.</textarea></div>
           <div class="field"><label>ملاحظة الدفع المقدّم</label><textarea id="paymentNote">يتم اعتماد المشروع وبدء العمل بعد سداد الدفعة المقدمة، وتكون المدفوعات الشهرية مقدمة قبل بداية كل شهر عمل.</textarea></div>
           <button class="btn btn-primary btn-block" onclick="renderProposal()">تحديث العرض الآن</button>
@@ -846,6 +860,10 @@
     byId('duration').value = type === 'lean' ? '3 أشهر - الحد الأدنى' : '6 أشهر - موصى به';
     [...document.querySelectorAll('#services input')].forEach(i => i.checked = servicePick.includes(i.value));
     [...document.querySelectorAll('#channels input')].forEach(i => i.checked = channelPick.includes(i.value));
+    setChannelPercentages(type === 'lean'
+      ? {adPctInstagramMeta:40, adPctTikTok:25, adPctSnapchat:0, adPctGoogle:35, adPctLinkedIn:0, adPctX:0}
+      : {adPctInstagramMeta:30, adPctTikTok:20, adPctSnapchat:10, adPctGoogle:25, adPctLinkedIn:15, adPctX:0}
+    );
     renderProposal();
   }
 
@@ -866,11 +884,29 @@
     </div>`;
   }
 
+  function channelPercent(channel){
+    const ids = {
+      'Instagram/Meta':'adPctInstagramMeta',
+      'TikTok':'adPctTikTok',
+      'Snapchat':'adPctSnapchat',
+      'Google Ads':'adPctGoogle',
+      'LinkedIn':'adPctLinkedIn',
+      'X / Twitter':'adPctX'
+    };
+    return Number(byId(ids[channel])?.value || 0);
+  }
+
+  function setChannelPercentages(values){
+    Object.entries(values).forEach(([id, value]) => {
+      if (byId(id)) byId(id).value = value;
+    });
+  }
+
   function distribution(channels, budget){
     const filtered = channels.filter(c => c !== 'WhatsApp' && c !== 'YouTube Shorts');
-    const weights = filtered.map(c => c.includes('Google') ? 30 : c.includes('Instagram') || c.includes('Meta') ? 35 : c.includes('TikTok') ? 25 : c.includes('LinkedIn') ? 20 : 10);
-    const sum = weights.reduce((a,b) => a + b, 0) || 1;
-    return filtered.map((c,i) => ({channel:c, pct:Math.round(weights[i] / sum * 100), amount:Math.round(budget * weights[i] / sum)}));
+    return filtered
+      .map(c => ({channel:c, pct:channelPercent(c), amount:Math.round(budget * channelPercent(c) / 100)}))
+      .filter(row => row.pct > 0);
   }
 
   function addPage(html, num, cls=''){
