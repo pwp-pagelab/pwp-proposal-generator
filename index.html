@@ -46,18 +46,11 @@
       gap:18px;
     }
     .brand-lockup{display:flex;align-items:center;gap:14px}
-    .mark{
-      width:58px;
-      height:58px;
-      border-radius:18px;
-      background:var(--yellow);
-      color:var(--green);
-      display:grid;
-      place-items:center;
-      font-size:20px;
-      font-weight:800;
-      letter-spacing:-1px;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);
+    .app-brand-logo{
+      width:190px;
+      max-width:42vw;
+      height:auto;
+      display:block;
     }
     .app-header h1{font-size:24px;margin:0;font-weight:800}
     .app-header p{font-size:14px;margin:2px 0 0;color:rgba(255,255,255,.76)}
@@ -205,17 +198,11 @@
     .cover:before{display:none}
     .cover:after{background:rgba(255,255,255,.08)}
     .cover-top{display:flex;align-items:center;justify-content:space-between}
-    .logo{
-      width:104px;
-      height:104px;
-      border-radius:30px;
-      background:var(--yellow);
-      color:var(--green);
-      display:grid;
-      place-items:center;
-      font-size:32px;
-      font-weight:800;
-      letter-spacing:-2px;
+    .cover-logo{
+      width:min(360px,48vw);
+      height:auto;
+      display:block;
+      object-fit:contain;
     }
     .tag{
       border:1px solid rgba(255,255,255,.26);
@@ -425,9 +412,9 @@
       color:var(--ink)!important;
     }
     .approval-page .approval-logo{
-      width:190px;
-      height:70px;
-      background:var(--pwp-white-logo) no-repeat right center / contain;
+      width:260px;
+      height:78px;
+      background:url('assets/pwp-white-long-logo.png') no-repeat right center / contain;
       filter:brightness(0) saturate(100%) invert(22%) sepia(48%) saturate(832%) hue-rotate(122deg) brightness(85%) contrast(92%);
       margin-bottom:56px;
     }
@@ -526,7 +513,7 @@
   <header class="app-header no-print">
     <div class="wrap">
       <div class="brand-lockup">
-        <div class="mark">PWP</div>
+        <img class="app-brand-logo" src="assets/pwp-white-long-logo.png" alt="Post With Passion">
         <div>
           <h1>مولّد عروض Post With Passion</h1>
           <p>نسخة فخمة وسهلة الاستخدام مع الخطط التسويقية وعرض جاهز للتوقيع والطباعة.</p>
@@ -626,7 +613,36 @@
       </details>
 
       <details class="panel" open>
-        <summary><span>06 الصفحات التي تظهر في العرض</span></summary>
+        <summary><span>06 صفحة الأسعار</span></summary>
+        <div class="panel-body">
+          <div class="field"><label>وسم الصفحة</label><input class="input" id="pricingKicker" value="تفاصيل الأسعار"></div>
+          <div class="field"><label>عنوان الصفحة</label><input class="input" id="pricingTitle" value="تفصيل الاستثمار التسويقي"></div>
+          <div class="field"><label>وصف الصفحة</label><textarea id="pricingDesc">يوضح هذا الجدول قيمة خدمات Post With Passion بشكل مستقل عن ميزانية الإعلانات ورسوم إدارتها، مع توضيح الدفعة الشهرية وإجمالي العرض لمدة {duration} لضمان وضوح الاعتماد المالي قبل بدء التنفيذ.</textarea></div>
+          <div class="field"><label>عنوان عمود البند</label><input class="input" id="pricingHeaderItem" value="البند"></div>
+          <div class="two">
+            <div class="field"><label>صف قيمة الباقة</label><input class="input" id="pricingLabelFee" value="قيمة الباقة الشهرية"></div>
+            <div class="field"><label>صف ميزانية الإعلانات</label><input class="input" id="pricingLabelAd" value="ميزانية الإعلانات الشهرية"></div>
+          </div>
+          <div class="two">
+            <div class="field"><label>صف رسوم الإدارة</label><input class="input" id="pricingLabelMgmt" value="رسوم إدارة الإعلانات"></div>
+            <div class="field"><label>صف إجمالي الإعلانات</label><input class="input" id="pricingLabelMediaTotal" value="إجمالي الإعلانات الممولة"></div>
+          </div>
+          <div class="two">
+            <div class="field"><label>صف الضريبة</label><input class="input" id="pricingLabelVat" value="الضريبة الشهرية 15%"></div>
+            <div class="field"><label>صف الدفعة الشهرية</label><input class="input" id="pricingLabelMonthlyTotal" value="الدفعة الشهرية شامل الضريبة"></div>
+          </div>
+          <div class="field"><label>صف إجمالي مدة التعاقد</label><input class="input" id="pricingLabelContractTotal" value="إجمالي مدة التعاقد ({duration})"></div>
+          <div class="two">
+            <div class="field"><label>عنوان بطاقة الإجمالي</label><input class="input" id="pricingSummaryTotalPrefix" value="إجمالي {plan} لمدة {duration}"></div>
+            <div class="field"><label>عنوان بطاقة الدفعة</label><input class="input" id="pricingSummaryMonthlyLabel" value="الدفعة الشهرية"></div>
+          </div>
+          <div class="field"><label>عنوان الملاحظة</label><input class="input" id="pricingNoteTitle" value="ملاحظة التعاقد"></div>
+          <div class="field"><label>نص الملاحظة</label><textarea id="pricingNoteBody">الحد الأدنى للتعاقد على الخدمات التسويقية هو 3 أشهر، ولا تُقبل المشاريع الأقصر من ذلك إلا إذا كانت مخصصة لإنتاج UGC Content فقط.</textarea></div>
+        </div>
+      </details>
+
+      <details class="panel" open>
+        <summary><span>07 الصفحات التي تظهر في العرض</span></summary>
         <div class="panel-body">
           <p class="micro">فعّل الصفحات المطلوبة فقط. أي صفحة غير مطلوبة أزل التحديد عنها ولن تظهر في العرض.</p>
           <label class="check"><input id="showAbout" type="checkbox" checked> صفحة من نحن</label>
@@ -759,6 +775,10 @@
     return `<article class="page ${cls}">${html}<div class="footer-brand">Post With Passion</div><div class="page-num">${String(num).padStart(2,'0')}</div></article>`;
   }
 
+  function templateText(value, data){
+    return Object.entries(data).reduce((text, [key, val]) => text.replaceAll(`{${key}}`, val), String(value || ''));
+  }
+
   function renderProposal(){
     const client = byId('clientName').value || 'اسم العميل';
     const date = byId('proposalDate').value;
@@ -771,6 +791,21 @@
     const opt2 = optionData(2);
     const notes = byId('notes').value;
     const paymentNote = byId('paymentNote').value;
+    const pricingKicker = byId('pricingKicker').value;
+    const pricingTitle = byId('pricingTitle').value;
+    const pricingDesc = byId('pricingDesc').value;
+    const pricingHeaderItem = byId('pricingHeaderItem').value;
+    const pricingLabelFee = byId('pricingLabelFee').value;
+    const pricingLabelAd = byId('pricingLabelAd').value;
+    const pricingLabelMgmt = byId('pricingLabelMgmt').value;
+    const pricingLabelMediaTotal = byId('pricingLabelMediaTotal').value;
+    const pricingLabelVat = byId('pricingLabelVat').value;
+    const pricingLabelMonthlyTotal = byId('pricingLabelMonthlyTotal').value;
+    const pricingLabelContractTotal = byId('pricingLabelContractTotal').value;
+    const pricingSummaryTotalPrefix = byId('pricingSummaryTotalPrefix').value;
+    const pricingSummaryMonthlyLabel = byId('pricingSummaryMonthlyLabel').value;
+    const pricingNoteTitle = byId('pricingNoteTitle').value;
+    const pricingNoteBody = byId('pricingNoteBody').value;
     const setupFee = Number(byId('setupFee')?.value || 0);
     const setupVat = byId('vatEnabled').checked ? setupFee * .15 : 0;
     const setupTotal = setupFee + setupVat;
@@ -782,11 +817,13 @@
     const durationLabel = months > 1 ? `${months} أشهر` : esc(duration);
     const opt1ContractTotal = opt1.total * months + setupTotal;
     const opt2ContractTotal = opt2.total * months + setupTotal;
+    const pricingTokens = {duration: durationLabel};
+    const pricingSetupNote = setupFee > 0 ? ` تشمل الإجماليات رسوم ربط مدير الحسابات وأدوات التتبع ${money(setupTotal)} شامل الضريبة كرسوم تُدفع مرة واحدة.` : '';
 
     const pages = [];
 
     pages.push(`<article class="page cover">
-      <div class="cover-top"><div class="logo">PWP</div><div class="tag">Client Proposal</div></div>
+      <div class="cover-top"><img class="cover-logo" src="assets/pwp-white-long-logo.png" alt="Post With Passion"><div class="tag">Client Proposal</div></div>
       <div><h1>عرض تسويقي مقدم إلى<br>${esc(client)}</h1><p>مقدم من Post With Passion بوست وذ باشن</p></div>
       <div class="cover-grid"><div class="cover-box"><small>التاريخ</small><strong>${esc(date)}</strong></div><div class="cover-box"><small>مدة التعاقد المقترحة</small><strong>${esc(duration)}</strong></div></div>
     </article>`);
@@ -809,18 +846,18 @@
 
     if(pageEnabled('showPlans')) pages.push(addPage(`<div class="kicker">اختيار العميل</div><h2 class="title">الخطط التسويقية</h2><p class="subtitle">تم تصميم هذه الخطط للشركات الجادة في بناء نتائج تسويقية قابلة للقياس، مع مساحة كافية لاختبار الرسائل، قراءة البيانات، وتحسين الأداء بشكل مستمر.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>${extraServiceName ? `<div class="note" style="margin-top:20px"><strong>${esc(extraServiceName)}</strong>${extraServiceDesc ? `<br>${esc(extraServiceDesc)}` : ''}</div>` : ''}`,7));
 
-    if(pageEnabled('showPricing')) pages.push(addPage(`<div class="kicker">تفاصيل الأسعار</div><h2 class="title">تفصيل الاستثمار التسويقي</h2><p class="subtitle">يوضح هذا الجدول قيمة خدمات Post With Passion بشكل مستقل عن ميزانية الإعلانات ورسوم إدارتها، مع توضيح الدفعة الشهرية وإجمالي العرض لمدة ${durationLabel} لضمان وضوح الاعتماد المالي قبل بدء التنفيذ.</p>
-      <table><thead><tr><th>البند</th><th>${esc(opt1.title)}</th><th>${esc(opt2.title)}</th></tr></thead><tbody>
-      ${rowIf('قيمة الباقة الشهرية', opt1.fee, opt2.fee)}
-      ${rowIf('ميزانية الإعلانات الشهرية', opt1.ad, opt2.ad)}
-      ${rowIf('رسوم إدارة الإعلانات', opt1.mgmt, opt2.mgmt)}
-      ${rowIf('إجمالي الإعلانات الممولة', opt1.mediaTotal, opt2.mediaTotal)}
-      ${rowIf('الضريبة الشهرية 15%', opt1.vat, opt2.vat)}
-      ${rowIf('<strong>الدفعة الشهرية شامل الضريبة</strong>', opt1.total, opt2.total)}
-      ${rowIf(`<strong>إجمالي مدة التعاقد (${durationLabel})</strong>`, opt1ContractTotal, opt2ContractTotal)}
+    if(pageEnabled('showPricing')) pages.push(addPage(`<div class="kicker">${esc(pricingKicker)}</div><h2 class="title">${esc(pricingTitle)}</h2><p class="subtitle">${esc(templateText(pricingDesc, pricingTokens))}</p>
+      <table><thead><tr><th>${esc(pricingHeaderItem)}</th><th>${esc(opt1.title)}</th><th>${esc(opt2.title)}</th></tr></thead><tbody>
+      ${rowIf(esc(pricingLabelFee), opt1.fee, opt2.fee)}
+      ${rowIf(esc(pricingLabelAd), opt1.ad, opt2.ad)}
+      ${rowIf(esc(pricingLabelMgmt), opt1.mgmt, opt2.mgmt)}
+      ${rowIf(esc(pricingLabelMediaTotal), opt1.mediaTotal, opt2.mediaTotal)}
+      ${rowIf(esc(pricingLabelVat), opt1.vat, opt2.vat)}
+      ${rowIf(`<strong>${esc(pricingLabelMonthlyTotal)}</strong>`, opt1.total, opt2.total)}
+      ${rowIf(`<strong>${esc(templateText(pricingLabelContractTotal, pricingTokens))}</strong>`, opt1ContractTotal, opt2ContractTotal)}
       </tbody></table>
-      <div class="summary-box"><div class="money"><h3>إجمالي ${esc(opt1.title)} لمدة ${durationLabel}</h3><strong>${money(opt1ContractTotal)}</strong></div><div class="money yellow"><h3>الدفعة الشهرية</h3><strong>${money(opt1.total)}</strong></div><div class="money"><h3>إجمالي ${esc(opt2.title)} لمدة ${durationLabel}</h3><strong>${money(opt2ContractTotal)}</strong></div><div class="money yellow"><h3>الدفعة الشهرية</h3><strong>${money(opt2.total)}</strong></div></div>
-      <div class="note" style="margin-top:20px"><strong>ملاحظة التعاقد:</strong> الحد الأدنى للتعاقد على الخدمات التسويقية هو 3 أشهر، ولا تُقبل المشاريع الأقصر من ذلك إلا إذا كانت مخصصة لإنتاج UGC Content فقط. ${setupFee > 0 ? `تشمل الإجماليات رسوم ربط مدير الحسابات وأدوات التتبع ${money(setupTotal)} شامل الضريبة كرسوم تُدفع مرة واحدة.` : ''}</div>`,8));
+      <div class="summary-box"><div class="money"><h3>${esc(templateText(pricingSummaryTotalPrefix, {...pricingTokens, plan: opt1.title}))}</h3><strong>${money(opt1ContractTotal)}</strong></div><div class="money yellow"><h3>${esc(pricingSummaryMonthlyLabel)}</h3><strong>${money(opt1.total)}</strong></div><div class="money"><h3>${esc(templateText(pricingSummaryTotalPrefix, {...pricingTokens, plan: opt2.title}))}</h3><strong>${money(opt2ContractTotal)}</strong></div><div class="money yellow"><h3>${esc(pricingSummaryMonthlyLabel)}</h3><strong>${money(opt2.total)}</strong></div></div>
+      <div class="note" style="margin-top:20px"><strong>${esc(pricingNoteTitle)}:</strong> ${esc(pricingNoteBody)}${esc(pricingSetupNote)}</div>`,8));
 
     if(pageEnabled('showPaidMedia')) pages.push(addPage(`<div class="kicker">Paid Media</div><h2 class="title">توزيع الصرف الإعلاني المقترح</h2><p class="subtitle">توزيع الميزانية الإعلانية يتم بشكل مبدئي بناءً على طبيعة الجمهور والقنوات الأنسب للهدف، ثم يتم تحسينه بعد الإطلاق وفق أداء كل منصة وجودة النتائج القادمة منها.</p>
       <div class="grid-2"><div><h3>${esc(opt1.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${dist1.map(d => `<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div><div><h3>${esc(opt2.title)}</h3><table><thead><tr><th>المنصة</th><th>النسبة</th><th>المبلغ</th></tr></thead><tbody>${dist2.map(d => `<tr><td>${esc(d.channel)}</td><td>${d.pct}%</td><td>${money(d.amount)}</td></tr>`).join('')}</tbody></table></div></div><div class="note" style="margin-top:20px">${esc(notes)}</div>`,9));
@@ -833,9 +870,12 @@
       <div class="signature"><div class="sig-box"><strong>موافقة العميل</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div><div class="sig-box"><strong>Post With Passion</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div></div>
       `,11,'approval-page'));
 
-    if(pageEnabled('showClosing')) pages.push(addPage(`<div class="approval-logo"></div><h2 class="acceptance-title">جاهزون للبدء؟</h2><p class="acceptance-text">نحن متحمسون لبناء مرحلة تسويقية أوضح وأكثر تأثيرًا معكم. عند اختيار الخطة المناسبة واعتماد العرض، يبدأ فريق Post With Passion بتجهيز خطة الانطلاق، ترتيب المتطلبات، وجدولة أول خطوات التنفيذ.</p>
-      <div class="payment-note"><h3>دعوة لقبول العرض</h3><p>للمضي قدمًا، نرجو تأكيد اختيار الخطة المناسبة وإرسال الاعتماد حتى نبدأ مرحلة التجهيز والتنفيذ حسب الجدول المتفق عليه.</p></div>
-      `,12,'approval-page'));
+    if(pageEnabled('showClosing')) pages.push(`<article class="page cover">
+      <div class="cover-top"><img class="cover-logo" src="assets/pwp-white-long-logo.png" alt="Post With Passion"><div class="tag">Next Step</div></div>
+      <div><h1>جاهزون للبدء؟</h1><p>نحن متحمسون لبناء مرحلة تسويقية أوضح وأكثر تأثيرًا معكم. عند اختيار الخطة المناسبة واعتماد العرض، يبدأ فريق Post With Passion بتجهيز خطة الانطلاق، ترتيب المتطلبات، وجدولة أول خطوات التنفيذ.</p></div>
+      <div class="cover-grid"><div class="cover-box"><small>الخطوة التالية</small><strong>اعتماد العرض</strong></div><div class="cover-box"><small>بداية العمل</small><strong>بعد تأكيد الخطة</strong></div></div>
+      <div class="footer-brand">Post With Passion</div><div class="page-num">12</div>
+    </article>`);
 
     byId('preview').innerHTML = pages.join('');
   }
