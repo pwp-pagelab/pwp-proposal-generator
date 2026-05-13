@@ -777,7 +777,22 @@
       </details>
 
       <details class="panel" open>
-        <summary><span>07 الصفحات التي تظهر في العرض</span></summary>
+        <summary><span>07 تسعير خدمة واحدة</span></summary>
+        <div class="panel-body">
+          <div class="field"><label>وسم الصفحة</label><input class="input" id="singleServiceKicker" value="تسعير خدمة واحدة"></div>
+          <div class="field"><label>عنوان الصفحة</label><input class="input" id="singleServiceTitle" value="تفاصيل الخدمة المطلوبة"></div>
+          <div class="field"><label>وصف الصفحة</label><textarea id="singleServiceIntro">هذه الصفحة مخصصة للعملاء الذين يحتاجون خدمة واحدة فقط، مع توضيح نطاق الخدمة والتكلفة النهائية شامل ضريبة القيمة المضافة.</textarea></div>
+          <div class="field"><label>اسم الخدمة</label><input class="input" id="singleServiceName" value="إنتاج محتوى UGC"></div>
+          <div class="field"><label>تفاصيل الخدمة</label><textarea id="singleServiceDetails">يشمل العمل التخطيط المختصر، تنسيق المتطلبات، إنتاج المحتوى المتفق عليه، وتسليم الملفات النهائية حسب النطاق المعتمد.</textarea></div>
+          <div class="two">
+            <div class="field"><label>سعر الخدمة قبل الضريبة</label><input class="input" id="singleServicePrice" type="number" value="5000"></div>
+            <div class="field"><label>ملاحظة السعر</label><input class="input" id="singleServicePriceNote" value="السعر النهائي شامل ضريبة القيمة المضافة"></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" open>
+        <summary><span>08 الصفحات التي تظهر في العرض</span></summary>
         <div class="panel-body">
           <p class="micro">فعّل الصفحات المطلوبة فقط. أي صفحة غير مطلوبة أزل التحديد عنها ولن تظهر في العرض.</p>
           <label class="check"><input id="showAbout" type="checkbox" checked> صفحة من نحن</label>
@@ -787,6 +802,7 @@
           <label class="check"><input id="showScope" type="checkbox" checked> صفحة الخدمات والقنوات</label>
           <label class="check"><input id="showPlans" type="checkbox" checked> صفحة الخطط التسويقية</label>
           <label class="check"><input id="showPricing" type="checkbox" checked> صفحة الأسعار</label>
+          <label class="check"><input id="showSingleServicePricing" type="checkbox"> صفحة تسعير خدمة واحدة</label>
           <label class="check"><input id="showPaidMedia" type="checkbox" checked> صفحة توزيع الإعلانات</label>
           <label class="check"><input id="showResults" type="checkbox" checked> صفحة النتائج المتوقعة</label>
           <label class="check"><input id="showAcceptance" type="checkbox" checked> صفحة اعتماد العرض</label>
@@ -1082,6 +1098,15 @@
     const pricingSummaryMonthlyLabel = byId('pricingSummaryMonthlyLabel').value;
     const pricingNoteTitle = byId('pricingNoteTitle').value;
     const pricingNoteBody = byId('pricingNoteBody').value;
+    const singleServiceKicker = byId('singleServiceKicker').value;
+    const singleServiceTitle = byId('singleServiceTitle').value;
+    const singleServiceIntro = byId('singleServiceIntro').value;
+    const singleServiceName = byId('singleServiceName').value;
+    const singleServiceDetails = byId('singleServiceDetails').value;
+    const singleServicePrice = Number(byId('singleServicePrice').value || 0);
+    const singleServiceVat = byId('vatEnabled').checked ? singleServicePrice * .15 : 0;
+    const singleServiceTotal = singleServicePrice + singleServiceVat;
+    const singleServicePriceNote = byId('singleServicePriceNote').value;
     const setupFee = Number(byId('setupFee')?.value || 0);
     const setupVat = byId('vatEnabled').checked ? setupFee * .15 : 0;
     const setupTotal = setupFee + setupVat;
@@ -1137,6 +1162,15 @@
       </tbody></table>
       <div class="summary-box"><div class="money"><h3>${esc(templateText(pricingSummaryTotalPrefix, {...pricingTokens, plan: opt1.title}))}</h3><strong>${money(opt1ContractTotal)}</strong></div><div class="money yellow"><h3>${esc(pricingSummaryMonthlyLabel)}</h3><strong>${money(opt1.total)}</strong></div><div class="money"><h3>${esc(templateText(pricingSummaryTotalPrefix, {...pricingTokens, plan: opt2.title}))}</h3><strong>${money(opt2ContractTotal)}</strong></div><div class="money yellow"><h3>${esc(pricingSummaryMonthlyLabel)}</h3><strong>${money(opt2.total)}</strong></div></div>
       <div class="note" style="margin-top:20px"><strong>${esc(pricingNoteTitle)}:</strong> ${esc(pricingNoteBody)}${esc(pricingSetupNote)}</div>`,8));
+
+    if(pageEnabled('showSingleServicePricing')) pages.push(addPage(`<div class="kicker">${esc(singleServiceKicker)}</div><h2 class="title">${esc(singleServiceTitle)}</h2><p class="subtitle">${esc(singleServiceIntro)}</p>
+      <div class="lead"><strong>${esc(singleServiceName)}</strong><br>${esc(singleServiceDetails)}</div>
+      <table style="margin-top:24px"><thead><tr><th>البند</th><th>القيمة</th></tr></thead><tbody>
+        <tr><td>سعر الخدمة قبل الضريبة</td><td>${money(singleServicePrice)}</td></tr>
+        <tr><td>ضريبة القيمة المضافة 15%</td><td>${money(singleServiceVat)}</td></tr>
+        <tr><td><strong>الإجمالي شامل الضريبة</strong></td><td><strong>${money(singleServiceTotal)}</strong></td></tr>
+      </tbody></table>
+      <div class="summary-box"><div class="money yellow"><h3>${esc(singleServicePriceNote)}</h3><strong>${money(singleServiceTotal)}</strong></div></div>`,9));
 
     if(pageEnabled('showPaidMedia')) pages.push(addPage(`<div class="kicker">Paid Media</div><h2 class="title">توزيع الصرف الإعلاني المقترح</h2><p class="subtitle">توزيع الميزانية الإعلانية يتم بشكل مبدئي بناءً على طبيعة الجمهور والقنوات الأنسب للهدف، ثم يتم تحسينه بعد الإطلاق وفق أداء كل منصة وجودة النتائج القادمة منها.</p>
       <div class="${paidMediaOptions.length > 1 ? 'grid-2' : ''}">${paidMediaOptions.map(item => paidMediaBlock(item.option, item.rows)).join('')}</div><div class="note" style="margin-top:20px">${esc(notes)}</div>`,9));
