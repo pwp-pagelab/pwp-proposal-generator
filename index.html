@@ -156,6 +156,17 @@
       cursor:pointer;
     }
     .micro{margin:0;color:var(--muted);font-size:14px}
+    .scope-helper{
+      margin:12px 0;
+      padding:14px;
+      border-radius:18px;
+      background:rgba(231,189,82,.14);
+      border:1px solid rgba(231,189,82,.34);
+      color:var(--ink);
+      font-size:14px;
+    }
+    .scope-helper strong{color:var(--green)}
+    .scope-builder textarea#rawScope{min-height:220px}
     .percent-total{
       margin-top:10px;
       border:1px solid rgba(10,76,62,.14);
@@ -649,11 +660,35 @@
         <summary><span>01 بيانات العميل</span></summary>
         <div class="panel-body">
           <div class="field"><label>اسم العميل</label><input class="input" id="clientName" value="اسم العميل"></div>
+          <div class="field"><label>نوع العرض</label><select id="proposalMode" onchange="setProposalMode(this.value)"><option value="packages">عرض خطط تسويقية</option><option value="scope">عرض مبني على نطاق عمل متفق عليه</option></select></div>
           <div class="two">
             <div class="field"><label>التاريخ</label><input class="input" id="proposalDate" type="date"></div>
             <div class="field"><label>مدة المشروع</label><input class="input" id="duration" value="6 أشهر - موصى به"></div>
           </div>
           <div class="field"><label>الهدف الرئيسي</label><textarea id="mainGoal">بناء حضور رقمي أقوى وزيادة فرص الوصول إلى العملاء المحتملين من خلال محتوى محلي وحملات إعلانية قابلة للقياس.</textarea></div>
+        </div>
+      </details>
+
+      <details class="panel scope-builder" id="scopeBuilderPanel">
+        <summary><span>02 مولّد العرض من نطاق العمل</span></summary>
+        <div class="panel-body">
+          <div class="scope-helper"><strong>الصقي نطاق العمل كما اتفقتِ عليه مع العميل.</strong><br>سيحوّله المولّد إلى أقسام قابلة للمراجعة، ثم ينشئ عرضًا مخصصًا بدل عرض الباقات.</div>
+          <div class="field"><label>نطاق العمل المتفق عليه</label><textarea id="rawScope" placeholder="مثال:\nالهدف: إطلاق الحملة التعريفية...\nالمخرجات:\n- 8 فيديوهات قصيرة\n- 12 تصميم سوشيال ميديا\nالمدة: 6 أسابيع\nالقيمة: 25,000 ريال"></textarea></div>
+          <button class="btn btn-primary btn-block" type="button" onclick="generateFromScope()">تحويل النطاق إلى عرض</button>
+          <div class="field"><label>اسم المشروع</label><input class="input" id="scopeProjectTitle" value="مشروع التسويق والإنتاج الإبداعي"></div>
+          <div class="field"><label>ملخص المشروع</label><textarea id="scopeSummary" placeholder="ملخص واضح لما سيقدمه المشروع ولماذا"></textarea></div>
+          <div class="field"><label>المخرجات المتفق عليها — مخرج في كل سطر</label><textarea id="scopeDeliverables" placeholder="إعداد الاستراتيجية\nإنتاج 8 فيديوهات قصيرة\nتصميم 12 منشورًا"></textarea></div>
+          <div class="field"><label>الجدول الزمني والمراحل — مرحلة في كل سطر</label><textarea id="scopeTimeline" placeholder="الأسبوع 1: التأسيس والتخطيط\nالأسبوع 2-5: الإنتاج والتنفيذ\nالأسبوع 6: التسليم والتقرير"></textarea></div>
+          <div class="field"><label>مسؤوليات العميل — بند في كل سطر</label><textarea id="scopeClientResponsibilities" placeholder="اعتماد المحتوى خلال يومي عمل\nتوفير المواد والبيانات المطلوبة"></textarea></div>
+          <div class="field"><label>خارج نطاق العمل — بند في كل سطر</label><textarea id="scopeExclusions" placeholder="تكاليف الإعلانات المدفوعة\nالتصوير خارج مدينة الرياض"></textarea></div>
+          <div class="two">
+            <div class="field"><label>قيمة المشروع قبل الضريبة</label><input class="input" id="scopeProjectFee" type="number" value="0"></div>
+            <div class="field"><label>صلاحية العرض</label><input class="input" id="scopeValidity" value="7 أيام"></div>
+          </div>
+          <label class="check"><input id="scopeVatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%</label>
+          <div class="field"><label>جدول الدفعات</label><textarea id="scopePaymentSchedule">50% عند اعتماد العرض، و50% قبل التسليم النهائي.</textarea></div>
+          <div class="field"><label>الافتراضات وآلية التغيير</label><textarea id="scopeChangeTerms">أي طلبات أو مخرجات إضافية خارج النطاق المتفق عليه يتم تسعيرها واعتمادها كتابيًا قبل التنفيذ.</textarea></div>
+          <button class="btn btn-primary btn-block" type="button" onclick="renderProposal()">تحديث العرض من النطاق</button>
         </div>
       </details>
 
@@ -1031,7 +1066,7 @@
       document.querySelectorAll('#channels input').forEach(input => input.checked = data.selectedChannels.includes(input.value));
     }
     updateAdPercentTotal();
-    renderProposal();
+    setProposalMode(byId('proposalMode')?.value || 'packages');
   }
 
   function importProposalCopy(event){
@@ -1070,7 +1105,144 @@
     })).filter(service => service.name);
   }
 
+  function scopeLines(id){
+    return String(byId(id)?.value || '')
+      .split(/\n+/)
+      .map(line => line.replace(/^\s*(?:[-•*–—]|\d+[.)-])\s*/, '').trim())
+      .filter(Boolean);
+  }
+
+  function scopeList(items, emptyText='يتم تحديد التفاصيل النهائية حسب النطاق المعتمد.'){
+    const rows = items.length ? items : [emptyText];
+    return `<div class="service-list">${rows.map(item => `<div class="pill">${esc(item)}</div>`).join('')}</div>`;
+  }
+
+  function setProposalMode(mode){
+    const isScope = mode === 'scope';
+    document.querySelectorAll('.controls > details.panel').forEach((panel, index) => {
+      if (index === 0 || panel.id === 'scopeBuilderPanel') return;
+      panel.hidden = isScope;
+    });
+    byId('scopeBuilderPanel').hidden = !isScope;
+    if (isScope) byId('scopeBuilderPanel').open = true;
+    renderProposal();
+  }
+
+  function generateFromScope(){
+    const raw = String(byId('rawScope').value || '').trim();
+    if (!raw) {
+      alert('الصقي نطاق العمل أولًا، ثم اضغطي تحويل النطاق إلى عرض.');
+      return;
+    }
+
+    const buckets = {summary:[], deliverables:[], timeline:[], responsibilities:[], exclusions:[], payment:[]};
+    let active = '';
+    const headingMap = [
+      [/^(?:الهدف|ملخص|نبذة|overview|objective)/i, 'summary'],
+      [/^(?:النطاق|المخرجات|التسليمات|الخدمات|deliverables|scope)/i, 'deliverables'],
+      [/^(?:المدة|الجدول الزمني|المراحل|timeline|schedule|milestones)/i, 'timeline'],
+      [/^(?:مسؤوليات العميل|متطلبات العميل|client responsibilities|requirements)/i, 'responsibilities'],
+      [/^(?:خارج النطاق|الاستثناءات|لا يشمل|exclusions|out of scope)/i, 'exclusions'],
+      [/^(?:الدفعات|الدفع|شروط الدفع|payment)/i, 'payment']
+    ];
+
+    raw.split(/\n+/).map(line => line.trim()).filter(Boolean).forEach((original, index) => {
+      const line = original.replace(/^\s*(?:[-•*–—]|\d+[.)-])\s*/, '').trim();
+      const match = headingMap.find(([pattern]) => pattern.test(line));
+      if (match) {
+        active = match[1];
+        const remainder = line.includes(':') ? line.split(':').slice(1).join(':').trim() : (line.includes('：') ? line.split('：').slice(1).join('：').trim() : '');
+        if (remainder) buckets[active].push(remainder);
+        if (/^(?:المدة|duration)/i.test(line) && remainder) byId('duration').value = remainder;
+        return;
+      }
+
+      if (/^(?:قيمة المشروع|القيمة|السعر|project fee|price)/i.test(line)) {
+        const digits = line.replace(/[^0-9٠-٩]/g, '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+        if (digits) byId('scopeProjectFee').value = Number(digits);
+        return;
+      }
+      if (/^(?:اسم المشروع|المشروع|project title)/i.test(line) && /[:：]/.test(line)) {
+        byId('scopeProjectTitle').value = line.split(/[:：]/).slice(1).join(':').trim();
+        return;
+      }
+
+      if (active) buckets[active].push(line);
+      else if (/^[-•*–—\d]/.test(original)) buckets.deliverables.push(line);
+      else if (index === 0 && line.length < 90) byId('scopeProjectTitle').value = line;
+      else buckets.summary.push(line);
+    });
+
+    if (buckets.summary.length) {
+      byId('scopeSummary').value = buckets.summary.join('\n');
+      byId('mainGoal').value = buckets.summary[0];
+    }
+    if (buckets.deliverables.length) byId('scopeDeliverables').value = buckets.deliverables.join('\n');
+    if (buckets.timeline.length) byId('scopeTimeline').value = buckets.timeline.join('\n');
+    if (buckets.responsibilities.length) byId('scopeClientResponsibilities').value = buckets.responsibilities.join('\n');
+    if (buckets.exclusions.length) byId('scopeExclusions').value = buckets.exclusions.join('\n');
+    if (buckets.payment.length) byId('scopePaymentSchedule').value = buckets.payment.join('\n');
+    renderProposal();
+  }
+
+  function renderScopeProposal(){
+    const client = byId('clientName').value || 'اسم العميل';
+    const date = byId('proposalDate').value;
+    const duration = byId('duration').value || 'حسب الجدول المتفق عليه';
+    const goal = byId('mainGoal').value;
+    const projectTitle = byId('scopeProjectTitle').value || 'المشروع المتفق عليه';
+    const summary = byId('scopeSummary').value || byId('rawScope').value || goal;
+    const deliverables = scopeLines('scopeDeliverables');
+    const timeline = scopeLines('scopeTimeline');
+    const responsibilities = scopeLines('scopeClientResponsibilities');
+    const exclusions = scopeLines('scopeExclusions');
+    const fee = Number(byId('scopeProjectFee').value || 0);
+    const vat = byId('scopeVatEnabled').checked ? fee * .15 : 0;
+    const total = fee + vat;
+    const payment = byId('scopePaymentSchedule').value;
+    const changeTerms = byId('scopeChangeTerms').value;
+    const validity = byId('scopeValidity').value;
+    const pages = [];
+    const nextPage = (html, cls='') => pages.push(addPage(html, pages.length + 1, cls));
+
+    pages.push(`<article class="page cover">
+      <div class="cover-top"><img class="cover-logo" src="assets/pwp-white-long-logo.png" alt="Post With Passion"><div class="tag">Scope Proposal</div></div>
+      <div><h1>${esc(projectTitle)}<br><span style="color:var(--yellow)">${esc(client)}</span></h1><p>عرض مبني على نطاق العمل المتفق عليه</p></div>
+      <div class="cover-grid"><div class="cover-box"><small>التاريخ</small><strong>${esc(date)}</strong></div><div class="cover-box"><small>مدة المشروع</small><strong>${esc(duration)}</strong></div></div>
+    </article>`);
+
+    nextPage(`<div class="kicker">ملخص المشروع</div><h2 class="title">ما اتفقنا على تنفيذه</h2><p class="subtitle">${esc(summary)}</p>
+      <div class="lead">يحوّل هذا العرض نطاق العمل المتفق عليه إلى خطة تنفيذ وتجارية واضحة بين Post With Passion و${esc(client)}.</div>`);
+
+    nextPage(`<div class="kicker">نطاق العمل</div><h2 class="title">المخرجات المتفق عليها</h2><p class="subtitle">تشمل قيمة المشروع وتنفيذه المخرجات التالية فقط، وفق الاعتمادات والمواعيد الموضحة في هذا العرض.</p>${scopeList(deliverables)}`);
+
+    nextPage(`<div class="kicker">التنفيذ والتعاون</div><h2 class="title">الجدول الزمني والمسؤوليات</h2>
+      <div class="grid-2"><div><h3>المراحل والجدول الزمني</h3>${scopeList(timeline, duration)}</div><div><h3>مسؤوليات العميل</h3>${scopeList(responsibilities, 'توفير المواد والمعلومات والاعتمادات اللازمة في الوقت المتفق عليه.')}</div></div>
+      <div class="note" style="margin-top:24px"><strong>مهم:</strong> قد تتأثر مواعيد التسليم عند تأخر المواد أو الاعتمادات المطلوبة من العميل.</div>`);
+
+    nextPage(`<div class="kicker">حدود المشروع</div><h2 class="title">خارج نطاق العمل</h2><p class="subtitle">لضمان وضوح التنفيذ، البنود التالية غير مشمولة ما لم تتم إضافتها واعتمادها كتابيًا.</p>${scopeList(exclusions, 'أي أعمال أو تكاليف غير مذكورة صراحة ضمن المخرجات المتفق عليها.')}
+      <div class="note" style="margin-top:24px"><strong>طلبات التغيير:</strong> ${esc(changeTerms)}</div>`);
+
+    nextPage(`<div class="kicker">الاستثمار</div><h2 class="title">القيمة وشروط الدفع</h2><p class="subtitle">القيمة أدناه تغطي نطاق العمل والمخرجات المحددة في هذا العرض.</p>
+      ${fee > 0 ? `<table><thead><tr><th>البند</th><th>القيمة</th></tr></thead><tbody><tr><td>قيمة المشروع قبل الضريبة</td><td>${money(fee)}</td></tr>${byId('scopeVatEnabled').checked ? `<tr><td>ضريبة القيمة المضافة 15%</td><td>${money(vat)}</td></tr>` : ''}<tr><td><strong>الإجمالي المستحق</strong></td><td><strong>${money(total)}</strong></td></tr></tbody></table>` : `<div class="lead">تُعتمد القيمة المالية حسب الاتفاق التجاري مع العميل.</div>`}
+      <div class="grid-2" style="margin-top:22px"><div class="info yellow"><h3>جدول الدفعات</h3><p>${esc(payment)}</p></div><div class="info"><h3>صلاحية العرض</h3><p>${esc(validity)}</p></div></div>`);
+
+    nextPage(`<div class="approval-logo"></div><h2 class="acceptance-title">اعتماد نطاق العمل</h2><p class="acceptance-text">باعتماد هذا العرض، يوافق الطرفان على نطاق العمل والمخرجات والجدول الزمني والقيمة وشروط الدفع الموضحة أعلاه.</p>
+      <div class="payment-note"><h3>آلية البدء</h3><p>${esc(payment)}</p></div>
+      <div class="signature"><div class="sig-box"><strong>${esc(client)}</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div><div class="sig-box"><strong>Post With Passion</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div></div>`, 'approval-page');
+
+    pages.push(`<article class="page cover">
+      <div class="cover-top"><img class="cover-logo" src="assets/pwp-white-long-logo.png" alt="Post With Passion"><div class="tag">Next Step</div></div>
+      <div><h1>جاهزون للبدء؟</h1><p>بعد اعتماد نطاق العمل والدفعة المطلوبة، نبدأ ترتيب المتطلبات وجدولة أول مرحلة من المشروع.</p></div>
+      <div class="cover-grid"><div class="cover-box"><small>الخطوة التالية</small><strong>اعتماد العرض</strong></div><div class="cover-box"><small>بداية العمل</small><strong>حسب الجدول المتفق عليه</strong></div></div>
+    </article>`);
+
+    byId('preview').innerHTML = pages.join('');
+    return true;
+  }
+
   function renderProposal(){
+    if (byId('proposalMode')?.value === 'scope') return renderScopeProposal();
     const client = byId('clientName').value || 'اسم العميل';
     const date = byId('proposalDate').value;
     const duration = byId('duration').value;
@@ -1196,6 +1368,16 @@
   }
 
   function copySummary(){
+    if (byId('proposalMode')?.value === 'scope') {
+      const client = byId('clientName').value || 'اسم العميل';
+      const fee = Number(byId('scopeProjectFee').value || 0);
+      const vat = byId('scopeVatEnabled').checked ? fee * .15 : 0;
+      const deliverables = scopeLines('scopeDeliverables').map(item => `- ${item}`).join('\n');
+      const txt = `${byId('scopeProjectTitle').value || 'عرض نطاق عمل'}\nمقدم إلى: ${client}\nمدة المشروع: ${byId('duration').value}\n\nالمخرجات المتفق عليها:\n${deliverables || '- حسب النطاق المعتمد'}\n\nقيمة المشروع شامل الضريبة: ${fee > 0 ? money(fee + vat) : 'حسب الاتفاق'}\nجدول الدفعات: ${byId('scopePaymentSchedule').value}`;
+      navigator.clipboard.writeText(txt);
+      alert('تم نسخ ملخص نطاق العمل');
+      return;
+    }
     const client = byId('clientName').value || 'اسم العميل';
     const duration = byId('duration').value;
     const o1 = optionData(1), o2 = optionData(2);
@@ -1231,7 +1413,7 @@
     document.querySelectorAll('[id^="adPct"]').forEach(input => input.addEventListener('input', updateAdPercentTotal));
     document.querySelectorAll('#channels input').forEach(input => input.addEventListener('change', updateAdPercentTotal));
     updateAdPercentTotal();
-    renderProposal();
+    setProposalMode(byId('proposalMode').value);
   });
 </script>
 </body>
