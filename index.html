@@ -873,6 +873,7 @@
   </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"></script>
 <script>
   const servicesList = [
     "خدمة 360 تشغيل تسويقي متكامل",
@@ -1152,6 +1153,72 @@
     renderProposal();
   }
 
+  function normalizePdfText(text){
+    return String(text || '')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/[ \t]{2,}/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  function pdfTextLooksReadable(text){
+    const normalized = normalizePdfText(text);
+    const compact = normalized.replace(/\s/g, '');
+    const readableCharacters = (normalized.match(/[A-Za-z\u0600-\u06FF0-9]/g) || []).length;
+    const suspiciousCharacters = (normalized.match(/[#$%@<>|\\^~]/g) || []).length;
+    const suspiciousRuns = (normalized.match(/[#$%@<>|\\^~+*=\/]{3,}/g) || []).length;
+    const arabicCharacters = (normalized.match(/[\u0600-\u06FF]/g) || []).length;
+    const arabicWords = normalized.match(/[\u0600-\u06FF]{3,}/g) || [];
+
+    if (readableCharacters < 20 || compact.length < 24) return false;
+    if (suspiciousCharacters > Math.max(8, compact.length * .035)) return false;
+    if (suspiciousRuns > 2) return false;
+    if (arabicCharacters > 30 && arabicWords.length < Math.max(3, Math.floor(arabicCharacters / 45))) return false;
+    return true;
+  }
+
+  async function ocrPdfPages(pdf, setStatus){
+    if (!window.Tesseract) throw new Error('OCR_UNAVAILABLE');
+    let currentPage = 1;
+    const worker = await Tesseract.createWorker(['ara', 'eng'], 1, {
+      logger: message => {
+        if (message.status === 'recognizing text') {
+          const progress = Math.max(1, Math.round((message.progress || 0) * 100));
+          setStatus(`النص الأصلي غير واضح. جارٍ التعرف البصري على الصفحة ${currentPage} من ${pdf.numPages} — ${progress}%`);
+        }
+      }
+    });
+    const pageTexts = [];
+
+    try {
+      if (Tesseract.PSM?.AUTO) {
+        await worker.setParameters({
+          tessedit_pageseg_mode: Tesseract.PSM.AUTO,
+          preserve_interword_spaces: '1'
+        });
+      }
+
+      for (currentPage = 1; currentPage <= pdf.numPages; currentPage++) {
+        setStatus(`تم اكتشاف ترميز غير مقروء. جارٍ تجهيز الصفحة ${currentPage} من ${pdf.numPages} للقراءة البصرية...`);
+        const page = await pdf.getPage(currentPage);
+        const viewport = page.getViewport({scale: 2});
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.ceil(viewport.width);
+        canvas.height = Math.ceil(viewport.height);
+        const context = canvas.getContext('2d', {willReadFrequently:true});
+        await page.render({canvasContext:context, viewport}).promise;
+        const result = await worker.recognize(canvas);
+        pageTexts.push(result.data.text || '');
+        canvas.width = 1;
+        canvas.height = 1;
+      }
+    } finally {
+      await worker.terminate();
+    }
+
+    return normalizePdfText(pageTexts.join('\n\n'));
+  }
+
   async function importScopePdf(event){
     const input = event.target;
     const file = input.files?.[0];
@@ -1182,21 +1249,24 @@
         pageTexts.push(pageText.trim());
       }
 
-      const extracted = pageTexts.join('\n\n')
-        .replace(/[ \t]+\n/g, '\n')
-        .replace(/[ \t]{2,}/g, ' ')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
+      let extracted = normalizePdfText(pageTexts.join('\n\n'));
+      let usedOcr = false;
+      if (!pdfTextLooksReadable(extracted)) {
+        usedOcr = true;
+        extracted = await ocrPdfPages(pdf, setStatus);
+      }
       const readableCharacters = (extracted.match(/[A-Za-z\u0600-\u06FF0-9]/g) || []).length;
       if (readableCharacters < 20) throw new Error('PDF_TEXT_UNREADABLE');
 
       byId('rawScope').value = extracted;
       generateFromScope();
-      setStatus(`تمت قراءة ${pdf.numPages} صفحة واستخراج النقاط. راجعي الحقول ثم حدّثي العرض.`, 'success');
+      setStatus(usedOcr
+        ? `تمت قراءة ${pdf.numPages} صفحة بصريًا واستخراج نص واضح. راجعي الحقول ثم حدّثي العرض.`
+        : `تمت قراءة ${pdf.numPages} صفحة واستخراج النقاط. راجعي الحقول ثم حدّثي العرض.`, 'success');
     } catch (error) {
-      const scanned = error?.message === 'PDF_TEXT_UNREADABLE';
-      setStatus(scanned
-        ? 'لم أجد نصًا واضحًا في الملف. قد يكون PDF ممسوحًا ضوئيًا؛ الصقي النقاط يدويًا في الحقل أعلاه.'
+      const unreadable = error?.message === 'PDF_TEXT_UNREADABLE' || error?.message === 'OCR_UNAVAILABLE';
+      setStatus(unreadable
+        ? 'لم أتمكن من استخراج نص واضح حتى بالقراءة البصرية. الصقي النقاط يدويًا في الحقل أعلاه.'
         : 'تعذرت قراءة ملف PDF. تأكدي أنه ملف صالح أو الصقي النقاط يدويًا.', 'error');
     } finally {
       input.value = '';
