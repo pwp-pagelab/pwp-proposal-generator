@@ -157,6 +157,20 @@
     }
     .catalog-group-head strong{display:block;font-size:15px}
     .catalog-group-head small{color:rgba(255,255,255,.72);font-size:12px}
+    .catalog-pricing-mode{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 150px;
+      gap:10px;
+      align-items:end;
+      padding:12px 14px;
+      background:rgba(10,76,62,.06);
+      border-bottom:1px solid var(--line);
+    }
+    .catalog-pricing-mode label{margin:0;font-size:12px}
+    .catalog-pricing-mode select,.catalog-pricing-mode input{padding:9px 10px;border-radius:12px;background:white}
+    .catalog-stage-price{position:relative}
+    .catalog-stage-price small{position:absolute;left:9px;bottom:10px;color:var(--muted);font-size:10px;pointer-events:none}
+    .catalog-item.stage-priced .catalog-price{opacity:.38}
     .catalog-subsection{
       padding:10px 14px 4px;
       color:var(--green);
@@ -180,6 +194,9 @@
     .catalog-total{padding:12px;border-radius:16px;background:rgba(10,76,62,.08);color:var(--green)}
     .catalog-total small{display:block;color:var(--muted);font-size:11px}
     .catalog-total strong{font-size:18px}
+    @media (max-width:560px){
+      .catalog-item,.catalog-pricing-mode,.catalog-totals{grid-template-columns:1fr}
+    }
     .quick-row{display:flex;gap:8px;margin:10px 0 14px}
     .quick{
       flex:1;
@@ -987,6 +1004,7 @@
       title:'الخدمات الإضافية',
       duration:'تُضاف حسب احتياج المشروع',
       billing:'مرة واحدة',
+      allowStagePricing:false,
       items:[
         {id:'weeklyDesign', name:'٢ ساعة تصميم أسبوعيًا للعروض والمنتجات الجديدة', billing:'شهري'},
         {id:'printProduction', name:'تنفيذ المطبوعات حسب الحاجة بتسعيرة منفصلة'}
@@ -1021,14 +1039,35 @@
           : '';
         lastSection = item.section || lastSection;
         const billing = item.billing || group.billing;
-        return `${section}<div class="catalog-item">
+        return `${section}<div class="catalog-item" id="catalogRow_${item.id}">
           <label class="catalog-choice"><input id="catalogSelect_${item.id}" type="checkbox" onchange="updateServiceCatalogTotal()"><span>${esc(item.name)}</span></label>
           <div class="catalog-price"><input id="catalogPrice_${item.id}" type="number" min="0" step="100" value="0" aria-label="سعر ${esc(item.name)}" oninput="updateServiceCatalogTotal()"><small>${billing === 'شهري' ? 'ريال/شهر' : 'ريال'}</small></div>
         </div>`;
       }).join('');
-      return `<section class="catalog-group"><div class="catalog-group-head"><strong>${esc(group.title)}</strong><small>${esc(group.duration)}</small></div>${rows}</section>`;
+      const pricingControl = group.allowStagePricing === false ? '' : `<div class="catalog-pricing-mode">
+        <label>طريقة تسعير المرحلة<select id="catalogMode_${group.id}" onchange="updateCatalogGroupMode('${group.id}')"><option value="items">تسعير كل عنصر</option><option value="stage">تسعير المرحلة كاملة</option></select></label>
+        <label class="catalog-stage-price" id="catalogStagePriceWrap_${group.id}" hidden>سعر المرحلة<input id="catalogStagePrice_${group.id}" type="number" min="0" step="100" value="0" aria-label="سعر ${esc(group.title)}" oninput="updateServiceCatalogTotal()"><small>${group.billing === 'شهري' ? 'ريال/شهر' : 'ريال'}</small></label>
+      </div>`;
+      return `<section class="catalog-group"><div class="catalog-group-head"><strong>${esc(group.title)}</strong><small>${esc(group.duration)}</small></div>${pricingControl}${rows}</section>`;
     }).join('');
+    serviceCatalog.forEach(group => updateCatalogGroupMode(group.id, false));
     updateServiceCatalogTotal();
+  }
+
+  function updateCatalogGroupMode(groupId, refresh=true){
+    const group = serviceCatalog.find(item => item.id === groupId);
+    if (!group) return;
+    const mode = group.allowStagePricing === false ? 'items' : (byId(`catalogMode_${groupId}`)?.value || 'items');
+    const stagePricing = mode === 'stage';
+    const stageWrap = byId(`catalogStagePriceWrap_${groupId}`);
+    if (stageWrap) stageWrap.hidden = !stagePricing;
+    group.items.forEach(item => {
+      const priceInput = byId(`catalogPrice_${item.id}`);
+      const row = byId(`catalogRow_${item.id}`);
+      if (priceInput) priceInput.disabled = stagePricing;
+      if (row) row.classList.toggle('stage-priced', stagePricing);
+    });
+    if (refresh) updateServiceCatalogTotal();
   }
 
   function selectedCatalogServices(){
@@ -1040,15 +1079,36 @@
       groupTitle:group.title,
       duration:group.duration,
       billing:item.billing || group.billing,
+      pricingMode:group.allowStagePricing === false ? 'items' : (byId(`catalogMode_${group.id}`)?.value || 'items'),
       selected:Boolean(byId(`catalogSelect_${item.id}`)?.checked),
       price:Number(byId(`catalogPrice_${item.id}`)?.value || 0)
     }))).filter(item => item.selected);
   }
 
+  function selectedCatalogGroups(items=selectedCatalogServices()){
+    return serviceCatalog.map(group => {
+      const groupItems = items.filter(item => item.groupId === group.id);
+      const pricingMode = group.allowStagePricing === false ? 'items' : (byId(`catalogMode_${group.id}`)?.value || 'items');
+      return {
+        ...group,
+        pricingMode,
+        groupPrice:Number(byId(`catalogStagePrice_${group.id}`)?.value || 0),
+        selectedItems:groupItems
+      };
+    }).filter(group => group.selectedItems.length);
+  }
+
   function catalogServiceTotals(items=selectedCatalogServices()){
-    return items.reduce((totals, item) => {
-      if (item.billing === 'شهري') totals.monthly += item.price;
-      else totals.oneTime += item.price;
+    return selectedCatalogGroups(items).reduce((totals, group) => {
+      if (group.pricingMode === 'stage') {
+        if (group.billing === 'شهري') totals.monthly += group.groupPrice;
+        else totals.oneTime += group.groupPrice;
+        return totals;
+      }
+      group.selectedItems.forEach(item => {
+        if (item.billing === 'شهري') totals.monthly += item.price;
+        else totals.oneTime += item.price;
+      });
       return totals;
     }, {oneTime:0, monthly:0});
   }
@@ -1060,15 +1120,38 @@
     return totals;
   }
 
-  function catalogPricingPage(group, items, pageNum){
-    const oneTime = items.filter(item => item.billing !== 'شهري').reduce((sum,item) => sum + item.price, 0);
-    const monthly = items.filter(item => item.billing === 'شهري').reduce((sum,item) => sum + item.price, 0);
+  function catalogPricingPages(groups, startPage=7){
+    const rows = groups.flatMap(group => {
+      if (group.pricingMode === 'stage') {
+        const included = group.selectedItems.map(item => item.name).join('، ');
+        return [{
+          stage:group.title,
+          service:`<strong>سعر المرحلة كاملة</strong><small style="display:block;color:var(--muted);margin-top:5px">يشمل: ${esc(included)}</small>`,
+          method:'سعر موحّد للمرحلة',
+          billing:group.billing,
+          price:group.groupPrice
+        }];
+      }
+      return group.selectedItems.map(item => ({
+        stage:group.title,
+        service:`${item.section ? `<small style="display:block;color:var(--muted)">${esc(item.section)}</small>` : ''}${esc(item.name)}`,
+        method:'سعر العنصر',
+        billing:item.billing,
+        price:item.price
+      }));
+    });
+    const totals = catalogServiceTotals(groups.flatMap(group => group.selectedItems));
     const vatEnabled = byId('vatEnabled')?.checked;
-    const oneTimeTotal = oneTime + (vatEnabled ? oneTime * .15 : 0);
-    const monthlyTotal = monthly + (vatEnabled ? monthly * .15 : 0);
-    return addPage(`<div class="kicker">تسعير الخدمات المختارة</div><h2 class="title">${esc(group.title)}</h2><p class="subtitle">${esc(group.duration)} — يمكن تعديل كل سعر قبل إصدار العرض النهائي.</p>
-      <table><thead><tr><th>الخدمة</th><th>نوع السعر</th><th>السعر قبل الضريبة</th></tr></thead><tbody>${items.map(item => `<tr><td>${item.section ? `<small style="display:block;color:var(--muted)">${esc(item.section)}</small>` : ''}${esc(item.name)}</td><td>${esc(item.billing)}</td><td>${money(item.price)}</td></tr>`).join('')}</tbody></table>
-      <div class="summary-box">${oneTime > 0 ? `<div class="money"><h3>إجمالي التأسيس قبل الضريبة</h3><strong>${money(oneTime)}</strong></div><div class="money yellow"><h3>إجمالي التأسيس شامل الضريبة</h3><strong>${money(oneTimeTotal)}</strong></div>` : ''}${monthly > 0 ? `<div class="money"><h3>الإجمالي الشهري قبل الضريبة</h3><strong>${money(monthly)}</strong></div><div class="money yellow"><h3>الإجمالي الشهري شامل الضريبة</h3><strong>${money(monthlyTotal)}</strong></div>` : ''}</div>`, pageNum);
+    const oneTimeTotal = totals.oneTime + (vatEnabled ? totals.oneTime * .15 : 0);
+    const monthlyTotal = totals.monthly + (vatEnabled ? totals.monthly * .15 : 0);
+    const chunks = [];
+    for (let i = 0; i < rows.length; i += 8) chunks.push(rows.slice(i, i + 8));
+    return chunks.map((chunk, index) => {
+      const isLast = index === chunks.length - 1;
+      const summary = isLast ? `<div class="summary-box">${totals.oneTime > 0 ? `<div class="money"><h3>التأسيس قبل الضريبة</h3><strong>${money(totals.oneTime)}</strong></div><div class="money yellow"><h3>التأسيس شامل الضريبة</h3><strong>${money(oneTimeTotal)}</strong></div>` : ''}${totals.monthly > 0 ? `<div class="money"><h3>الشهري قبل الضريبة</h3><strong>${money(totals.monthly)}</strong></div><div class="money yellow"><h3>الشهري شامل الضريبة</h3><strong>${money(monthlyTotal)}</strong></div>` : ''}</div>` : '';
+      return addPage(`<div class="kicker">التسعير النهائي</div><h2 class="title">جدول تسعير الخدمات${index ? ' — تابع' : ''}</h2><p class="subtitle">يعرض الجدول سعرًا موحدًا للمرحلة أو سعر كل عنصر، حسب الخيار المحدد في المولد.</p>
+        <table><thead><tr><th>المرحلة</th><th>الخدمة</th><th>طريقة التسعير</th><th>الدورية</th><th>السعر قبل الضريبة</th></tr></thead><tbody>${chunk.map(row => `<tr><td>${esc(row.stage)}</td><td>${row.service}</td><td>${esc(row.method)}</td><td>${esc(row.billing)}</td><td>${money(row.price)}</td></tr>`).join('')}</tbody></table>${summary}`, startPage + index);
+    });
   }
 
   function selected(containerId){
@@ -1256,6 +1339,7 @@
       document.querySelectorAll('#channels input').forEach(input => input.checked = data.selectedChannels.includes(input.value));
     }
     updateAdPercentTotal();
+    serviceCatalog.forEach(group => updateCatalogGroupMode(group.id, false));
     updateServiceCatalogTotal();
     setProposalMode(byId('proposalMode')?.value || 'packages');
   }
@@ -1644,6 +1728,7 @@
     const goal = byId('mainGoal').value;
     const services = selected('services');
     const catalogServices = selectedCatalogServices();
+    const catalogGroups = selectedCatalogGroups(catalogServices);
     const channels = selected('channels');
     if (!validateAdPercentages(channels)) return false;
     const scopeDesc = byId('scopeDesc').value;
@@ -1716,10 +1801,7 @@
     if(pageEnabled('showScope')) pages.push(addPage(`<div class="kicker">نطاق العمل</div><h2 class="title">الخدمات والقنوات المقترحة</h2><p class="subtitle">${esc(scopeDesc)}</p>
       <h3>الخدمات</h3><div class="service-list">${services.map(s => `<div class="pill">${esc(s)}</div>`).join('')}</div><div class="divider"></div><h3>القنوات</h3><div class="channel-list">${channels.map(c => `<span class="channel">${esc(c)}</span>`).join('')}</div>`,6));
 
-    serviceCatalog.forEach((group, index) => {
-      const groupItems = catalogServices.filter(item => item.groupId === group.id);
-      if (groupItems.length) pages.push(catalogPricingPage(group, groupItems, 7 + index));
-    });
+    if (catalogGroups.length) pages.push(...catalogPricingPages(catalogGroups, 7));
 
     if(pageEnabled('showPlans')) pages.push(addPage(`<div class="kicker">اختيار العميل</div><h2 class="title">الخطط التسويقية</h2><p class="subtitle">تم تصميم هذه الخطط للشركات الجادة في بناء نتائج تسويقية قابلة للقياس، مع مساحة كافية لاختبار الرسائل، قراءة البيانات، وتحسين الأداء بشكل مستمر.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>${extraServices.map(service => `<div class="note" style="margin-top:20px"><strong>${esc(service.name)}</strong>${service.desc ? `<br>${esc(service.desc)}` : ''}</div>`).join('')}`,7));
 
@@ -1790,8 +1872,12 @@
     const o1ContractTotal = o1.total * months + setupTotal;
     const o2ContractTotal = o2.total * months + setupTotal;
     const catalogItems = selectedCatalogServices();
+    const catalogGroups = selectedCatalogGroups(catalogItems);
     const catalogTotals = catalogServiceTotals(catalogItems);
-    const catalogText = catalogItems.length ? `\n\nخدمات إطلاق العلامة المختارة:\n${catalogItems.map(item => `- ${item.name}: ${money(item.price)} (${item.billing})`).join('\n')}\nإجمالي التأسيس: ${money(catalogTotals.oneTime)}\nالإجمالي الشهري: ${money(catalogTotals.monthly)}` : '';
+    const catalogRows = catalogGroups.flatMap(group => group.pricingMode === 'stage'
+      ? [`- ${group.title}: ${money(group.groupPrice)} (${group.billing}) — سعر المرحلة كاملة`]
+      : group.selectedItems.map(item => `- ${item.name}: ${money(item.price)} (${item.billing})`));
+    const catalogText = catalogRows.length ? `\n\nخدمات إطلاق العلامة المختارة:\n${catalogRows.join('\n')}\nإجمالي التأسيس: ${money(catalogTotals.oneTime)}\nالإجمالي الشهري: ${money(catalogTotals.monthly)}` : '';
     const txt = `عرض تسويقي مقدم إلى ${client}
 مدة التعاقد المقترحة: ${duration}
 
