@@ -697,9 +697,16 @@
             <input id="scopePdfInput" type="file" accept="application/pdf,.pdf" hidden onchange="importScopePdf(event)">
             <div class="scope-file-status" id="scopePdfStatus" aria-live="polite">تتم قراءة الملف داخل متصفحك، ولا يتم رفعه إلى أي خادم.</div>
           </div>
-          <button class="btn btn-primary btn-block" type="button" onclick="generateFromScope()">تحويل النطاق إلى عرض</button>
+          <button class="btn btn-primary btn-block" type="button" onclick="generateFromScope()">تلخيص النطاق وتحويله إلى عرض</button>
           <div class="field"><label>اسم المشروع</label><input class="input" id="scopeProjectTitle" value="مشروع التسويق والإنتاج الإبداعي"></div>
-          <div class="field"><label>ملخص المشروع</label><textarea id="scopeSummary" placeholder="ملخص واضح لما سيقدمه المشروع ولماذا"></textarea></div>
+          <div class="field">
+            <label>ملخص المشروع</label>
+            <textarea id="scopeSummary" placeholder="ملخص واضح ومختصر لما سيقدمه المشروع ولماذا"></textarea>
+            <div class="quick-row">
+              <button class="quick" type="button" onclick="enhanceScopeSummary()">تحسين صياغة الملخص</button>
+            </div>
+            <p class="micro">يظهر هنا ملخص من فقرة قصيرة فقط، بينما تبقى التفاصيل موزعة على المخرجات والجدول الزمني وبقية الأقسام.</p>
+          </div>
           <div class="field"><label>المخرجات المتفق عليها — مخرج في كل سطر</label><textarea id="scopeDeliverables" placeholder="إعداد الاستراتيجية\nإنتاج 8 فيديوهات قصيرة\nتصميم 12 منشورًا"></textarea></div>
           <div class="field"><label>الجدول الزمني والمراحل — مرحلة في كل سطر</label><textarea id="scopeTimeline" placeholder="الأسبوع 1: التأسيس والتخطيط\nالأسبوع 2-5: الإنتاج والتنفيذ\nالأسبوع 6: التسليم والتقرير"></textarea></div>
           <div class="field"><label>مسؤوليات العميل — بند في كل سطر</label><textarea id="scopeClientResponsibilities" placeholder="اعتماد المحتوى خلال يومي عمل\nتوفير المواد والبيانات المطلوبة"></textarea></div>
@@ -1273,6 +1280,79 @@
     }
   }
 
+  function cleanScopePhrase(value){
+    return String(value || '')
+      .replace(/^\s*(?:[-•*–—]|\d+[.)-])\s*/, '')
+      .replace(/^\s*(?:الهدف|ملخص|نبذة|نظرة عامة|overview|objective|summary)\s*[:：-]?\s*/i, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function isScopeNoise(value){
+    const line = cleanScopePhrase(value);
+    if (!line || line.length < 12) return true;
+    if (/^(?:نطاق العمل|scope of work|عرض فني|عرض مالي|المحتويات|الفهرس|تم إعداده|prepared (?:by|for)|تاريخ|date)(?:\s|[:：-]|$)/i.test(line)) return true;
+    if (/^(?:قيمة المشروع|السعر|الضريبة|شروط الدفع|الدفعات|مدة المشروع|الجدول الزمني|مسؤوليات العميل|خارج النطاق)(?:\s|[:：-]|$)/i.test(line)) return true;
+    if (/^(?:https?:\/\/|www\.|\S+@\S+\.\S+)/i.test(line)) return true;
+    const letters = (line.match(/[A-Za-z\u0600-\u06FF]/g) || []).length;
+    return letters < Math.max(8, line.length * .35);
+  }
+
+  function uniqueScopePhrases(values){
+    const seen = new Set();
+    return values.map(cleanScopePhrase).filter(value => {
+      if (isScopeNoise(value)) return false;
+      const key = value.toLowerCase().replace(/[^A-Za-z\u0600-\u06FF0-9]/g, '');
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  function splitScopeSentences(values){
+    return uniqueScopePhrases(values)
+      .flatMap(value => value.split(/(?<=[.!؟])\s+|\s*[؛;]\s*/))
+      .map(cleanScopePhrase)
+      .filter(value => value.length >= 18 && !isScopeNoise(value));
+  }
+
+  function conciseScopeSummary(summaryLines=[], deliverables=[]){
+    const sentences = splitScopeSentences(summaryLines);
+    const selected = [];
+    let characters = 0;
+
+    for (const sentence of sentences) {
+      if (selected.length >= 3) break;
+      const trimmed = sentence.length > 230 ? `${sentence.slice(0, 227).trim()}…` : sentence;
+      if (characters + trimmed.length > 430 && selected.length) break;
+      selected.push(trimmed);
+      characters += trimmed.length;
+    }
+
+    if (selected.length) {
+      return selected.map(sentence => /[.!؟…]$/.test(sentence) ? sentence : `${sentence}.`).join(' ');
+    }
+
+    const outputs = uniqueScopePhrases(deliverables).slice(0, 3);
+    if (outputs.length) {
+      const title = (byId('scopeProjectTitle')?.value || 'المشروع').trim();
+      return `يهدف ${title} إلى تنفيذ نطاق العمل المتفق عليه، ويشمل ${outputs.join('، ')}. تُنفذ الأعمال وفق الجدول المعتمد وبما يدعم أهداف العميل.`;
+    }
+
+    return 'يهدف المشروع إلى تنفيذ نطاق العمل المتفق عليه بمخرجات واضحة وجدول زمني محدد، بما يحقق أهداف العميل ويضمن جودة التنفيذ.';
+  }
+
+  function enhanceScopeSummary(){
+    const current = String(byId('scopeSummary')?.value || '').trim();
+    const rawCandidates = String(byId('rawScope')?.value || '').split(/\n+/);
+    const deliverables = scopeLines('scopeDeliverables');
+    const source = current ? [current] : rawCandidates;
+    const improved = conciseScopeSummary(source, deliverables);
+    byId('scopeSummary').value = improved;
+    if (!byId('mainGoal').value.trim() || byId('mainGoal').value.length > 500) byId('mainGoal').value = improved;
+    renderProposal();
+  }
+
   function generateFromScope(){
     const raw = String(byId('rawScope').value || '').trim();
     if (!raw) {
@@ -1318,15 +1398,15 @@
       else buckets.summary.push(line);
     });
 
-    if (buckets.summary.length) {
-      byId('scopeSummary').value = buckets.summary.join('\n');
-      byId('mainGoal').value = buckets.summary[0];
-    }
     if (buckets.deliverables.length) byId('scopeDeliverables').value = buckets.deliverables.join('\n');
     if (buckets.timeline.length) byId('scopeTimeline').value = buckets.timeline.join('\n');
     if (buckets.responsibilities.length) byId('scopeClientResponsibilities').value = buckets.responsibilities.join('\n');
     if (buckets.exclusions.length) byId('scopeExclusions').value = buckets.exclusions.join('\n');
     if (buckets.payment.length) byId('scopePaymentSchedule').value = buckets.payment.join('\n');
+    const summarySource = buckets.summary.length ? buckets.summary : raw.split(/\n+/);
+    const summary = conciseScopeSummary(summarySource, buckets.deliverables);
+    byId('scopeSummary').value = summary;
+    byId('mainGoal').value = summary;
     renderProposal();
   }
 
@@ -1336,7 +1416,7 @@
     const duration = byId('duration').value || 'حسب الجدول المتفق عليه';
     const goal = byId('mainGoal').value;
     const projectTitle = byId('scopeProjectTitle').value || 'المشروع المتفق عليه';
-    const summary = byId('scopeSummary').value || byId('rawScope').value || goal;
+    const summary = byId('scopeSummary').value || conciseScopeSummary(String(byId('rawScope').value || '').split(/\n+/), scopeLines('scopeDeliverables')) || goal;
     const deliverables = scopeLines('scopeDeliverables');
     const timeline = scopeLines('scopeTimeline');
     const responsibilities = scopeLines('scopeClientResponsibilities');
