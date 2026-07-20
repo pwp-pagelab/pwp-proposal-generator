@@ -1247,7 +1247,8 @@
           service:`<strong>سعر المرحلة كاملة</strong><small style="display:block;color:var(--muted);margin-top:5px">يشمل: ${esc(included)}</small>`,
           method:'سعر موحّد للمرحلة',
           billing:group.billing,
-          price:group.groupPrice
+          price:group.groupPrice,
+          weight:Math.max(1, Math.ceil(group.selectedItems.length / 3))
         }];
       }
       if (group.pricingMode === 'bundles') {
@@ -1256,7 +1257,8 @@
           service:`<strong>${esc(bundle.name)}</strong><small style="display:block;color:var(--muted);margin-top:5px">يشمل: ${esc(bundle.selectedItems.map(item => item.name).join('، '))}</small>`,
           method:'سعر مجموعة',
           billing:bundle.billing,
-          price:bundle.price
+          price:bundle.price,
+          weight:Math.max(1, Math.ceil(bundle.selectedItems.length / 3))
         }));
       }
       return group.selectedItems.map(item => ({
@@ -1264,7 +1266,8 @@
         service:`${item.section ? `<small style="display:block;color:var(--muted)">${esc(item.section)}</small>` : ''}${esc(item.name)}`,
         method:'سعر العنصر',
         billing:item.billing,
-        price:item.price
+        price:item.price,
+        weight:1
       }));
     });
     const totals = catalogServiceTotals(groups.flatMap(group => group.selectedItems));
@@ -1272,7 +1275,19 @@
     const oneTimeTotal = totals.oneTime + (vatEnabled ? totals.oneTime * .15 : 0);
     const monthlyTotal = totals.monthly + (vatEnabled ? totals.monthly * .15 : 0);
     const chunks = [];
-    for (let i = 0; i < rows.length; i += 8) chunks.push(rows.slice(i, i + 8));
+    let currentChunk = [];
+    let currentWeight = 0;
+    rows.forEach(row => {
+      const weight = row.weight || 1;
+      if (currentChunk.length && currentWeight + weight > 7) {
+        chunks.push(currentChunk);
+        currentChunk = [];
+        currentWeight = 0;
+      }
+      currentChunk.push(row);
+      currentWeight += weight;
+    });
+    if (currentChunk.length) chunks.push(currentChunk);
     return chunks.map((chunk, index) => {
       const isLast = index === chunks.length - 1;
       const summary = isLast ? `<div class="summary-box">${totals.oneTime > 0 ? `<div class="money"><h3>التأسيس قبل الضريبة</h3><strong>${money(totals.oneTime)}</strong></div><div class="money yellow"><h3>التأسيس شامل الضريبة</h3><strong>${money(oneTimeTotal)}</strong></div>` : ''}${totals.monthly > 0 ? `<div class="money"><h3>الشهري قبل الضريبة</h3><strong>${money(totals.monthly)}</strong></div><div class="money yellow"><h3>الشهري شامل الضريبة</h3><strong>${money(monthlyTotal)}</strong></div>` : ''}</div>` : '';
