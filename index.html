@@ -170,7 +170,8 @@
     .catalog-pricing-mode select,.catalog-pricing-mode input{padding:9px 10px;border-radius:12px;background:white}
     .catalog-stage-price{position:relative}
     .catalog-stage-price small{position:absolute;left:9px;bottom:10px;color:var(--muted);font-size:10px;pointer-events:none}
-    .catalog-item.stage-priced .catalog-price{opacity:.38}
+    .catalog-item.stage-priced{grid-template-columns:minmax(0,1fr) 70px}
+    .catalog-item.stage-priced .catalog-price,.catalog-item.stage-priced .catalog-included{display:none}
     .catalog-bundle-controls{
       display:grid;
       gap:8px;
@@ -184,8 +185,8 @@
     .catalog-bundle-row input,.catalog-bundle-row select{padding:8px 9px;border-radius:11px;background:white}
     .catalog-bundle-select select{width:100%;padding:9px 8px;border:1px solid var(--line);border-radius:12px;background:white;font:inherit;font-size:12px;color:var(--ink)}
     .catalog-bundle-select{display:none}
-    .catalog-item.bundle-priced{grid-template-columns:minmax(0,1fr) 112px}
-    .catalog-item.bundle-priced .catalog-price{display:none}
+    .catalog-item.bundle-priced{grid-template-columns:minmax(0,1fr) 70px 112px}
+    .catalog-item.bundle-priced .catalog-price,.catalog-item.bundle-priced .catalog-included{display:none}
     .catalog-item.bundle-priced .catalog-bundle-select{display:block}
     .catalog-subsection{
       padding:10px 14px 4px;
@@ -195,7 +196,7 @@
     }
     .catalog-item{
       display:grid;
-      grid-template-columns:minmax(0,1fr) 112px;
+      grid-template-columns:minmax(0,1fr) 70px 94px 112px;
       gap:10px;
       align-items:center;
       padding:10px 14px;
@@ -203,6 +204,11 @@
     }
     .catalog-choice{display:flex;align-items:flex-start;gap:8px;margin:0;color:var(--ink);font-weight:600;line-height:1.35;cursor:pointer}
     .catalog-choice input{margin-top:3px;accent-color:var(--green)}
+    .catalog-qty label{margin:0;font-size:10px;color:var(--muted)}
+    .catalog-qty input{width:100%;padding:8px;border:1px solid var(--line);border-radius:11px;background:white;font:inherit;color:var(--ink);text-align:center}
+    .catalog-included{display:flex;align-items:center;justify-content:center;gap:5px;margin:0;padding:8px 6px;border:1px solid var(--line);border-radius:11px;background:white;color:var(--green);font-size:11px;cursor:pointer}
+    .catalog-included input{accent-color:var(--green)}
+    .catalog-item.included-priced .catalog-price{opacity:.4}
     .catalog-price{position:relative}
     .catalog-price input{width:100%;padding:9px 10px 9px 38px;border:1px solid var(--line);border-radius:12px;background:white;font:inherit;color:var(--ink)}
     .catalog-price small{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:10px;pointer-events:none}
@@ -805,10 +811,10 @@
             </div>
             <p class="micro">يظهر هنا ملخص من فقرة قصيرة فقط، بينما تبقى التفاصيل موزعة على المخرجات والجدول الزمني وبقية الأقسام.</p>
           </div>
-          <div class="field"><label>المخرجات المتفق عليها — مخرج في كل سطر</label><textarea id="scopeDeliverables" placeholder="إعداد الاستراتيجية\nإنتاج 8 فيديوهات قصيرة\nتصميم 12 منشورًا"></textarea></div>
-          <div class="field"><label>الجدول الزمني والمراحل — مرحلة في كل سطر</label><textarea id="scopeTimeline" placeholder="الأسبوع 1: التأسيس والتخطيط\nالأسبوع 2-5: الإنتاج والتنفيذ\nالأسبوع 6: التسليم والتقرير"></textarea></div>
-          <div class="field"><label>مسؤوليات العميل — بند في كل سطر</label><textarea id="scopeClientResponsibilities" placeholder="اعتماد المحتوى خلال يومي عمل\nتوفير المواد والبيانات المطلوبة"></textarea></div>
-          <div class="field"><label>خارج نطاق العمل — بند في كل سطر</label><textarea id="scopeExclusions" placeholder="تكاليف الإعلانات المدفوعة\nالتصوير خارج مدينة الرياض"></textarea></div>
+          <div class="field"><label>المخرجات المتفق عليها - مخرج في كل سطر</label><textarea id="scopeDeliverables" placeholder="إعداد الاستراتيجية\nإنتاج 8 فيديوهات قصيرة\nتصميم 12 منشورًا"></textarea></div>
+          <div class="field"><label>الجدول الزمني والمراحل - مرحلة في كل سطر</label><textarea id="scopeTimeline" placeholder="الأسبوع 1: التأسيس والتخطيط\nالأسبوع 2-5: الإنتاج والتنفيذ\nالأسبوع 6: التسليم والتقرير"></textarea></div>
+          <div class="field"><label>مسؤوليات العميل - بند في كل سطر</label><textarea id="scopeClientResponsibilities" placeholder="اعتماد المحتوى خلال يومي عمل\nتوفير المواد والبيانات المطلوبة"></textarea></div>
+          <div class="field"><label>خارج نطاق العمل - بند في كل سطر</label><textarea id="scopeExclusions" placeholder="تكاليف الإعلانات المدفوعة\nالتصوير خارج مدينة الرياض"></textarea></div>
           <div class="two">
             <div class="field"><label>قيمة المشروع قبل الضريبة</label><input class="input" id="scopeProjectFee" type="number" value="0"></div>
             <div class="field"><label>صلاحية العرض</label><input class="input" id="scopeValidity" value="7 أيام"></div>
@@ -852,7 +858,7 @@
             <div class="quick-row"><button class="quick" type="button" onclick="selectFullLaunchScope()">تحديد النطاق كاملًا</button><button class="quick" type="button" onclick="clearServiceCatalog()">إلغاء التحديد</button></div>
           </div>
           <div class="field">
-            <label>خدمات إطلاق العلامة — اختاري الخدمة وحددي سعرها</label>
+            <label>خدمات إطلاق العلامة - اختاري الخدمة وحددي سعرها</label>
             <p class="micro">التقسيم مطابق لملف نطاق العمل: الهوية، المتجر والمحتوى، التسويق بالأداء، ثم الخدمات الإضافية.</p>
             <div id="serviceCatalog" class="service-catalog"></div>
             <div class="catalog-totals">
@@ -1028,7 +1034,7 @@
   const serviceCatalog = [
     {
       id:'brand',
-      title:'المرحلة الأولى — الهوية والعلامة التجارية',
+      title:'المرحلة الأولى - الهوية والعلامة التجارية',
       duration:'المدة التقديرية: ٢–٣ أسابيع',
       billing:'مرة واحدة',
       items:[
@@ -1041,7 +1047,7 @@
     },
     {
       id:'storeContent',
-      title:'المرحلة الثانية — المحتوى وإعداد المتجر',
+      title:'المرحلة الثانية - المحتوى وإعداد المتجر',
       duration:'المدة التقديرية: ٢–٣ أسابيع',
       billing:'مرة واحدة',
       items:[
@@ -1058,7 +1064,7 @@
     },
     {
       id:'performance',
-      title:'المرحلة الثالثة — التسويق بالأداء (Performance Marketing)',
+      title:'المرحلة الثالثة - التسويق بالأداء (Performance Marketing)',
       duration:'المدة: مستمرة',
       billing:'شهري',
       items:[
@@ -1111,6 +1117,8 @@
         const billing = item.billing || group.billing;
         return `${section}<div class="catalog-item" id="catalogRow_${item.id}">
           <label class="catalog-choice"><input id="catalogSelect_${item.id}" type="checkbox" onchange="updateServiceCatalogTotal()"><span>${esc(item.name)}</span></label>
+          <div class="catalog-qty"><label>العدد<input id="catalogQty_${item.id}" type="number" min="1" step="1" value="1" aria-label="عدد ${esc(item.name)}" oninput="updateServiceCatalogTotal()"></label></div>
+          <label class="catalog-included"><input id="catalogIncluded_${item.id}" type="checkbox" onchange="updateCatalogItemPricing('${item.id}')"> مشمول في العرض</label>
           <div class="catalog-price"><input id="catalogPrice_${item.id}" type="number" min="0" step="100" value="0" aria-label="سعر ${esc(item.name)}" oninput="updateServiceCatalogTotal()"><small>${billing === 'شهري' ? 'ريال/شهر' : 'ريال'}</small></div>
           <div class="catalog-bundle-select"><select id="catalogBundle_${item.id}" aria-label="مجموعة ${esc(item.name)}" onchange="updateServiceCatalogTotal()"><option value="1">المجموعة 1</option><option value="2">المجموعة 2</option><option value="3">المجموعة 3</option></select></div>
         </div>`;
@@ -1127,8 +1135,22 @@
       </div>`).join('')}</div>`;
       return `<section class="catalog-group"><div class="catalog-group-head"><strong>${esc(group.title)}</strong><small>${esc(group.duration)}</small></div>${pricingControl}${bundleControls}${rows}</section>`;
     }).join('');
-    serviceCatalog.forEach(group => updateCatalogGroupMode(group.id, false));
+    serviceCatalog.forEach(group => {
+      updateCatalogGroupMode(group.id, false);
+      group.items.forEach(item => updateCatalogItemPricing(item.id, false));
+    });
     updateServiceCatalogTotal();
+  }
+
+  function updateCatalogItemPricing(itemId, refresh=true){
+    const itemGroup = serviceCatalog.find(group => group.items.some(item => item.id === itemId));
+    const mode = itemGroup ? (byId(`catalogMode_${itemGroup.id}`)?.value || 'items') : 'items';
+    const included = Boolean(byId(`catalogIncluded_${itemId}`)?.checked);
+    const priceInput = byId(`catalogPrice_${itemId}`);
+    const row = byId(`catalogRow_${itemId}`);
+    if (priceInput) priceInput.disabled = included || mode !== 'items';
+    if (row) row.classList.toggle('included-priced', included);
+    if (refresh) updateServiceCatalogTotal();
   }
 
   function updateCatalogGroupMode(groupId, refresh=true){
@@ -1141,14 +1163,20 @@
     if (stageWrap) stageWrap.hidden = !stagePricing;
     const bundleControls = byId(`catalogBundleControls_${groupId}`);
     if (bundleControls) bundleControls.hidden = !bundlePricing;
+    const hasSelectedItems = group.items.some(item => byId(`catalogSelect_${item.id}`)?.checked);
+    if (stagePricing && !hasSelectedItems) {
+      group.items.forEach(item => {
+        const checkbox = byId(`catalogSelect_${item.id}`);
+        if (checkbox) checkbox.checked = true;
+      });
+    }
     group.items.forEach(item => {
-      const priceInput = byId(`catalogPrice_${item.id}`);
       const row = byId(`catalogRow_${item.id}`);
-      if (priceInput) priceInput.disabled = stagePricing || bundlePricing;
       if (row) {
         row.classList.toggle('stage-priced', stagePricing);
         row.classList.toggle('bundle-priced', bundlePricing);
       }
+      updateCatalogItemPricing(item.id, false);
     });
     if (refresh) updateServiceCatalogTotal();
   }
@@ -1165,6 +1193,8 @@
       pricingMode:byId(`catalogMode_${group.id}`)?.value || 'items',
       bundleId:byId(`catalogBundle_${item.id}`)?.value || '1',
       selected:Boolean(byId(`catalogSelect_${item.id}`)?.checked),
+      quantity:Math.max(1, Number(byId(`catalogQty_${item.id}`)?.value || 1)),
+      included:Boolean(byId(`catalogIncluded_${item.id}`)?.checked),
       price:Number(byId(`catalogPrice_${item.id}`)?.value || 0)
     }))).filter(item => item.selected);
   }
@@ -1205,8 +1235,9 @@
         return totals;
       }
       group.selectedItems.forEach(item => {
-        if (item.billing === 'شهري') totals.monthly += item.price;
-        else totals.oneTime += item.price;
+        const itemTotal = item.included ? 0 : item.price * item.quantity;
+        if (item.billing === 'شهري') totals.monthly += itemTotal;
+        else totals.oneTime += itemTotal;
       });
       return totals;
     }, {oneTime:0, monthly:0});
@@ -1237,36 +1268,43 @@
     renderProposal();
   }
 
+  function catalogItemLabel(item){
+    return `${item.name}${Number(item.quantity || 1) > 1 ? ` (العدد: ${item.quantity})` : ''}`;
+  }
+
   function catalogPricingPages(groups, startPage=7, options={}){
     const pendingLabel = options.pendingLabel || 'حسب الاتفاق';
     const rows = groups.flatMap(group => {
       if (group.pricingMode === 'stage') {
-        const included = group.selectedItems.map(item => item.name).join('، ');
+        const included = group.selectedItems.map(catalogItemLabel).join('، ');
         return [{
           stage:group.title,
           service:`<strong>سعر المرحلة كاملة</strong><small style="display:block;color:var(--muted);margin-top:5px">يشمل: ${esc(included)}</small>`,
           method:'سعر موحّد للمرحلة',
           billing:group.billing,
           price:group.groupPrice,
+          included:false,
           weight:Math.max(1, Math.ceil(group.selectedItems.length / 3))
         }];
       }
       if (group.pricingMode === 'bundles') {
         return group.bundles.map(bundle => ({
           stage:group.title,
-          service:`<strong>${esc(bundle.name)}</strong><small style="display:block;color:var(--muted);margin-top:5px">يشمل: ${esc(bundle.selectedItems.map(item => item.name).join('، '))}</small>`,
+          service:`<strong>${esc(bundle.name)}</strong><small style="display:block;color:var(--muted);margin-top:5px">يشمل: ${esc(bundle.selectedItems.map(catalogItemLabel).join('، '))}</small>`,
           method:'سعر مجموعة',
           billing:bundle.billing,
           price:bundle.price,
+          included:false,
           weight:Math.max(1, Math.ceil(bundle.selectedItems.length / 3))
         }));
       }
       return group.selectedItems.map(item => ({
         stage:group.title,
-        service:`${item.section ? `<small style="display:block;color:var(--muted)">${esc(item.section)}</small>` : ''}${esc(item.name)}`,
-        method:'سعر العنصر',
+        service:`${item.section ? `<small style="display:block;color:var(--muted)">${esc(item.section)}</small>` : ''}${esc(item.name)}${item.quantity > 1 ? `<small style="display:block;color:var(--muted);margin-top:4px">الكمية: ${item.quantity}</small>` : ''}`,
+        method:item.included ? 'مشمول في العرض' : (item.quantity > 1 ? 'سعر الوحدة × الكمية' : 'سعر العنصر'),
         billing:item.billing,
-        price:item.price,
+        price:item.included ? 0 : item.price * item.quantity,
+        included:item.included,
         weight:1
       }));
     });
@@ -1291,8 +1329,8 @@
     return chunks.map((chunk, index) => {
       const isLast = index === chunks.length - 1;
       const summary = isLast ? `<div class="summary-box">${totals.oneTime > 0 ? `<div class="money"><h3>التأسيس قبل الضريبة</h3><strong>${money(totals.oneTime)}</strong></div><div class="money yellow"><h3>التأسيس شامل الضريبة</h3><strong>${money(oneTimeTotal)}</strong></div>` : ''}${totals.monthly > 0 ? `<div class="money"><h3>الشهري قبل الضريبة</h3><strong>${money(totals.monthly)}</strong></div><div class="money yellow"><h3>الشهري شامل الضريبة</h3><strong>${money(monthlyTotal)}</strong></div>` : ''}</div>` : '';
-      return addPage(`<div class="kicker">${esc(options.kicker || 'التسعير النهائي')}</div><h2 class="title">${esc(options.title || 'جدول تسعير الخدمات')}${index ? ' — تابع' : ''}</h2><p class="subtitle">${esc(options.description || 'يعرض الجدول سعرًا موحدًا للمرحلة أو سعر كل عنصر، حسب الخيار المحدد في المولد.')}</p>
-        <table><thead><tr><th>المرحلة</th><th>الخدمة</th><th>طريقة التسعير</th><th>الدورية</th><th>السعر قبل الضريبة</th></tr></thead><tbody>${chunk.map(row => `<tr><td>${esc(row.stage)}</td><td>${row.service}</td><td>${esc(row.method)}</td><td>${esc(row.billing)}</td><td>${row.price > 0 ? money(row.price) : esc(pendingLabel)}</td></tr>`).join('')}</tbody></table>${summary}`, startPage + index);
+      return addPage(`<div class="kicker">${esc(options.kicker || 'التسعير النهائي')}</div><h2 class="title">${esc(options.title || 'جدول تسعير الخدمات')}${index ? ' - تابع' : ''}</h2><p class="subtitle">${esc(options.description || 'جدول تسعير الخدمات المتفق عليها في نطاق العمل')}</p>
+        <table><thead><tr><th>المرحلة</th><th>الخدمة</th><th>طريقة التسعير</th><th>الدورية</th><th>الإجمالي قبل الضريبة</th></tr></thead><tbody>${chunk.map(row => `<tr><td>${esc(row.stage)}</td><td>${row.service}</td><td>${esc(row.method)}</td><td>${esc(row.billing)}</td><td>${row.included ? 'مشمول في العرض' : (row.price > 0 ? money(row.price) : esc(pendingLabel))}</td></tr>`).join('')}</tbody></table>${summary}`, startPage + index);
     });
   }
 
@@ -1532,7 +1570,7 @@
   function scopeLines(id){
     return String(byId(id)?.value || '')
       .split(/\n+/)
-      .map(line => line.replace(/^\s*(?:[-•*–—]|\d+[.)-])\s*/, '').trim())
+      .map(line => line.replace(/^\s*(?:[-•*–]|\d+[.)-])\s*/, '').trim())
       .filter(Boolean);
   }
 
@@ -1547,7 +1585,7 @@
   }
 
   function scopeStageCards(groups){
-    return groups.map(group => `<div class="scope-stage-card"><h3>${esc(group.title)}</h3><small>${esc(group.duration)}</small><ul>${group.selectedItems.map(item => `<li>${esc(item.name)}</li>`).join('')}</ul></div>`).join('');
+    return groups.map(group => `<div class="scope-stage-card"><h3>${esc(group.title)}</h3><small>${esc(group.duration)}</small><ul>${group.selectedItems.map(item => `<li>${esc(catalogItemLabel(item))}${item.included ? ' <strong>(مشمول في العرض)</strong>' : ''}</li>`).join('')}</ul></div>`).join('');
   }
 
   function scopeQualityWarnings({client, deliverables, timeline, responsibilities, exclusions, catalogGroups, pricingStyle, fee}){
@@ -1562,7 +1600,7 @@
     const unpriced = catalogGroups.flatMap(group => {
       if (group.pricingMode === 'stage') return group.groupPrice > 0 ? [] : [group.title];
       if (group.pricingMode === 'bundles') return group.bundles.filter(bundle => bundle.price <= 0).map(bundle => `${group.title}: ${bundle.name}`);
-      return group.selectedItems.filter(item => item.price <= 0).map(item => item.name);
+      return group.selectedItems.filter(item => !item.included && item.price <= 0).map(item => item.name);
     });
     if (pricingStyle === 'catalog' && unpriced.length) warnings.push(`يوجد ${unpriced.length} بندًا بلا سعر؛ سيظهر بالنص البديل بدل 0 ريال.`);
     return warnings;
@@ -1623,7 +1661,7 @@
       logger: message => {
         if (message.status === 'recognizing text') {
           const progress = Math.max(1, Math.round((message.progress || 0) * 100));
-          setStatus(`النص الأصلي غير واضح. جارٍ التعرف البصري على الصفحة ${currentPage} من ${pdf.numPages} — ${progress}%`);
+          setStatus(`النص الأصلي غير واضح. جارٍ التعرف البصري على الصفحة ${currentPage} من ${pdf.numPages} - ${progress}%`);
         }
       }
     });
@@ -1714,7 +1752,7 @@
 
   function cleanScopePhrase(value){
     return String(value || '')
-      .replace(/^\s*(?:[-•*–—]|\d+[.)-])\s*/, '')
+      .replace(/^\s*(?:[-•*–]|\d+[.)-])\s*/, '')
       .replace(/^\s*(?:الهدف|ملخص|نبذة|نظرة عامة|overview|objective|summary)\s*[:：-]?\s*/i, '')
       .replace(/\s+/g, ' ')
       .trim();
@@ -1804,7 +1842,7 @@
     ];
 
     raw.split(/\n+/).map(line => line.trim()).filter(Boolean).forEach((original, index) => {
-      const line = original.replace(/^\s*(?:[-•*–—]|\d+[.)-])\s*/, '').trim();
+      const line = original.replace(/^\s*(?:[-•*–]|\d+[.)-])\s*/, '').trim();
       const match = headingMap.find(([pattern]) => pattern.test(line));
       if (match) {
         active = match[1];
@@ -1825,7 +1863,7 @@
       }
 
       if (active) buckets[active].push(line);
-      else if (/^[-•*–—\d]/.test(original)) buckets.deliverables.push(line);
+      else if (/^[-•*–\d]/.test(original)) buckets.deliverables.push(line);
       else if (index === 0 && line.length < 90) byId('scopeProjectTitle').value = line;
       else buckets.summary.push(line);
     });
@@ -1889,8 +1927,8 @@
 
     if (scopeSectionEnabled('scopeShowDeliverables')) {
       if (catalogGroups.length) {
-        catalogGroups.forEach((group, index) => nextPage(`<div class="kicker">نطاق العمل${index ? ' — تابع' : ''}</div><h2 class="title">${esc(group.title)}</h2><p class="subtitle">${esc(group.duration)}. تشمل هذه المرحلة الخدمات الموضحة أدناه وفق الاعتمادات والمواعيد المتفق عليها.</p>${scopeStageCards([group])}`));
-        if (deliverables.length) nextPage(`<div class="kicker">نطاق العمل — تفاصيل إضافية</div><h2 class="title">مخرجات أو متطلبات إضافية</h2><p class="subtitle">بنود إضافية مستخرجة من نطاق العمل وتحتاج إلى مراجعة قبل اعتماد العرض.</p>${scopeList(deliverables)}`);
+        catalogGroups.forEach((group, index) => nextPage(`<div class="kicker">نطاق العمل${index ? ' - تابع' : ''}</div><h2 class="title">${esc(group.title)}</h2><p class="subtitle">${esc(group.duration)}. تشمل هذه المرحلة الخدمات الموضحة أدناه وفق الاعتمادات والمواعيد المتفق عليها.</p>${scopeStageCards([group])}`));
+        if (deliverables.length) nextPage(`<div class="kicker">نطاق العمل - تفاصيل إضافية</div><h2 class="title">مخرجات أو متطلبات إضافية</h2><p class="subtitle">بنود إضافية مستخرجة من نطاق العمل وتحتاج إلى مراجعة قبل اعتماد العرض.</p>${scopeList(deliverables)}`);
       } else {
         nextPage(`<div class="kicker">نطاق العمل</div><h2 class="title">المخرجات المتفق عليها</h2><p class="subtitle">تشمل قيمة المشروع وتنفيذه البنود التالية فقط، وفق الاعتمادات والمواعيد الموضحة في هذا العرض.</p>${scopeList(deliverables)}`);
       }
@@ -1912,7 +1950,7 @@
         pendingLabel:pendingPriceLabel,
         kicker:'الاستثمار',
         title:'جدول الأسعار حسب نطاق العمل',
-        description:'يرتبط كل سعر مباشرة بالمرحلة والمخرجات المشمولة، لتكون الموافقة المالية واضحة وسهلة.'
+        description:'جدول تسعير الخدمات المتفق عليها في نطاق العمل'
       }));
       nextPage(`<div class="kicker">الشروط المالية</div><h2 class="title">الدفعات وصلاحية العرض</h2><div class="grid-2"><div class="info yellow"><h3>جدول الدفعات</h3><p>${esc(payment)}</p></div><div class="info"><h3>صلاحية العرض</h3><p>${esc(validity)}</p></div></div><div class="note" style="margin-top:24px"><strong>طلبات التغيير:</strong> ${esc(changeTerms)}</div>`);
     } else if (scopeSectionEnabled('scopeShowPricing') && pricingStyle === 'total') {
@@ -2092,9 +2130,9 @@
     const catalogGroups = selectedCatalogGroups(catalogItems);
     const catalogTotals = catalogServiceTotals(catalogItems);
     const catalogRows = catalogGroups.flatMap(group => {
-      if (group.pricingMode === 'stage') return [`- ${group.title}: ${money(group.groupPrice)} (${group.billing}) — سعر المرحلة كاملة`];
-      if (group.pricingMode === 'bundles') return group.bundles.map(bundle => `- ${bundle.name}: ${money(bundle.price)} (${bundle.billing}) — يشمل ${bundle.selectedItems.map(item => item.name).join('، ')}`);
-      return group.selectedItems.map(item => `- ${item.name}: ${money(item.price)} (${item.billing})`);
+      if (group.pricingMode === 'stage') return [`- ${group.title}: ${money(group.groupPrice)} (${group.billing}) - سعر المرحلة كاملة`];
+      if (group.pricingMode === 'bundles') return group.bundles.map(bundle => `- ${bundle.name}: ${money(bundle.price)} (${bundle.billing}) - يشمل ${bundle.selectedItems.map(catalogItemLabel).join('، ')}`);
+      return group.selectedItems.map(item => `- ${catalogItemLabel(item)}: ${item.included ? 'مشمول في العرض' : money(item.price * item.quantity)} (${item.billing})`);
     });
     const catalogText = catalogRows.length ? `\n\nخدمات إطلاق العلامة المختارة:\n${catalogRows.join('\n')}\nإجمالي التأسيس: ${money(catalogTotals.oneTime)}\nالإجمالي الشهري: ${money(catalogTotals.monthly)}` : '';
     const txt = `عرض تسويقي مقدم إلى ${client}
