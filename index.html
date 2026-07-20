@@ -211,7 +211,7 @@
     .catalog-total small{display:block;color:var(--muted);font-size:11px}
     .catalog-total strong{font-size:18px}
     @media (max-width:560px){
-      .catalog-item,.catalog-pricing-mode,.catalog-totals,.catalog-bundle-row{grid-template-columns:1fr}
+      .catalog-item,.catalog-pricing-mode,.catalog-totals,.catalog-bundle-row,.scope-section-grid{grid-template-columns:1fr}
     }
     .quick-row{display:flex;gap:8px;margin:10px 0 14px}
     .quick{
@@ -236,6 +236,38 @@
       font-size:14px;
     }
     .scope-helper strong{color:var(--green)}
+    .scope-only[hidden],.packages-only[hidden]{display:none!important}
+    .scope-mode-note{
+      margin:0 0 12px;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(10,76,62,.08);
+      color:var(--green);
+      font-size:13px;
+      font-weight:700;
+    }
+    .scope-section-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    .proposal-quality{
+      margin-top:14px;
+      padding:14px;
+      border:1px solid rgba(10,76,62,.18);
+      border-radius:18px;
+      background:#f3faf7;
+      color:var(--green);
+    }
+    .proposal-quality.warning{background:#fff8e8;border-color:rgba(190,132,0,.28);color:#795600}
+    .proposal-quality strong{display:block;margin-bottom:5px}
+    .proposal-quality ul{margin:6px 0 0;padding-right:20px}
+    .scope-stage-card{
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:20px;
+      background:#fffdf8;
+      margin-top:14px;
+    }
+    .scope-stage-card h3{margin:0;color:var(--green)}
+    .scope-stage-card small{display:block;color:var(--muted);margin:3px 0 10px}
+    .scope-stage-card ul{margin:0;padding-right:20px;color:var(--ink)}
     .scope-builder textarea#rawScope{min-height:220px}
     .scope-pdf-row{
       display:flex;
@@ -744,7 +776,7 @@
         <summary><span>01 بيانات العميل</span></summary>
         <div class="panel-body">
           <div class="field"><label>اسم العميل</label><input class="input" id="clientName" value="اسم العميل"></div>
-          <div class="field"><label>نوع العرض</label><select id="proposalMode" onchange="setProposalMode(this.value)"><option value="packages">عرض خطط تسويقية</option><option value="scope">عرض مبني على نطاق عمل متفق عليه</option></select></div>
+          <div class="field"><label>نوع العرض</label><select id="proposalMode" onchange="setProposalMode(this.value)"><option value="scope" selected>عرض مبني على نطاق عمل متفق عليه</option><option value="packages">عرض خطط تسويقية</option></select></div>
           <div class="two">
             <div class="field"><label>التاريخ</label><input class="input" id="proposalDate" type="date"></div>
             <div class="field"><label>مدة المشروع</label><input class="input" id="duration" value="6 أشهر - موصى به"></div>
@@ -781,22 +813,44 @@
             <div class="field"><label>قيمة المشروع قبل الضريبة</label><input class="input" id="scopeProjectFee" type="number" value="0"></div>
             <div class="field"><label>صلاحية العرض</label><input class="input" id="scopeValidity" value="7 أيام"></div>
           </div>
+          <div class="field"><label>طريقة إظهار الأسعار</label><select id="scopePricingStyle" onchange="renderProposal()"><option value="catalog" selected>جدول تفصيلي حسب المراحل والخدمات</option><option value="total">إجمالي واحد للمشروع</option><option value="hidden">بدون أسعار داخل العرض</option></select></div>
+          <div class="field"><label>النص البديل للسعر غير المحدد</label><input class="input" id="scopePendingPriceLabel" value="حسب الاتفاق"></div>
           <label class="check"><input id="scopeVatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%</label>
           <div class="field"><label>جدول الدفعات</label><textarea id="scopePaymentSchedule">50% عند اعتماد العرض، و50% قبل التسليم النهائي.</textarea></div>
           <div class="field"><label>الافتراضات وآلية التغيير</label><textarea id="scopeChangeTerms">أي طلبات أو مخرجات إضافية خارج النطاق المتفق عليه يتم تسعيرها واعتمادها كتابيًا قبل التنفيذ.</textarea></div>
+          <div class="field">
+            <label>صفحات العرض</label>
+            <div class="scope-section-grid">
+              <label class="check"><input id="scopeShowAbout" type="checkbox" checked> من نحن</label>
+              <label class="check"><input id="scopeShowClients" type="checkbox" checked> عملاؤنا</label>
+              <label class="check"><input id="scopeShowWork" type="checkbox" checked> طريقة العمل</label>
+              <label class="check"><input id="scopeShowSummary" type="checkbox" checked> ملخص المشروع</label>
+              <label class="check"><input id="scopeShowDeliverables" type="checkbox" checked> نطاق العمل</label>
+              <label class="check"><input id="scopeShowTimeline" type="checkbox" checked> الجدول والمسؤوليات</label>
+              <label class="check"><input id="scopeShowExclusions" type="checkbox" checked> خارج النطاق</label>
+              <label class="check"><input id="scopeShowPricing" type="checkbox" checked> الأسعار والدفعات</label>
+              <label class="check"><input id="scopeShowAcceptance" type="checkbox" checked> الاعتماد والتوقيع</label>
+              <label class="check"><input id="scopeShowClosing" type="checkbox" checked> الخاتمة</label>
+            </div>
+          </div>
+          <div class="proposal-quality" id="scopeQuality" aria-live="polite"><strong>فحص جاهزية العرض</strong><span>سيتم فحص البيانات عند تحديث العرض.</span></div>
           <button class="btn btn-primary btn-block" type="button" onclick="renderProposal()">تحديث العرض من النطاق</button>
         </div>
       </details>
 
-      <details class="panel" open>
+      <details class="panel" id="serviceCatalogPanel" open>
         <summary><span>02 الخدمات والقنوات</span></summary>
         <div class="panel-body">
-          <p class="micro">اختر الخدمات والقنوات التي تريد ظهورها في نطاق العمل.</p>
-          <div class="quick-row">
+          <p class="micro packages-only">اختر الخدمات والقنوات التي تريد ظهورها في نطاق العمل.</p>
+          <div class="quick-row packages-only">
             <button class="quick" onclick="selectRecommended('lean')">اقتراح اقتصادي</button>
             <button class="quick" onclick="selectRecommended('growth')">اقتراح نمو</button>
           </div>
-          <div class="field"><label>الخدمات التسويقية العامة</label><div id="services" class="check-grid"></div></div>
+          <div class="field packages-only"><label>الخدمات التسويقية العامة</label><div id="services" class="check-grid"></div></div>
+          <div class="scope-only" hidden>
+            <div class="scope-mode-note">اختاري الخدمات المتفق عليها فقط. ستظهر مرتبة حسب مراحلها، ولن تختلط بباقات التسويق العامة.</div>
+            <div class="quick-row"><button class="quick" type="button" onclick="selectFullLaunchScope()">تحديد النطاق كاملًا</button><button class="quick" type="button" onclick="clearServiceCatalog()">إلغاء التحديد</button></div>
+          </div>
           <div class="field">
             <label>خدمات إطلاق العلامة — اختاري الخدمة وحددي سعرها</label>
             <p class="micro">التقسيم مطابق لملف نطاق العمل: الهوية، المتجر والمحتوى، التسويق بالأداء، ثم الخدمات الإضافية.</p>
@@ -806,14 +860,14 @@
               <div class="catalog-total"><small>إجمالي الخدمات الشهرية قبل الضريبة</small><strong id="catalogMonthlyTotal">0 ريال</strong></div>
             </div>
           </div>
-          <div class="field"><label>القنوات</label><div id="channels" class="check-grid"></div></div>
-          <div class="field"><label>وصف نطاق العمل</label><textarea id="scopeDesc">تم اختيار هذه الخدمات والقنوات كنطاق مقترح قابل للتخصيص، ويتم ضبط تفاصيل التنفيذ النهائية بعد اعتماد الخطة بما يتوافق مع أهداف العميل وأولويات المرحلة.</textarea></div>
-          <div class="field"><label>خدمة إضافية اختيارية 1</label><input class="input" id="extraServiceName1" value="" placeholder="مثال: تصوير منتجات، صفحة هبوط، جلسة استراتيجية"></div>
-          <div class="field"><label>وصف الخدمة الإضافية 1</label><textarea id="extraServiceDesc1" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
-          <div class="field"><label>خدمة إضافية اختيارية 2</label><input class="input" id="extraServiceName2" value="" placeholder="مثال: إدارة واتساب، تصوير ريلز، جلسة استراتيجية"></div>
-          <div class="field"><label>وصف الخدمة الإضافية 2</label><textarea id="extraServiceDesc2" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
-          <div class="field"><label>خدمة إضافية اختيارية 3</label><input class="input" id="extraServiceName3" value="" placeholder="مثال: Influencer Marketing، إنتاج UGC إضافي"></div>
-          <div class="field"><label>وصف الخدمة الإضافية 3</label><textarea id="extraServiceDesc3" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
+          <div class="field packages-only"><label>القنوات</label><div id="channels" class="check-grid"></div></div>
+          <div class="field packages-only"><label>وصف نطاق العمل</label><textarea id="scopeDesc">تم اختيار هذه الخدمات والقنوات كنطاق مقترح قابل للتخصيص، ويتم ضبط تفاصيل التنفيذ النهائية بعد اعتماد الخطة بما يتوافق مع أهداف العميل وأولويات المرحلة.</textarea></div>
+          <div class="field packages-only"><label>خدمة إضافية اختيارية 1</label><input class="input" id="extraServiceName1" value="" placeholder="مثال: تصوير منتجات، صفحة هبوط، جلسة استراتيجية"></div>
+          <div class="field packages-only"><label>وصف الخدمة الإضافية 1</label><textarea id="extraServiceDesc1" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
+          <div class="field packages-only"><label>خدمة إضافية اختيارية 2</label><input class="input" id="extraServiceName2" value="" placeholder="مثال: إدارة واتساب، تصوير ريلز، جلسة استراتيجية"></div>
+          <div class="field packages-only"><label>وصف الخدمة الإضافية 2</label><textarea id="extraServiceDesc2" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
+          <div class="field packages-only"><label>خدمة إضافية اختيارية 3</label><input class="input" id="extraServiceName3" value="" placeholder="مثال: Influencer Marketing، إنتاج UGC إضافي"></div>
+          <div class="field packages-only"><label>وصف الخدمة الإضافية 3</label><textarea id="extraServiceDesc3" placeholder="اكتب وصف مختصر للخدمة الإضافية عند الحاجة"></textarea></div>
         </div>
       </details>
 
@@ -1165,7 +1219,26 @@
     return totals;
   }
 
-  function catalogPricingPages(groups, startPage=7){
+  function selectFullLaunchScope(){
+    serviceCatalog.forEach(group => group.items.forEach(item => {
+      const checkbox = byId(`catalogSelect_${item.id}`);
+      if (checkbox) checkbox.checked = true;
+    }));
+    updateServiceCatalogTotal();
+    renderProposal();
+  }
+
+  function clearServiceCatalog(){
+    serviceCatalog.forEach(group => group.items.forEach(item => {
+      const checkbox = byId(`catalogSelect_${item.id}`);
+      if (checkbox) checkbox.checked = false;
+    }));
+    updateServiceCatalogTotal();
+    renderProposal();
+  }
+
+  function catalogPricingPages(groups, startPage=7, options={}){
+    const pendingLabel = options.pendingLabel || 'حسب الاتفاق';
     const rows = groups.flatMap(group => {
       if (group.pricingMode === 'stage') {
         const included = group.selectedItems.map(item => item.name).join('، ');
@@ -1195,7 +1268,7 @@
       }));
     });
     const totals = catalogServiceTotals(groups.flatMap(group => group.selectedItems));
-    const vatEnabled = byId('vatEnabled')?.checked;
+    const vatEnabled = byId(options.vatCheckboxId || 'vatEnabled')?.checked;
     const oneTimeTotal = totals.oneTime + (vatEnabled ? totals.oneTime * .15 : 0);
     const monthlyTotal = totals.monthly + (vatEnabled ? totals.monthly * .15 : 0);
     const chunks = [];
@@ -1203,8 +1276,8 @@
     return chunks.map((chunk, index) => {
       const isLast = index === chunks.length - 1;
       const summary = isLast ? `<div class="summary-box">${totals.oneTime > 0 ? `<div class="money"><h3>التأسيس قبل الضريبة</h3><strong>${money(totals.oneTime)}</strong></div><div class="money yellow"><h3>التأسيس شامل الضريبة</h3><strong>${money(oneTimeTotal)}</strong></div>` : ''}${totals.monthly > 0 ? `<div class="money"><h3>الشهري قبل الضريبة</h3><strong>${money(totals.monthly)}</strong></div><div class="money yellow"><h3>الشهري شامل الضريبة</h3><strong>${money(monthlyTotal)}</strong></div>` : ''}</div>` : '';
-      return addPage(`<div class="kicker">التسعير النهائي</div><h2 class="title">جدول تسعير الخدمات${index ? ' — تابع' : ''}</h2><p class="subtitle">يعرض الجدول سعرًا موحدًا للمرحلة أو سعر كل عنصر، حسب الخيار المحدد في المولد.</p>
-        <table><thead><tr><th>المرحلة</th><th>الخدمة</th><th>طريقة التسعير</th><th>الدورية</th><th>السعر قبل الضريبة</th></tr></thead><tbody>${chunk.map(row => `<tr><td>${esc(row.stage)}</td><td>${row.service}</td><td>${esc(row.method)}</td><td>${esc(row.billing)}</td><td>${money(row.price)}</td></tr>`).join('')}</tbody></table>${summary}`, startPage + index);
+      return addPage(`<div class="kicker">${esc(options.kicker || 'التسعير النهائي')}</div><h2 class="title">${esc(options.title || 'جدول تسعير الخدمات')}${index ? ' — تابع' : ''}</h2><p class="subtitle">${esc(options.description || 'يعرض الجدول سعرًا موحدًا للمرحلة أو سعر كل عنصر، حسب الخيار المحدد في المولد.')}</p>
+        <table><thead><tr><th>المرحلة</th><th>الخدمة</th><th>طريقة التسعير</th><th>الدورية</th><th>السعر قبل الضريبة</th></tr></thead><tbody>${chunk.map(row => `<tr><td>${esc(row.stage)}</td><td>${row.service}</td><td>${esc(row.method)}</td><td>${esc(row.billing)}</td><td>${row.price > 0 ? money(row.price) : esc(pendingLabel)}</td></tr>`).join('')}</tbody></table>${summary}`, startPage + index);
     });
   }
 
@@ -1423,6 +1496,13 @@
     return `<article class="page ${cls}">${html}<div class="footer-brand">Post With Passion</div><div class="page-num">${String(num).padStart(2,'0')}</div></article>`;
   }
 
+  function renumberPreviewPages(){
+    document.querySelectorAll('#preview .page').forEach((page, index) => {
+      const number = page.querySelector('.page-num');
+      if (number) number.textContent = String(index + 1).padStart(2, '0');
+    });
+  }
+
   function templateText(value, data){
     return Object.entries(data).reduce((text, [key, val]) => text.replaceAll(`{${key}}`, val), String(value || ''));
   }
@@ -1446,14 +1526,54 @@
     return `<div class="service-list">${rows.map(item => `<div class="pill">${esc(item)}</div>`).join('')}</div>`;
   }
 
+  function scopeSectionEnabled(id){
+    const field = byId(id);
+    return !field || field.checked;
+  }
+
+  function scopeStageCards(groups){
+    return groups.map(group => `<div class="scope-stage-card"><h3>${esc(group.title)}</h3><small>${esc(group.duration)}</small><ul>${group.selectedItems.map(item => `<li>${esc(item.name)}</li>`).join('')}</ul></div>`).join('');
+  }
+
+  function scopeQualityWarnings({client, deliverables, timeline, responsibilities, exclusions, catalogGroups, pricingStyle, fee}){
+    const warnings = [];
+    if (!client.trim() || client.trim() === 'اسم العميل') warnings.push('أضيفي اسم العميل.');
+    if (!deliverables.length && !catalogGroups.length) warnings.push('أضيفي المخرجات أو اختاري الخدمات المتفق عليها.');
+    if (!timeline.length && !catalogGroups.length) warnings.push('أضيفي مراحل المشروع ومدده.');
+    if (!responsibilities.length) warnings.push('راجعي مسؤوليات العميل لتجنب تأخر الاعتمادات والمواد.');
+    if (!exclusions.length) warnings.push('أضيفي ما لا يشمله العرض لحماية نطاق المشروع.');
+    if (scopeSectionEnabled('scopeShowPricing') && pricingStyle === 'catalog' && !catalogGroups.length) warnings.push('اختاري خدمات من جدول المراحل لإظهار التسعير التفصيلي.');
+    if (scopeSectionEnabled('scopeShowPricing') && pricingStyle === 'total' && fee <= 0) warnings.push('أدخلي قيمة المشروع أو غيّري طريقة عرض الأسعار.');
+    const unpriced = catalogGroups.flatMap(group => {
+      if (group.pricingMode === 'stage') return group.groupPrice > 0 ? [] : [group.title];
+      if (group.pricingMode === 'bundles') return group.bundles.filter(bundle => bundle.price <= 0).map(bundle => `${group.title}: ${bundle.name}`);
+      return group.selectedItems.filter(item => item.price <= 0).map(item => item.name);
+    });
+    if (pricingStyle === 'catalog' && unpriced.length) warnings.push(`يوجد ${unpriced.length} بندًا بلا سعر؛ سيظهر بالنص البديل بدل 0 ريال.`);
+    return warnings;
+  }
+
+  function updateScopeQuality(warnings){
+    const box = byId('scopeQuality');
+    if (!box) return;
+    box.classList.toggle('warning', warnings.length > 0);
+    box.innerHTML = warnings.length
+      ? `<strong>راجعي ${warnings.length} نقطة قبل الإرسال</strong><ul>${warnings.map(item => `<li>${esc(item)}</li>`).join('')}</ul>`
+      : '<strong>العرض جاهز للمراجعة النهائية</strong><span>اكتملت البيانات الأساسية ولم يظهر تعارض في التسعير.</span>';
+  }
+
   function setProposalMode(mode){
     const isScope = mode === 'scope';
     document.querySelectorAll('.controls > details.panel').forEach((panel, index) => {
-      if (index === 0 || panel.id === 'scopeBuilderPanel') return;
+      if (index === 0 || panel.id === 'scopeBuilderPanel' || panel.id === 'serviceCatalogPanel') return;
       panel.hidden = isScope;
     });
     byId('scopeBuilderPanel').hidden = !isScope;
     if (isScope) byId('scopeBuilderPanel').open = true;
+    document.querySelectorAll('.scope-only').forEach(element => element.hidden = !isScope);
+    document.querySelectorAll('.packages-only').forEach(element => element.hidden = isScope);
+    if (isScope && /^(?:6|٦)\s*أشهر/.test(byId('duration').value)) byId('duration').value = 'حسب المراحل الموضحة';
+    if (!isScope && byId('duration').value === 'حسب المراحل الموضحة') byId('duration').value = '6 أشهر - موصى به';
     renderProposal();
   }
 
@@ -1718,6 +1838,9 @@
     const timeline = scopeLines('scopeTimeline');
     const responsibilities = scopeLines('scopeClientResponsibilities');
     const exclusions = scopeLines('scopeExclusions');
+    const catalogGroups = selectedCatalogGroups();
+    const pricingStyle = byId('scopePricingStyle')?.value || 'catalog';
+    const pendingPriceLabel = byId('scopePendingPriceLabel')?.value || 'حسب الاتفاق';
     const fee = Number(byId('scopeProjectFee').value || 0);
     const vat = byId('scopeVatEnabled').checked ? fee * .15 : 0;
     const total = fee + vat;
@@ -1727,50 +1850,74 @@
     const pages = [];
     const nextPage = (html, cls='') => pages.push(addPage(html, pages.length + 1, cls));
 
+    updateScopeQuality(scopeQualityWarnings({client, deliverables, timeline, responsibilities, exclusions, catalogGroups, pricingStyle, fee}));
+
     pages.push(`<article class="page cover">
       <div class="cover-top"><img class="cover-logo" src="assets/pwp-white-long-logo.png" alt="Post With Passion"><div class="tag">Scope Proposal</div></div>
       <div><h1>${esc(projectTitle)}<br><span style="color:var(--yellow)">${esc(client)}</span></h1><p>عرض مبني على نطاق العمل المتفق عليه</p></div>
       <div class="cover-grid"><div class="cover-box"><small>التاريخ</small><strong>${esc(date)}</strong></div><div class="cover-box"><small>مدة المشروع</small><strong>${esc(duration)}</strong></div></div>
     </article>`);
 
-    nextPage(`<div class="kicker">عن الشركة</div><h2 class="title">من نحن؟</h2><p class="subtitle">Post With Passion شريك تسويقي سعودي يساعد العلامات على تحويل الحضور الرقمي من منشورات فقط إلى منظومة محتوى متكامل وإعلانات تقرّب العلامة من جمهورها وتدعم قراراته.</p>
+    if (scopeSectionEnabled('scopeShowAbout')) nextPage(`<div class="kicker">عن الشركة</div><h2 class="title">من نحن؟</h2><p class="subtitle">Post With Passion شريك تسويقي سعودي يساعد العلامات على تحويل الحضور الرقمي من منشورات فقط إلى منظومة محتوى متكامل وإعلانات تقرّب العلامة من جمهورها وتدعم قراراته.</p>
       <div class="stat-row"><div class="stat"><strong>+80M</strong><span>وصول رقمي تراكمي</span></div><div class="stat"><strong>+2000</strong><span>صانع محتوى سعودي</span></div><div class="stat"><strong>+600</strong><span>فيديو تم إنتاجه</span></div></div>
       <div class="grid-2" style="margin-top:28px"><div class="info soft"><h3>فهم محلي</h3><p>نصنع محتوى يتحدث بلغة الجمهور السعودي ويأخذ في الاعتبار طريقة تفاعله مع المنصات والعروض والخدمات.</p></div><div class="info yellow"><h3>تشغيل متكامل</h3><p>نجمع بين التخطيط، الإنتاج، النشر، الإعلانات، وقراءة الأداء بطريقة متناغمة للوصول إلى أهداف العميل.</p></div></div>
       <p class="lead">نتحدث بلغة جمهورك، ونحقق أهداف علامتك.</p>`);
 
-    nextPage(`<div class="kicker">عملاؤنا</div><h2 class="title">علامات وثقت بنا</h2><p class="subtitle">خبرة عملية مع علامات وجهات من قطاعات متنوعة داخل المملكة.</p>
+    if (scopeSectionEnabled('scopeShowClients')) nextPage(`<div class="kicker">عملاؤنا</div><h2 class="title">علامات وثقت بنا</h2><p class="subtitle">خبرة عملية مع علامات وجهات من قطاعات متنوعة داخل المملكة.</p>
       <div class="clients-logo-board scope-clients-board"><img src="assets/clients-board.svg" alt="شعارات عملاء Post With Passion"></div>`);
 
-    nextPage(`<div class="kicker">طريقة العمل</div><h2 class="title">كيف نعمل؟</h2><p class="subtitle">نبدأ بفهم أهداف العميل، ثم نمر بمرحلة تأسيس واختبار خلال الأسابيع الأولى، وبعدها نستخدم البيانات لتحسين الرسائل، الكرييتف، القنوات، وتوزيع الميزانية.</p>
-      <div class="grid-2"><div class="info"><h3>1. بناء الاستراتيجية</h3><p>نحدد الهدف، الجمهور، الرسائل الأساسية، والقنوات الأنسب قبل بدء الإنتاج.</p></div><div class="info"><h3>2. إنتاج المحتوى</h3><p>ننفذ محتوى مناسب للمنصات، ويشمل التصاميم، الفيديوهات القصيرة، UGC، وفيديوهات AI حسب احتياج الحملة.</p></div><div class="info"><h3>3. ربط أدوات القياس</h3><p>نجهز أدوات التتبع وربط الحسابات الإعلانية حتى تكون قراءة النتائج أوضح من بداية التشغيل.</p></div><div class="info"><h3>4. تشغيل الحملات</h3><p>نطلق الإعلانات على القنوات المختارة مع توزيع ميزانية واضح ومتابعة يومية للأداء.</p></div><div class="info"><h3>5. Performance Marketing</h3><p>نحلل مؤشرات الأداء ونحسن الحملات بناءً على تكلفة النتائج، جودة العملاء المحتملين، وأداء كل رسالة.</p></div><div class="info"><h3>6. التحسين والتقرير</h3><p>نقدم تقارير وتوصيات عملية لتحسين الرسائل، الكرييتف، القنوات، والوصول إلى الفئة المستهدفة.</p></div></div>`);
+    if (scopeSectionEnabled('scopeShowWork')) nextPage(`<div class="kicker">طريقة العمل</div><h2 class="title">كيف نعمل؟</h2><p class="subtitle">نبدأ بفهم أهداف العميل، ثم نرتب المراحل والاعتمادات، وننفذ المخرجات وفق نطاق واضح وجدول زمني متفق عليه.</p>
+      <div class="grid-2"><div class="info"><h3>1. تثبيت النطاق</h3><p>نراجع المخرجات والمتطلبات والمسؤوليات قبل بدء التنفيذ.</p></div><div class="info"><h3>2. تخطيط المراحل</h3><p>نرتب الأولويات والمدة والاعتمادات المطلوبة لكل مرحلة.</p></div><div class="info"><h3>3. التنفيذ والمراجعة</h3><p>ننفذ البنود المعتمدة ونشارك المخرجات للمراجعة وفق الجدول.</p></div><div class="info"><h3>4. التسليم والتحسين</h3><p>نسلم الملفات المتفق عليها ونعالج الملاحظات ضمن حدود النطاق.</p></div></div>`);
 
-    nextPage(`<div class="kicker">ملخص المشروع</div><h2 class="title">ما اتفقنا على تنفيذه</h2><p class="subtitle">${esc(summary)}</p>
+    if (scopeSectionEnabled('scopeShowSummary')) nextPage(`<div class="kicker">ملخص المشروع</div><h2 class="title">ما اتفقنا على تنفيذه</h2><p class="subtitle">${esc(summary)}</p>
       <div class="lead">يحوّل هذا العرض نطاق العمل المتفق عليه إلى خطة تنفيذ وتجارية واضحة بين Post With Passion و${esc(client)}.</div>`);
 
-    nextPage(`<div class="kicker">نطاق العمل</div><h2 class="title">المخرجات المتفق عليها</h2><p class="subtitle">تشمل قيمة المشروع وتنفيذه المخرجات التالية فقط، وفق الاعتمادات والمواعيد الموضحة في هذا العرض.</p>${scopeList(deliverables)}`);
+    if (scopeSectionEnabled('scopeShowDeliverables')) {
+      if (catalogGroups.length) {
+        catalogGroups.forEach((group, index) => nextPage(`<div class="kicker">نطاق العمل${index ? ' — تابع' : ''}</div><h2 class="title">${esc(group.title)}</h2><p class="subtitle">${esc(group.duration)}. تشمل هذه المرحلة الخدمات الموضحة أدناه وفق الاعتمادات والمواعيد المتفق عليها.</p>${scopeStageCards([group])}`));
+        if (deliverables.length) nextPage(`<div class="kicker">نطاق العمل — تفاصيل إضافية</div><h2 class="title">مخرجات أو متطلبات إضافية</h2><p class="subtitle">بنود إضافية مستخرجة من نطاق العمل وتحتاج إلى مراجعة قبل اعتماد العرض.</p>${scopeList(deliverables)}`);
+      } else {
+        nextPage(`<div class="kicker">نطاق العمل</div><h2 class="title">المخرجات المتفق عليها</h2><p class="subtitle">تشمل قيمة المشروع وتنفيذه البنود التالية فقط، وفق الاعتمادات والمواعيد الموضحة في هذا العرض.</p>${scopeList(deliverables)}`);
+      }
+    }
 
-    nextPage(`<div class="kicker">التنفيذ والتعاون</div><h2 class="title">الجدول الزمني والمسؤوليات</h2>
-      <div class="grid-2"><div><h3>المراحل والجدول الزمني</h3>${scopeList(timeline, duration)}</div><div><h3>مسؤوليات العميل</h3>${scopeList(responsibilities, 'توفير المواد والمعلومات والاعتمادات اللازمة في الوقت المتفق عليه.')}</div></div>
-      <div class="note" style="margin-top:24px"><strong>مهم:</strong> قد تتأثر مواعيد التسليم عند تأخر المواد أو الاعتمادات المطلوبة من العميل.</div>`);
+    if (scopeSectionEnabled('scopeShowTimeline')) {
+      const derivedTimeline = catalogGroups.map(group => `${group.title}: ${group.duration}`);
+      nextPage(`<div class="kicker">التنفيذ والتعاون</div><h2 class="title">الجدول الزمني والمسؤوليات</h2>
+        <div class="grid-2"><div><h3>المراحل والجدول الزمني</h3>${scopeList(timeline.length ? timeline : derivedTimeline, duration)}</div><div><h3>مسؤوليات العميل</h3>${scopeList(responsibilities, 'توفير المواد والمعلومات والاعتمادات اللازمة في الوقت المتفق عليه.')}</div></div>
+        <div class="note" style="margin-top:24px"><strong>مهم:</strong> قد تتأثر مواعيد التسليم عند تأخر المواد أو الاعتمادات المطلوبة من العميل.</div>`);
+    }
 
-    nextPage(`<div class="kicker">حدود المشروع</div><h2 class="title">خارج نطاق العمل</h2><p class="subtitle">لضمان وضوح التنفيذ، البنود التالية غير مشمولة ما لم تتم إضافتها واعتمادها كتابيًا.</p>${scopeList(exclusions, 'أي أعمال أو تكاليف غير مذكورة صراحة ضمن المخرجات المتفق عليها.')}
+    if (scopeSectionEnabled('scopeShowExclusions')) nextPage(`<div class="kicker">حدود المشروع</div><h2 class="title">خارج نطاق العمل</h2><p class="subtitle">لضمان وضوح التنفيذ، البنود التالية غير مشمولة ما لم تتم إضافتها واعتمادها كتابيًا.</p>${scopeList(exclusions, 'أي أعمال أو تكاليف غير مذكورة صراحة ضمن المخرجات المتفق عليها.')}
       <div class="note" style="margin-top:24px"><strong>طلبات التغيير:</strong> ${esc(changeTerms)}</div>`);
 
-    nextPage(`<div class="kicker">الاستثمار</div><h2 class="title">القيمة وشروط الدفع</h2><p class="subtitle">القيمة أدناه تغطي نطاق العمل والمخرجات المحددة في هذا العرض.</p>
-      ${fee > 0 ? `<table><thead><tr><th>البند</th><th>القيمة</th></tr></thead><tbody><tr><td>قيمة المشروع قبل الضريبة</td><td>${money(fee)}</td></tr>${byId('scopeVatEnabled').checked ? `<tr><td>ضريبة القيمة المضافة 15%</td><td>${money(vat)}</td></tr>` : ''}<tr><td><strong>الإجمالي المستحق</strong></td><td><strong>${money(total)}</strong></td></tr></tbody></table>` : `<div class="lead">تُعتمد القيمة المالية حسب الاتفاق التجاري مع العميل.</div>`}
-      <div class="grid-2" style="margin-top:22px"><div class="info yellow"><h3>جدول الدفعات</h3><p>${esc(payment)}</p></div><div class="info"><h3>صلاحية العرض</h3><p>${esc(validity)}</p></div></div>`);
+    if (scopeSectionEnabled('scopeShowPricing') && pricingStyle === 'catalog' && catalogGroups.length) {
+      pages.push(...catalogPricingPages(catalogGroups, pages.length + 1, {
+        vatCheckboxId:'scopeVatEnabled',
+        pendingLabel:pendingPriceLabel,
+        kicker:'الاستثمار',
+        title:'جدول الأسعار حسب نطاق العمل',
+        description:'يرتبط كل سعر مباشرة بالمرحلة والمخرجات المشمولة، لتكون الموافقة المالية واضحة وسهلة.'
+      }));
+      nextPage(`<div class="kicker">الشروط المالية</div><h2 class="title">الدفعات وصلاحية العرض</h2><div class="grid-2"><div class="info yellow"><h3>جدول الدفعات</h3><p>${esc(payment)}</p></div><div class="info"><h3>صلاحية العرض</h3><p>${esc(validity)}</p></div></div><div class="note" style="margin-top:24px"><strong>طلبات التغيير:</strong> ${esc(changeTerms)}</div>`);
+    } else if (scopeSectionEnabled('scopeShowPricing') && pricingStyle === 'total') {
+      nextPage(`<div class="kicker">الاستثمار</div><h2 class="title">القيمة وشروط الدفع</h2><p class="subtitle">القيمة أدناه تغطي نطاق العمل والمخرجات المحددة في هذا العرض.</p>
+        ${fee > 0 ? `<table><thead><tr><th>البند</th><th>القيمة</th></tr></thead><tbody><tr><td>قيمة المشروع قبل الضريبة</td><td>${money(fee)}</td></tr>${byId('scopeVatEnabled').checked ? `<tr><td>ضريبة القيمة المضافة 15%</td><td>${money(vat)}</td></tr>` : ''}<tr><td><strong>الإجمالي المستحق</strong></td><td><strong>${money(total)}</strong></td></tr></tbody></table>` : `<div class="lead">${esc(pendingPriceLabel)}</div>`}
+        <div class="grid-2" style="margin-top:22px"><div class="info yellow"><h3>جدول الدفعات</h3><p>${esc(payment)}</p></div><div class="info"><h3>صلاحية العرض</h3><p>${esc(validity)}</p></div></div>`);
+    }
 
-    nextPage(`<div class="approval-logo"></div><h2 class="acceptance-title">اعتماد نطاق العمل</h2><p class="acceptance-text">باعتماد هذا العرض، يوافق الطرفان على نطاق العمل والمخرجات والجدول الزمني والقيمة وشروط الدفع الموضحة أعلاه.</p>
-      <div class="payment-note"><h3>آلية البدء</h3><p>${esc(payment)}</p></div>
+    if (scopeSectionEnabled('scopeShowAcceptance')) nextPage(`<div class="approval-logo"></div><h2 class="acceptance-title">اعتماد نطاق العمل</h2><p class="acceptance-text">باعتماد هذا العرض، يوافق الطرفان على نطاق العمل والمخرجات والجدول الزمني${pricingStyle !== 'hidden' ? ' والقيمة وشروط الدفع' : ''} الموضحة أعلاه.</p>
+      ${pricingStyle !== 'hidden' ? `<div class="payment-note"><h3>آلية البدء</h3><p>${esc(payment)}</p></div>` : ''}
       <div class="signature"><div class="sig-box"><strong>${esc(client)}</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div><div class="sig-box"><strong>Post With Passion</strong><div class="sig-line">الاسم / التوقيع / التاريخ</div></div></div>`, 'approval-page');
 
-    pages.push(`<article class="page cover">
+    if (scopeSectionEnabled('scopeShowClosing')) pages.push(`<article class="page cover">
       <div class="cover-top"><img class="cover-logo" src="assets/pwp-white-long-logo.png" alt="Post With Passion"><div class="tag">Next Step</div></div>
       <div><h1>جاهزون للبدء؟</h1><p>بعد اعتماد نطاق العمل والدفعة المطلوبة، نبدأ ترتيب المتطلبات وجدولة أول مرحلة من المشروع.</p></div>
       <div class="cover-grid"><div class="cover-box"><small>الخطوة التالية</small><strong>اعتماد العرض</strong></div><div class="cover-box"><small>بداية العمل</small><strong>حسب الجدول المتفق عليه</strong></div></div>
     </article>`);
 
     byId('preview').innerHTML = pages.join('');
+    renumberPreviewPages();
     return true;
   }
 
@@ -1900,6 +2047,7 @@
     </article>`);
 
     byId('preview').innerHTML = pages.join('');
+    renumberPreviewPages();
     updateAdPercentTotal();
     return true;
   }
