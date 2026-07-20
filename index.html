@@ -171,6 +171,22 @@
     .catalog-stage-price{position:relative}
     .catalog-stage-price small{position:absolute;left:9px;bottom:10px;color:var(--muted);font-size:10px;pointer-events:none}
     .catalog-item.stage-priced .catalog-price{opacity:.38}
+    .catalog-bundle-controls{
+      display:grid;
+      gap:8px;
+      padding:12px 14px;
+      background:rgba(231,189,82,.10);
+      border-bottom:1px solid var(--line);
+    }
+    .catalog-bundle-controls[hidden],.catalog-stage-price[hidden]{display:none!important}
+    .catalog-bundle-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 105px;gap:8px;align-items:end}
+    .catalog-bundle-row label{margin:0;font-size:11px}
+    .catalog-bundle-row input,.catalog-bundle-row select{padding:8px 9px;border-radius:11px;background:white}
+    .catalog-bundle-select select{width:100%;padding:9px 8px;border:1px solid var(--line);border-radius:12px;background:white;font:inherit;font-size:12px;color:var(--ink)}
+    .catalog-bundle-select{display:none}
+    .catalog-item.bundle-priced{grid-template-columns:minmax(0,1fr) 112px}
+    .catalog-item.bundle-priced .catalog-price{display:none}
+    .catalog-item.bundle-priced .catalog-bundle-select{display:block}
     .catalog-subsection{
       padding:10px 14px 4px;
       color:var(--green);
@@ -195,7 +211,7 @@
     .catalog-total small{display:block;color:var(--muted);font-size:11px}
     .catalog-total strong{font-size:18px}
     @media (max-width:560px){
-      .catalog-item,.catalog-pricing-mode,.catalog-totals{grid-template-columns:1fr}
+      .catalog-item,.catalog-pricing-mode,.catalog-totals,.catalog-bundle-row{grid-template-columns:1fr}
     }
     .quick-row{display:flex;gap:8px;margin:10px 0 14px}
     .quick{
@@ -1042,13 +1058,20 @@
         return `${section}<div class="catalog-item" id="catalogRow_${item.id}">
           <label class="catalog-choice"><input id="catalogSelect_${item.id}" type="checkbox" onchange="updateServiceCatalogTotal()"><span>${esc(item.name)}</span></label>
           <div class="catalog-price"><input id="catalogPrice_${item.id}" type="number" min="0" step="100" value="0" aria-label="سعر ${esc(item.name)}" oninput="updateServiceCatalogTotal()"><small>${billing === 'شهري' ? 'ريال/شهر' : 'ريال'}</small></div>
+          <div class="catalog-bundle-select"><select id="catalogBundle_${item.id}" aria-label="مجموعة ${esc(item.name)}" onchange="updateServiceCatalogTotal()"><option value="1">المجموعة 1</option><option value="2">المجموعة 2</option><option value="3">المجموعة 3</option></select></div>
         </div>`;
       }).join('');
-      const pricingControl = group.allowStagePricing === false ? '' : `<div class="catalog-pricing-mode">
-        <label>طريقة تسعير المرحلة<select id="catalogMode_${group.id}" onchange="updateCatalogGroupMode('${group.id}')"><option value="items">تسعير كل عنصر</option><option value="stage">تسعير المرحلة كاملة</option></select></label>
-        <label class="catalog-stage-price" id="catalogStagePriceWrap_${group.id}" hidden>سعر المرحلة<input id="catalogStagePrice_${group.id}" type="number" min="0" step="100" value="0" aria-label="سعر ${esc(group.title)}" oninput="updateServiceCatalogTotal()"><small>${group.billing === 'شهري' ? 'ريال/شهر' : 'ريال'}</small></label>
+      const stageOption = group.allowStagePricing === false ? '' : '<option value="stage">تسعير المرحلة كاملة</option>';
+      const pricingControl = `<div class="catalog-pricing-mode">
+        <label>طريقة التسعير<select id="catalogMode_${group.id}" onchange="updateCatalogGroupMode('${group.id}')"><option value="items">تسعير كل عنصر</option><option value="bundles">تجميع العناصر في باقات</option>${stageOption}</select></label>
+        ${group.allowStagePricing === false ? '' : `<label class="catalog-stage-price" id="catalogStagePriceWrap_${group.id}" hidden>سعر المرحلة<input id="catalogStagePrice_${group.id}" type="number" min="0" step="100" value="0" aria-label="سعر ${esc(group.title)}" oninput="updateServiceCatalogTotal()"><small>${group.billing === 'شهري' ? 'ريال/شهر' : 'ريال'}</small></label>`}
       </div>`;
-      return `<section class="catalog-group"><div class="catalog-group-head"><strong>${esc(group.title)}</strong><small>${esc(group.duration)}</small></div>${pricingControl}${rows}</section>`;
+      const bundleControls = `<div class="catalog-bundle-controls" id="catalogBundleControls_${group.id}" hidden>${[1,2,3].map(number => `<div class="catalog-bundle-row">
+        <label>اسم المجموعة ${number}<input id="catalogBundleName_${group.id}_${number}" value="مجموعة ${number}" oninput="updateServiceCatalogTotal()"></label>
+        <label>السعر<input id="catalogBundlePrice_${group.id}_${number}" type="number" min="0" step="100" value="0" aria-label="سعر المجموعة ${number} في ${esc(group.title)}" oninput="updateServiceCatalogTotal()"></label>
+        <label>الدورية<select id="catalogBundleBilling_${group.id}_${number}" onchange="updateServiceCatalogTotal()"><option value="مرة واحدة" ${group.billing !== 'شهري' ? 'selected' : ''}>مرة واحدة</option><option value="شهري" ${group.billing === 'شهري' ? 'selected' : ''}>شهري</option></select></label>
+      </div>`).join('')}</div>`;
+      return `<section class="catalog-group"><div class="catalog-group-head"><strong>${esc(group.title)}</strong><small>${esc(group.duration)}</small></div>${pricingControl}${bundleControls}${rows}</section>`;
     }).join('');
     serviceCatalog.forEach(group => updateCatalogGroupMode(group.id, false));
     updateServiceCatalogTotal();
@@ -1057,15 +1080,21 @@
   function updateCatalogGroupMode(groupId, refresh=true){
     const group = serviceCatalog.find(item => item.id === groupId);
     if (!group) return;
-    const mode = group.allowStagePricing === false ? 'items' : (byId(`catalogMode_${groupId}`)?.value || 'items');
+    const mode = byId(`catalogMode_${groupId}`)?.value || 'items';
     const stagePricing = mode === 'stage';
+    const bundlePricing = mode === 'bundles';
     const stageWrap = byId(`catalogStagePriceWrap_${groupId}`);
     if (stageWrap) stageWrap.hidden = !stagePricing;
+    const bundleControls = byId(`catalogBundleControls_${groupId}`);
+    if (bundleControls) bundleControls.hidden = !bundlePricing;
     group.items.forEach(item => {
       const priceInput = byId(`catalogPrice_${item.id}`);
       const row = byId(`catalogRow_${item.id}`);
-      if (priceInput) priceInput.disabled = stagePricing;
-      if (row) row.classList.toggle('stage-priced', stagePricing);
+      if (priceInput) priceInput.disabled = stagePricing || bundlePricing;
+      if (row) {
+        row.classList.toggle('stage-priced', stagePricing);
+        row.classList.toggle('bundle-priced', bundlePricing);
+      }
     });
     if (refresh) updateServiceCatalogTotal();
   }
@@ -1079,7 +1108,8 @@
       groupTitle:group.title,
       duration:group.duration,
       billing:item.billing || group.billing,
-      pricingMode:group.allowStagePricing === false ? 'items' : (byId(`catalogMode_${group.id}`)?.value || 'items'),
+      pricingMode:byId(`catalogMode_${group.id}`)?.value || 'items',
+      bundleId:byId(`catalogBundle_${item.id}`)?.value || '1',
       selected:Boolean(byId(`catalogSelect_${item.id}`)?.checked),
       price:Number(byId(`catalogPrice_${item.id}`)?.value || 0)
     }))).filter(item => item.selected);
@@ -1088,11 +1118,19 @@
   function selectedCatalogGroups(items=selectedCatalogServices()){
     return serviceCatalog.map(group => {
       const groupItems = items.filter(item => item.groupId === group.id);
-      const pricingMode = group.allowStagePricing === false ? 'items' : (byId(`catalogMode_${group.id}`)?.value || 'items');
+      const pricingMode = byId(`catalogMode_${group.id}`)?.value || 'items';
+      const bundles = [1,2,3].map(number => ({
+        id:String(number),
+        name:(byId(`catalogBundleName_${group.id}_${number}`)?.value || `مجموعة ${number}`).trim(),
+        price:Number(byId(`catalogBundlePrice_${group.id}_${number}`)?.value || 0),
+        billing:byId(`catalogBundleBilling_${group.id}_${number}`)?.value || group.billing,
+        selectedItems:groupItems.filter(item => item.bundleId === String(number))
+      })).filter(bundle => bundle.selectedItems.length);
       return {
         ...group,
         pricingMode,
         groupPrice:Number(byId(`catalogStagePrice_${group.id}`)?.value || 0),
+        bundles,
         selectedItems:groupItems
       };
     }).filter(group => group.selectedItems.length);
@@ -1103,6 +1141,13 @@
       if (group.pricingMode === 'stage') {
         if (group.billing === 'شهري') totals.monthly += group.groupPrice;
         else totals.oneTime += group.groupPrice;
+        return totals;
+      }
+      if (group.pricingMode === 'bundles') {
+        group.bundles.forEach(bundle => {
+          if (bundle.billing === 'شهري') totals.monthly += bundle.price;
+          else totals.oneTime += bundle.price;
+        });
         return totals;
       }
       group.selectedItems.forEach(item => {
@@ -1131,6 +1176,15 @@
           billing:group.billing,
           price:group.groupPrice
         }];
+      }
+      if (group.pricingMode === 'bundles') {
+        return group.bundles.map(bundle => ({
+          stage:group.title,
+          service:`<strong>${esc(bundle.name)}</strong><small style="display:block;color:var(--muted);margin-top:5px">يشمل: ${esc(bundle.selectedItems.map(item => item.name).join('، '))}</small>`,
+          method:'سعر مجموعة',
+          billing:bundle.billing,
+          price:bundle.price
+        }));
       }
       return group.selectedItems.map(item => ({
         stage:group.title,
@@ -1874,9 +1928,11 @@
     const catalogItems = selectedCatalogServices();
     const catalogGroups = selectedCatalogGroups(catalogItems);
     const catalogTotals = catalogServiceTotals(catalogItems);
-    const catalogRows = catalogGroups.flatMap(group => group.pricingMode === 'stage'
-      ? [`- ${group.title}: ${money(group.groupPrice)} (${group.billing}) — سعر المرحلة كاملة`]
-      : group.selectedItems.map(item => `- ${item.name}: ${money(item.price)} (${item.billing})`));
+    const catalogRows = catalogGroups.flatMap(group => {
+      if (group.pricingMode === 'stage') return [`- ${group.title}: ${money(group.groupPrice)} (${group.billing}) — سعر المرحلة كاملة`];
+      if (group.pricingMode === 'bundles') return group.bundles.map(bundle => `- ${bundle.name}: ${money(bundle.price)} (${bundle.billing}) — يشمل ${bundle.selectedItems.map(item => item.name).join('، ')}`);
+      return group.selectedItems.map(item => `- ${item.name}: ${money(item.price)} (${item.billing})`);
+    });
     const catalogText = catalogRows.length ? `\n\nخدمات إطلاق العلامة المختارة:\n${catalogRows.join('\n')}\nإجمالي التأسيس: ${money(catalogTotals.oneTime)}\nالإجمالي الشهري: ${money(catalogTotals.monthly)}` : '';
     const txt = `عرض تسويقي مقدم إلى ${client}
 مدة التعاقد المقترحة: ${duration}
