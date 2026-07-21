@@ -826,6 +826,11 @@
             <div class="field"><label>صلاحية العرض</label><input class="input" id="scopeValidity" value="7 أيام"></div>
           </div>
           <div class="field"><label>طريقة إظهار الأسعار</label><select id="scopePricingStyle" onchange="renderProposal()"><option value="catalog" selected>جدول تفصيلي حسب المراحل والخدمات</option><option value="total">إجمالي واحد للمشروع</option><option value="hidden">بدون أسعار داخل العرض</option></select></div>
+          <div class="two">
+            <div class="field"><label>خصم العميل</label><select id="scopeDiscountType" onchange="updateScopeDiscountControl()"><option value="none" selected>بدون خصم</option><option value="percent">نسبة مئوية</option><option value="fixed">قيمة ثابتة</option></select></div>
+            <div class="field"><label>قيمة الخصم</label><input class="input" id="scopeDiscountValue" type="number" min="0" step="1" value="0" disabled oninput="renderProposal()"></div>
+          </div>
+          <p class="micro">يُحتسب الخصم قبل الضريبة. النسبة تطبق على التأسيس والخدمات الشهرية، أما القيمة الثابتة فتخصم من التأسيس أو من الشهري عند عدم وجود تكلفة تأسيس.</p>
           <div class="field"><label>النص البديل للسعر غير المحدد</label><input class="input" id="scopePendingPriceLabel" value="حسب الاتفاق"></div>
           <label class="check"><input id="scopeVatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%</label>
           <div class="field"><label>جدول الدفعات</label><textarea id="scopePaymentSchedule">50% عند اعتماد العرض، و50% قبل التسليم النهائي.</textarea></div>
@@ -1384,8 +1389,16 @@
     });
     const totals = catalogServiceTotals(groups.flatMap(group => group.selectedItems));
     const vatEnabled = byId(options.vatCheckboxId || 'vatEnabled')?.checked;
-    const oneTimeTotal = totals.oneTime + (vatEnabled ? totals.oneTime * .15 : 0);
-    const monthlyTotal = totals.monthly + (vatEnabled ? totals.monthly * .15 : 0);
+    const discountType = options.discountType || 'none';
+    const discountValue = Number(options.discountValue || 0);
+    const oneTimeDiscount = discountType === 'fixed' && totals.oneTime <= 0 ? 0 : discountAmount(totals.oneTime, discountType, discountValue);
+    const monthlyDiscount = discountType === 'fixed' && totals.oneTime > 0 ? 0 : discountAmount(totals.monthly, discountType, discountValue);
+    const discountedOneTime = totals.oneTime - oneTimeDiscount;
+    const discountedMonthly = totals.monthly - monthlyDiscount;
+    const oneTimeTotal = discountedOneTime + (vatEnabled ? discountedOneTime * .15 : 0);
+    const monthlyTotal = discountedMonthly + (vatEnabled ? discountedMonthly * .15 : 0);
+    const hasDiscount = oneTimeDiscount > 0 || monthlyDiscount > 0;
+    const discountNote = hasDiscount ? `<div class="note" style="margin-top:18px"><strong>خصم العميل ${esc(discountLabel(discountType, discountValue))}:</strong> ${oneTimeDiscount > 0 ? `خصم ${money(oneTimeDiscount)} من خدمات التأسيس` : ''}${oneTimeDiscount > 0 && monthlyDiscount > 0 ? '، و' : ''}${monthlyDiscount > 0 ? `خصم ${money(monthlyDiscount)} من الخدمات الشهرية` : ''}. تم احتساب الضريبة بعد الخصم.</div>` : '';
     const chunks = [];
     let currentChunk = [];
     let currentWeight = 0;
@@ -1402,7 +1415,7 @@
     if (currentChunk.length) chunks.push(currentChunk);
     return chunks.map((chunk, index) => {
       const isLast = index === chunks.length - 1;
-      const summary = isLast ? `<div class="summary-box">${totals.oneTime > 0 ? `<div class="money"><h3>التأسيس قبل الضريبة</h3><strong>${money(totals.oneTime)}</strong></div><div class="money yellow"><h3>التأسيس شامل الضريبة</h3><strong>${money(oneTimeTotal)}</strong></div>` : ''}${totals.monthly > 0 ? `<div class="money"><h3>الشهري قبل الضريبة</h3><strong>${money(totals.monthly)}</strong></div><div class="money yellow"><h3>الشهري شامل الضريبة</h3><strong>${money(monthlyTotal)}</strong></div>` : ''}</div>` : '';
+      const summary = isLast ? `${discountNote}<div class="summary-box">${totals.oneTime > 0 ? `<div class="money"><h3>${hasDiscount ? 'التأسيس قبل الخصم' : 'التأسيس قبل الضريبة'}</h3><strong>${money(totals.oneTime)}</strong></div><div class="money yellow"><h3>التأسيس شامل الضريبة</h3><strong>${money(oneTimeTotal)}</strong></div>` : ''}${totals.monthly > 0 ? `<div class="money"><h3>${hasDiscount ? 'الشهري قبل الخصم' : 'الشهري قبل الضريبة'}</h3><strong>${money(totals.monthly)}</strong></div><div class="money yellow"><h3>الشهري شامل الضريبة</h3><strong>${money(monthlyTotal)}</strong></div>` : ''}</div>` : '';
       return addPage(`<div class="kicker">${esc(options.kicker || 'التسعير النهائي')}</div><h2 class="title">${esc(options.title || 'جدول تسعير الخدمات')}${index ? ' - تابع' : ''}</h2><p class="subtitle">${esc(options.description || 'جدول تسعير الخدمات المتفق عليها في نطاق العمل')}</p>
         <table><thead><tr><th>المرحلة</th><th>الخدمة</th><th>طريقة التسعير</th><th>الدورية</th><th>الإجمالي قبل الضريبة</th></tr></thead><tbody>${chunk.map(row => `<tr><td>${esc(row.stage)}</td><td>${row.service}</td><td>${esc(row.method)}</td><td>${esc(row.billing)}</td><td>${row.included ? 'مشمول في العرض' : (row.price > 0 ? money(row.price) : esc(pendingLabel))}</td></tr>`).join('')}</tbody></table>${summary}`, startPage + index);
     });
@@ -1438,6 +1451,29 @@
   function pageEnabled(id){
     const el = byId(id);
     return !el || el.checked;
+  }
+
+  function discountAmount(base, type, value){
+    const amount = Math.max(0, Number(value || 0));
+    if (type === 'percent') return Math.min(base, base * Math.min(100, amount) / 100);
+    if (type === 'fixed') return Math.min(base, amount);
+    return 0;
+  }
+
+  function discountLabel(type, value){
+    if (type === 'percent') return `${Math.min(100, Math.max(0, Number(value || 0)))}%`;
+    if (type === 'fixed') return money(Math.max(0, Number(value || 0)));
+    return '';
+  }
+
+  function updateScopeDiscountControl(refresh=true){
+    const type = byId('scopeDiscountType')?.value || 'none';
+    const input = byId('scopeDiscountValue');
+    if (input) {
+      input.disabled = type === 'none';
+      input.placeholder = type === 'percent' ? 'مثال: 10' : 'مثال: 2500';
+    }
+    if (refresh) renderProposal();
   }
 
   function setPageOptions(mode, checked){
@@ -1607,6 +1643,7 @@
     updateAdPercentTotal();
     serviceCatalog.forEach(group => updateCatalogGroupMode(group.id, false));
     updateServiceCatalogTotal();
+    updateScopeDiscountControl(false);
     setProposalMode(byId('proposalMode')?.value || 'packages');
   }
 
@@ -1671,7 +1708,14 @@
   }
 
   function scopeStageCards(groups){
-    return groups.map(group => `<div class="scope-stage-card"><h3>${esc(group.title)}</h3><small>${esc(group.duration)}</small><ul>${group.selectedItems.map(item => `<li>${esc(catalogItemLabel(item))}${item.included ? ' <strong>(مشمول في العرض)</strong>' : ''}</li>`).join('')}</ul></div>`).join('');
+    return groups.map(group => `<div class="scope-stage-card"><ul>${group.selectedItems.map(item => `<li>${esc(catalogItemLabel(item))}${item.included ? ' <strong>(مشمول في العرض)</strong>' : ''}</li>`).join('')}</ul></div>`).join('');
+  }
+
+  function scopeStageHeading(group){
+    const parts = String(group.title || '').split(' - ');
+    return parts.length > 1
+      ? {kicker:parts[0], title:parts.slice(1).join(' - ')}
+      : {kicker:'نطاق العمل', title:group.title};
   }
 
   function scopeQualityWarnings({client, deliverables, timeline, responsibilities, exclusions, catalogGroups, pricingStyle, fee}){
@@ -1981,8 +2025,12 @@
     const pricingStyle = byId('scopePricingStyle')?.value || 'catalog';
     const pendingPriceLabel = byId('scopePendingPriceLabel')?.value || 'حسب الاتفاق';
     const fee = Number(byId('scopeProjectFee').value || 0);
-    const vat = byId('scopeVatEnabled').checked ? fee * .15 : 0;
-    const total = fee + vat;
+    const discountType = byId('scopeDiscountType')?.value || 'none';
+    const discountValue = Number(byId('scopeDiscountValue')?.value || 0);
+    const feeDiscount = discountAmount(fee, discountType, discountValue);
+    const discountedFee = fee - feeDiscount;
+    const vat = byId('scopeVatEnabled').checked ? discountedFee * .15 : 0;
+    const total = discountedFee + vat;
     const payment = byId('scopePaymentSchedule').value;
     const changeTerms = byId('scopeChangeTerms').value;
     const validity = byId('scopeValidity').value;
@@ -1997,27 +2045,28 @@
       <div class="cover-grid"><div class="cover-box"><small>التاريخ</small><strong>${esc(date)}</strong></div><div class="cover-box"><small>مدة المشروع</small><strong>${esc(duration)}</strong></div></div>
     </article>`);
 
-    if (scopeSectionEnabled('scopeShowAbout')) nextPage(`<div class="kicker">عن الشركة</div><h2 class="title">من نحن؟</h2><p class="subtitle">Post With Passion شريك تسويقي سعودي يساعد العلامات على تحويل الحضور الرقمي من منشورات فقط إلى منظومة محتوى متكامل وإعلانات تقرّب العلامة من جمهورها وتدعم قراراته.</p>
+    if (scopeSectionEnabled('scopeShowAbout')) nextPage(`<div class="kicker">نبذة عن PWP</div><h2 class="title">شريكك في التسويق والتنفيذ</h2><p class="subtitle">Post With Passion شريك تسويقي سعودي يساعد العلامات على تحويل الحضور الرقمي من منشورات فقط إلى منظومة محتوى متكامل وإعلانات تقرّب العلامة من جمهورها وتدعم قراراته.</p>
       <div class="stat-row"><div class="stat"><strong>+80M</strong><span>وصول رقمي تراكمي</span></div><div class="stat"><strong>+2000</strong><span>صانع محتوى سعودي</span></div><div class="stat"><strong>+600</strong><span>فيديو تم إنتاجه</span></div></div>
       <div class="grid-2" style="margin-top:28px"><div class="info soft"><h3>فهم محلي</h3><p>نصنع محتوى يتحدث بلغة الجمهور السعودي ويأخذ في الاعتبار طريقة تفاعله مع المنصات والعروض والخدمات.</p></div><div class="info yellow"><h3>تشغيل متكامل</h3><p>نجمع بين التخطيط، الإنتاج، النشر، الإعلانات، وقراءة الأداء بطريقة متناغمة للوصول إلى أهداف العميل.</p></div></div>
       <p class="lead">نتحدث بلغة جمهورك، ونحقق أهداف علامتك.</p>`);
 
-    if (scopeSectionEnabled('scopeShowClients')) nextPage(`<div class="kicker">عملاؤنا</div><h2 class="title">علامات وثقت بنا</h2><p class="subtitle">خبرة عملية مع علامات وجهات من قطاعات متنوعة داخل المملكة.</p>
+    if (scopeSectionEnabled('scopeShowClients')) nextPage(`<div class="kicker">خبراتنا</div><h2 class="title">علامات وثقت بنا</h2><p class="subtitle">خبرة عملية مع علامات وجهات من قطاعات متنوعة داخل المملكة.</p>
       <div class="clients-logo-board scope-clients-board"><img src="assets/clients-board.svg" alt="شعارات عملاء Post With Passion"></div>`);
 
-    if (scopeSectionEnabled('scopeShowWork')) nextPage(`<div class="kicker">طريقة العمل</div><h2 class="title">كيف نعمل؟</h2><p class="subtitle">نبدأ بفهم أهداف العميل، ثم نرتب المراحل والاعتمادات، وننفذ المخرجات وفق نطاق واضح وجدول زمني متفق عليه.</p>
+    if (scopeSectionEnabled('scopeShowWork')) nextPage(`<div class="kicker">منهجية التنفيذ</div><h2 class="title">كيف ننفذ المشروع؟</h2><p class="subtitle">نبدأ بفهم أهداف العميل، ثم نرتب المراحل والاعتمادات، وننفذ المخرجات وفق نطاق واضح وجدول زمني متفق عليه.</p>
       <div class="grid-2"><div class="info"><h3>1. تثبيت النطاق</h3><p>نراجع المخرجات والمتطلبات والمسؤوليات قبل بدء التنفيذ.</p></div><div class="info"><h3>2. تخطيط المراحل</h3><p>نرتب الأولويات والمدة والاعتمادات المطلوبة لكل مرحلة.</p></div><div class="info"><h3>3. التنفيذ والمراجعة</h3><p>ننفذ البنود المعتمدة ونشارك المخرجات للمراجعة وفق الجدول.</p></div><div class="info"><h3>4. التسليم والتحسين</h3><p>نسلم الملفات المتفق عليها ونعالج الملاحظات ضمن حدود النطاق.</p></div></div>`);
 
-    if (scopeSectionEnabled('scopeShowSummary')) nextPage(`<div class="kicker">ملخص المشروع</div><h2 class="title">ما اتفقنا على تنفيذه</h2><p class="subtitle">${esc(summary)}</p>
+    if (scopeSectionEnabled('scopeShowSummary')) nextPage(`<div class="kicker">المشروع</div><h2 class="title">${esc(projectTitle)}</h2><p class="subtitle">${esc(summary)}</p>
       <div class="lead">يحوّل هذا العرض نطاق العمل المتفق عليه إلى خطة تنفيذ وتجارية واضحة بين Post With Passion و${esc(client)}.</div>`);
 
     if (catalogGroups.length) catalogGroups.forEach(group => {
-      if (scopeSectionEnabled(`scopeShowStage_${group.id}`)) nextPage(`<div class="kicker">نطاق العمل</div><h2 class="title">${esc(group.title)}</h2><p class="subtitle">${esc(group.duration)}. تشمل هذه المرحلة الخدمات الموضحة أدناه وفق الاعتمادات والمواعيد المتفق عليها.</p>${scopeStageCards([group])}`);
+      const heading = scopeStageHeading(group);
+      if (scopeSectionEnabled(`scopeShowStage_${group.id}`)) nextPage(`<div class="kicker">${esc(heading.kicker)}</div><h2 class="title">${esc(heading.title)}</h2><p class="subtitle">${esc(group.duration)}. تشمل هذه المرحلة الخدمات الموضحة أدناه وفق الاعتمادات والمواعيد المتفق عليها.</p>${scopeStageCards([group])}`);
     });
 
     if (scopeSectionEnabled('scopeShowDeliverables')) {
       if (catalogGroups.length) {
-        if (deliverables.length) nextPage(`<div class="kicker">نطاق العمل - تفاصيل إضافية</div><h2 class="title">مخرجات أو متطلبات إضافية</h2><p class="subtitle">بنود إضافية مستخرجة من نطاق العمل وتحتاج إلى مراجعة قبل اعتماد العرض.</p>${scopeList(deliverables)}`);
+        if (deliverables.length) nextPage(`<div class="kicker">مخرجات إضافية</div><h2 class="title">بنود مكملة لنطاق العمل</h2><p class="subtitle">بنود إضافية مستخرجة من نطاق العمل وتحتاج إلى مراجعة قبل اعتماد العرض.</p>${scopeList(deliverables)}`);
       } else {
         nextPage(`<div class="kicker">نطاق العمل</div><h2 class="title">المخرجات المتفق عليها</h2><p class="subtitle">تشمل قيمة المشروع وتنفيذه البنود التالية فقط، وفق الاعتمادات والمواعيد الموضحة في هذا العرض.</p>${scopeList(deliverables)}`);
       }
@@ -2025,25 +2074,27 @@
 
     if (scopeSectionEnabled('scopeShowTimeline')) {
       const derivedTimeline = catalogGroups.map(group => `${group.title}: ${group.duration}`);
-      nextPage(`<div class="kicker">التنفيذ والتعاون</div><h2 class="title">الجدول الزمني والمسؤوليات</h2>
+      nextPage(`<div class="kicker">خطة التنفيذ</div><h2 class="title">الجدول الزمني ومسؤوليات العميل</h2>
         <div class="grid-2"><div><h3>المراحل والجدول الزمني</h3>${scopeList(timeline.length ? timeline : derivedTimeline, duration)}</div><div><h3>مسؤوليات العميل</h3>${scopeList(responsibilities, 'توفير المواد والمعلومات والاعتمادات اللازمة في الوقت المتفق عليه.')}</div></div>
         <div class="note" style="margin-top:24px"><strong>مهم:</strong> قد تتأثر مواعيد التسليم عند تأخر المواد أو الاعتمادات المطلوبة من العميل.</div>`);
     }
 
-    if (scopeSectionEnabled('scopeShowExclusions')) nextPage(`<div class="kicker">حدود المشروع</div><h2 class="title">خارج نطاق العمل</h2><p class="subtitle">لضمان وضوح التنفيذ، البنود التالية غير مشمولة ما لم تتم إضافتها واعتمادها كتابيًا.</p>${scopeList(exclusions, 'أي أعمال أو تكاليف غير مذكورة صراحة ضمن المخرجات المتفق عليها.')}
+    if (scopeSectionEnabled('scopeShowExclusions')) nextPage(`<div class="kicker">حدود المشروع</div><h2 class="title">ما لا يشمله العرض</h2><p class="subtitle">لضمان وضوح التنفيذ، البنود التالية غير مشمولة ما لم تتم إضافتها واعتمادها كتابيًا.</p>${scopeList(exclusions, 'أي أعمال أو تكاليف غير مذكورة صراحة ضمن المخرجات المتفق عليها.')}
       <div class="note" style="margin-top:24px"><strong>طلبات التغيير:</strong> ${esc(changeTerms)}</div>`);
 
     if (scopeSectionEnabled('scopeShowPricing') && pricingStyle === 'catalog' && catalogGroups.length) {
       pages.push(...catalogPricingPages(catalogGroups, pages.length + 1, {
         vatCheckboxId:'scopeVatEnabled',
         pendingLabel:pendingPriceLabel,
-        kicker:'الاستثمار',
-        title:'جدول الأسعار حسب نطاق العمل',
+        discountType,
+        discountValue,
+        kicker:'التسعير',
+        title:'الاستثمار المطلوب',
         description:'جدول تسعير الخدمات المتفق عليها في نطاق العمل'
       }));
     } else if (scopeSectionEnabled('scopeShowPricing') && pricingStyle === 'total') {
-      nextPage(`<div class="kicker">الاستثمار</div><h2 class="title">القيمة وشروط الدفع</h2><p class="subtitle">القيمة أدناه تغطي نطاق العمل والمخرجات المحددة في هذا العرض.</p>
-        ${fee > 0 ? `<table><thead><tr><th>البند</th><th>القيمة</th></tr></thead><tbody><tr><td>قيمة المشروع قبل الضريبة</td><td>${money(fee)}</td></tr>${byId('scopeVatEnabled').checked ? `<tr><td>ضريبة القيمة المضافة 15%</td><td>${money(vat)}</td></tr>` : ''}<tr><td><strong>الإجمالي المستحق</strong></td><td><strong>${money(total)}</strong></td></tr></tbody></table>` : `<div class="lead">${esc(pendingPriceLabel)}</div>`}`);
+      nextPage(`<div class="kicker">التسعير</div><h2 class="title">الاستثمار المطلوب</h2><p class="subtitle">القيمة أدناه تغطي نطاق العمل والمخرجات المحددة في هذا العرض.</p>
+        ${fee > 0 ? `<table><thead><tr><th>البند</th><th>القيمة</th></tr></thead><tbody><tr><td>قيمة المشروع قبل الخصم والضريبة</td><td>${money(fee)}</td></tr>${feeDiscount > 0 ? `<tr><td>خصم العميل ${esc(discountLabel(discountType, discountValue))}</td><td>- ${money(feeDiscount)}</td></tr><tr><td>القيمة بعد الخصم</td><td>${money(discountedFee)}</td></tr>` : ''}${byId('scopeVatEnabled').checked ? `<tr><td>ضريبة القيمة المضافة 15%</td><td>${money(vat)}</td></tr>` : ''}<tr><td><strong>الإجمالي المستحق</strong></td><td><strong>${money(total)}</strong></td></tr></tbody></table>` : `<div class="lead">${esc(pendingPriceLabel)}</div>`}`);
     }
 
     if (scopeSectionEnabled('scopeShowPayments')) nextPage(`<div class="kicker">الشروط المالية</div><h2 class="title">الدفعات وصلاحية العرض</h2><div class="grid-2"><div class="info yellow"><h3>جدول الدفعات</h3><p>${esc(payment)}</p></div><div class="info"><h3>صلاحية العرض</h3><p>${esc(validity)}</p></div></div><div class="note" style="margin-top:24px"><strong>طلبات التغيير:</strong> ${esc(changeTerms)}</div>`);
@@ -2128,25 +2179,25 @@
       <div class="cover-grid"><div class="cover-box"><small>التاريخ</small><strong>${esc(date)}</strong></div><div class="cover-box"><small>مدة التعاقد المقترحة</small><strong>${esc(duration)}</strong></div></div>
     </article>`);
 
-    if(pageEnabled('showAbout')) pages.push(addPage(`<div class="kicker">عن الشركة</div><h2 class="title">من نحن؟</h2><p class="subtitle">Post With Passion شريك تسويقي سعودي يساعد العلامات على تحويل الحضور الرقمي من منشورات فقط إلى منظومة محتوى متكامل وإعلانات تقرّب العلامة من جمهورها وتدعم قراراته.</p>
+    if(pageEnabled('showAbout')) pages.push(addPage(`<div class="kicker">نبذة عن PWP</div><h2 class="title">شريكك في التسويق والنمو</h2><p class="subtitle">Post With Passion شريك تسويقي سعودي يساعد العلامات على تحويل الحضور الرقمي من منشورات فقط إلى منظومة محتوى متكامل وإعلانات تقرّب العلامة من جمهورها وتدعم قراراته.</p>
       <div class="stat-row"><div class="stat"><strong>+80M</strong><span>وصول رقمي تراكمي</span></div><div class="stat"><strong>+2000</strong><span>صانع محتوى سعودي</span></div><div class="stat"><strong>+600</strong><span>فيديو تم إنتاجه</span></div></div>
       <div class="grid-2" style="margin-top:28px"><div class="info soft"><h3>فهم محلي</h3><p>نصنع محتوى يتحدث بلغة الجمهور السعودي ويأخذ في الاعتبار طريقة تفاعله مع المنصات والعروض والخدمات.</p></div><div class="info yellow"><h3>تشغيل متكامل</h3><p>نجمع بين التخطيط، الإنتاج، النشر، الإعلانات، وقراءة الأداء بطريقة متناغمة للوصول إلى أهداف العميل.</p></div></div>
       <p class="lead">نتحدث بلغة جمهورك، ونحقق أهداف علامتك.</p>`,2));
 
-    if(pageEnabled('showClients')) pages.push(addPage(`<div class="kicker">عملاؤنا</div><h2 class="title">عملاؤنا</h2><div class="clients-logo-board"><img src="assets/clients-board.svg" alt="شعارات عملاء Post With Passion"></div>`,3));
+    if(pageEnabled('showClients')) pages.push(addPage(`<div class="kicker">خبراتنا</div><h2 class="title">علامات وثقت بنا</h2><div class="clients-logo-board"><img src="assets/clients-board.svg" alt="شعارات عملاء Post With Passion"></div>`,3));
 
-    if(pageEnabled('showWork')) pages.push(addPage(`<div class="kicker">طريقة العمل</div><h2 class="title">كيف نعمل؟</h2><p class="subtitle">نبدأ بفهم أهداف العميل، ثم نمر بمرحلة تأسيس واختبار خلال الأسابيع الأولى، وبعدها نستخدم البيانات لتحسين الرسائل، الكرييتف، القنوات، وتوزيع الميزانية.</p>
+    if(pageEnabled('showWork')) pages.push(addPage(`<div class="kicker">منهجية العمل</div><h2 class="title">كيف ننفذ ونحسّن؟</h2><p class="subtitle">نبدأ بفهم أهداف العميل، ثم نمر بمرحلة تأسيس واختبار خلال الأسابيع الأولى، وبعدها نستخدم البيانات لتحسين الرسائل، الكرييتف، القنوات، وتوزيع الميزانية.</p>
       <div class="grid-2"><div class="info"><h3>1. بناء الاستراتيجية</h3><p>نحدد الهدف، الجمهور، الرسائل الأساسية، والقنوات الأنسب قبل بدء الإنتاج.</p></div><div class="info"><h3>2. إنتاج المحتوى</h3><p>ننفذ محتوى مناسب للمنصات، ويشمل التصاميم، الفيديوهات القصيرة، UGC، وفيديوهات AI حسب احتياج الحملة.</p></div><div class="info"><h3>3. ربط أدوات القياس</h3><p>نجهز أدوات التتبع وربط الحسابات الإعلانية حتى تكون قراءة النتائج أوضح من بداية التشغيل.</p></div><div class="info"><h3>4. تشغيل الحملات</h3><p>نطلق الإعلانات على القنوات المختارة مع توزيع ميزانية واضح ومتابعة يومية للأداء.</p></div><div class="info"><h3>5. Performance Marketing</h3><p>نحلل مؤشرات الأداء ونحسن الحملات بناءً على تكلفة النتائج، جودة العملاء المحتملين، وأداء كل رسالة.</p></div><div class="info"><h3>6. التحسين والتقرير</h3><p>نقدم تقارير وتوصيات عملية لتحسين الرسائل، الكرييتف، القنوات، والوصول إلى الفئة المستهدفة.</p></div></div>`,4));
 
-    if(pageEnabled('showGoal')) pages.push(addPage(`<div class="kicker">هدف المشروع</div><h2 class="title">التركيز المقترح لـ ${esc(client)}</h2><p class="subtitle">${esc(goal)}</p>
+    if(pageEnabled('showGoal')) pages.push(addPage(`<div class="kicker">هدف المشروع</div><h2 class="title">النتيجة التي نعمل عليها</h2><p class="subtitle">${esc(goal)}</p>
       <div class="grid-3"><div class="info"><h3>رسالة أوضح</h3><p>تحويل قيمة الخدمة إلى محتوى مفهوم وسهل التفاعل معه.</p></div><div class="info"><h3>قنوات مناسبة</h3><p>اختيار المنصات حسب الجمهور وليس بناءً على الحضور فقط.</p></div><div class="info"><h3>نتائج قابلة للقياس</h3><p>متابعة الظهور، التفاعل، العملاء المحتملين، وجودة النتائج.</p></div></div>`,5));
 
-    if(pageEnabled('showScope')) pages.push(addPage(`<div class="kicker">نطاق العمل</div><h2 class="title">الخدمات والقنوات المقترحة</h2><p class="subtitle">${esc(scopeDesc)}</p>
+    if(pageEnabled('showScope')) pages.push(addPage(`<div class="kicker">نطاق المشروع</div><h2 class="title">الخدمات والقنوات</h2><p class="subtitle">${esc(scopeDesc)}</p>
       <h3>الخدمات</h3><div class="service-list">${services.map(s => `<div class="pill">${esc(s)}</div>`).join('')}</div><div class="divider"></div><h3>القنوات</h3><div class="channel-list">${channels.map(c => `<span class="channel">${esc(c)}</span>`).join('')}</div>`,6));
 
     if (pageEnabled('showCatalogPricing') && catalogGroups.length) pages.push(...catalogPricingPages(catalogGroups, 7));
 
-    if(pageEnabled('showPlans')) pages.push(addPage(`<div class="kicker">اختيار العميل</div><h2 class="title">الخطط التسويقية</h2><p class="subtitle">تم تصميم هذه الخطط للشركات الجادة في بناء نتائج تسويقية قابلة للقياس، مع مساحة كافية لاختبار الرسائل، قراءة البيانات، وتحسين الأداء بشكل مستمر.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>${extraServices.map(service => `<div class="note" style="margin-top:20px"><strong>${esc(service.name)}</strong>${service.desc ? `<br>${esc(service.desc)}` : ''}</div>`).join('')}`,7));
+    if(pageEnabled('showPlans')) pages.push(addPage(`<div class="kicker">الخيارات المقترحة</div><h2 class="title">الخطط المناسبة للمشروع</h2><p class="subtitle">تم تصميم هذه الخطط للشركات الجادة في بناء نتائج تسويقية قابلة للقياس، مع مساحة كافية لاختبار الرسائل، قراءة البيانات، وتحسين الأداء بشكل مستمر.</p><div class="option-grid">${optionCard(opt1,1)}${optionCard(opt2,2,true)}</div>${extraServices.map(service => `<div class="note" style="margin-top:20px"><strong>${esc(service.name)}</strong>${service.desc ? `<br>${esc(service.desc)}` : ''}</div>`).join('')}`,7));
 
     if(pageEnabled('showPricing')) pages.push(addPage(`<div class="kicker">${esc(pricingKicker)}</div><h2 class="title">${esc(pricingTitle)}</h2><p class="subtitle">${esc(templateText(pricingDesc, pricingTokens))}</p>
       <table><thead><tr><th>${esc(pricingHeaderItem)}</th><th>${esc(opt1.title)}</th><th>${esc(opt2.title)}</th></tr></thead><tbody>
@@ -2173,7 +2224,7 @@
     if(pageEnabled('showPaidMedia')) pages.push(addPage(`<div class="kicker">Paid Media</div><h2 class="title">توزيع الصرف الإعلاني المقترح</h2><p class="subtitle">توزيع الميزانية الإعلانية يتم بشكل مبدئي بناءً على طبيعة الجمهور والقنوات الأنسب للهدف، ثم يتم تحسينه بعد الإطلاق وفق أداء كل منصة وجودة النتائج القادمة منها.</p>
       <div class="${paidMediaOptions.length > 1 ? 'grid-2' : ''}">${paidMediaOptions.map(item => paidMediaBlock(item.option, item.rows)).join('')}</div><div class="note" style="margin-top:20px">${esc(notes)}</div>`,9));
 
-    if(pageEnabled('showResults')) pages.push(addPage(`<div class="kicker">النتائج المتوقعة</div><h2 class="title">ماذا نتوقع من العمل؟</h2><p class="subtitle">لا نبيع وعودًا غير واقعية. نركز على مؤشرات تسويقية قابلة للإدارة والتحسين، مع ربطها بجودة تجربة العميل بعد التواصل. تبدأ النتائج القابلة للتعلم عادةً بعد مرور 6-8 أسابيع من التشغيل، حيث تكون الفترة الأولى مخصصة لاختبار الرسائل، الجمهور، الكرييتف، والقنوات.</p>
+    if(pageEnabled('showResults')) pages.push(addPage(`<div class="kicker">مؤشرات النجاح</div><h2 class="title">النتائج التي نعمل على تحقيقها</h2><p class="subtitle">لا نبيع وعودًا غير واقعية. نركز على مؤشرات تسويقية قابلة للإدارة والتحسين، مع ربطها بجودة تجربة العميل بعد التواصل. تبدأ النتائج القابلة للتعلم عادةً بعد مرور 6-8 أسابيع من التشغيل، حيث تكون الفترة الأولى مخصصة لاختبار الرسائل، الجمهور، الكرييتف، والقنوات.</p>
       <div class="grid-3"><div class="info"><h3>ظهور أفضل</h3><p>تحسين جودة حضور العلامة على القنوات المختارة.</p></div><div class="info"><h3>اختبار الرسائل</h3><p>معرفة الزوايا الأعلى تفاعلًا والأقرب للتحويل.</p></div><div class="info"><h3>عملاء محتملون</h3><p>جذب زيارات أو Leads حسب هدف الحملة.</p></div><div class="info"><h3>مكتبة محتوى</h3><p>بناء أصول قابلة للاستخدام في الحملات القادمة.</p></div><div class="info"><h3>تحسين مستمر</h3><p>تعديل الصرف بناءً على النتائج لا الافتراضات.</p></div><div class="info"><h3>وضوح أعلى</h3><p>فهم القنوات الأعلى فعالية للمرحلة القادمة.</p></div></div>`,10));
 
     if(pageEnabled('showAcceptance')) pages.push(addPage(`<div class="approval-logo"></div><h2 class="acceptance-title">اعتماد العرض</h2><p class="acceptance-text">يسعدنا التعاون معكم لبناء حضور رقمي أقوى وأكثر تأثيرًا. باعتماد هذا العرض، يوافق العميل على نطاق العمل، الميزانية، آلية الدفع، ومدة التعاقد الموضحة في العرض.</p>
@@ -2198,9 +2249,14 @@
     if (byId('proposalMode')?.value === 'scope') {
       const client = byId('clientName').value || 'اسم العميل';
       const fee = Number(byId('scopeProjectFee').value || 0);
-      const vat = byId('scopeVatEnabled').checked ? fee * .15 : 0;
+      const discountType = byId('scopeDiscountType')?.value || 'none';
+      const discountValue = Number(byId('scopeDiscountValue')?.value || 0);
+      const discount = discountAmount(fee, discountType, discountValue);
+      const discountedFee = fee - discount;
+      const vat = byId('scopeVatEnabled').checked ? discountedFee * .15 : 0;
       const deliverables = scopeLines('scopeDeliverables').map(item => `- ${item}`).join('\n');
-      const txt = `${byId('scopeProjectTitle').value || 'عرض نطاق عمل'}\nمقدم إلى: ${client}\nمدة المشروع: ${byId('duration').value}\n\nالمخرجات المتفق عليها:\n${deliverables || '- حسب النطاق المعتمد'}\n\nقيمة المشروع شامل الضريبة: ${fee > 0 ? money(fee + vat) : 'حسب الاتفاق'}\nجدول الدفعات: ${byId('scopePaymentSchedule').value}`;
+      const discountText = discount > 0 ? `\nخصم العميل: ${discountLabel(discountType, discountValue)} (${money(discount)})` : '';
+      const txt = `${byId('scopeProjectTitle').value || 'عرض نطاق عمل'}\nمقدم إلى: ${client}\nمدة المشروع: ${byId('duration').value}\n\nالمخرجات المتفق عليها:\n${deliverables || '- حسب النطاق المعتمد'}${discountText}\n\nقيمة المشروع شامل الضريبة: ${fee > 0 ? money(discountedFee + vat) : 'حسب الاتفاق'}\nجدول الدفعات: ${byId('scopePaymentSchedule').value}`;
       navigator.clipboard.writeText(txt);
       alert('تم نسخ ملخص نطاق العمل');
       return;
@@ -2251,6 +2307,7 @@
     document.querySelectorAll('#channels input').forEach(input => input.addEventListener('change', updateAdPercentTotal));
     document.querySelectorAll('input[id^="scopeShow"], input[id^="show"]').forEach(input => input.addEventListener('change', renderProposal));
     updateAdPercentTotal();
+    updateScopeDiscountControl(false);
     setProposalMode(byId('proposalMode').value);
   });
 </script>
