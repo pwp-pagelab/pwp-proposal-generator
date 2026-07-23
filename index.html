@@ -893,9 +893,10 @@
               <h3>خصم العميل</h3>
               <p class="micro">اختياري. يظهر الخصم في صفحة التسعير وتُحتسب الضريبة بعده.</p>
               <div class="two">
-                <div class="field"><label>نوع الخصم</label><select id="scopeDiscountType" onchange="updateScopeDiscountControl()"><option value="none" selected>بدون خصم</option><option value="percent">نسبة مئوية</option><option value="fixed">قيمة ثابتة</option></select></div>
-                <div class="field"><label>قيمة الخصم</label><input class="input" id="scopeDiscountValue" type="number" min="0" step="1" value="0" disabled oninput="renderProposal()"></div>
+                <div class="field"><label>1. نوع الخصم</label><select id="scopeDiscountType" onchange="updateScopeDiscountControl()"><option value="percent" selected>نسبة مئوية</option><option value="fixed">قيمة ثابتة</option><option value="none">بدون خصم</option></select></div>
+                <div class="field"><label>2. قيمة الخصم</label><input class="input" id="scopeDiscountValue" type="number" min="0" step="1" value="0" oninput="updateScopeDiscountControl()"></div>
               </div>
+              <p class="micro" id="scopeDiscountStatus"><strong>لا يوجد خصم مطبق حاليًا.</strong></p>
               <p class="micro">النسبة تطبق على التأسيس والخدمات الشهرية. القيمة الثابتة تخصم من التأسيس، أو من الشهري إذا لم توجد تكلفة تأسيس.</p>
             </div>
           </div>
@@ -962,9 +963,10 @@
             <h3>خصم العميل على الخطط</h3>
             <p class="micro">اختياري. يطبق على رسوم الباقة في الخطتين، ولا يشمل ميزانية الإعلانات أو رسوم إدارتها.</p>
             <div class="two">
-              <div class="field"><label>نوع الخصم</label><select id="packageDiscountType" onchange="updatePackageDiscountControl()"><option value="none" selected>بدون خصم</option><option value="percent">نسبة مئوية</option><option value="fixed">قيمة ثابتة</option></select></div>
-              <div class="field"><label>قيمة الخصم</label><input class="input" id="packageDiscountValue" type="number" min="0" step="1" value="0" disabled oninput="renderProposal()"></div>
+              <div class="field"><label>1. نوع الخصم</label><select id="packageDiscountType" onchange="updatePackageDiscountControl()"><option value="percent" selected>نسبة مئوية</option><option value="fixed">قيمة ثابتة</option><option value="none">بدون خصم</option></select></div>
+              <div class="field"><label>2. قيمة الخصم</label><input class="input" id="packageDiscountValue" type="number" min="0" step="1" value="0" oninput="updatePackageDiscountControl()"></div>
             </div>
+            <p class="micro" id="packageDiscountStatus"><strong>لا يوجد خصم مطبق حاليًا.</strong></p>
           </div>
           <div class="field"><label>رسوم ربط مدير الحسابات وأدوات التتبع</label><input class="input" id="setupFee" type="number" value="1500"></div>
           <div class="field">
@@ -1499,20 +1501,32 @@
   function updateScopeDiscountControl(refresh=true){
     const type = byId('scopeDiscountType')?.value || 'none';
     const input = byId('scopeDiscountValue');
+    const status = byId('scopeDiscountStatus');
     if (input) {
       input.disabled = type === 'none';
+      if (type === 'none') input.value = '0';
       input.placeholder = type === 'percent' ? 'مثال: 10' : 'مثال: 2500';
     }
+    const value = Number(input?.value || 0);
+    if (status) status.innerHTML = value > 0 && type !== 'none'
+      ? `<strong>الخصم مطبق: ${esc(discountLabel(type, value))}</strong>`
+      : '<strong>لا يوجد خصم مطبق حاليًا.</strong>';
     if (refresh) renderProposal();
   }
 
   function updatePackageDiscountControl(refresh=true){
     const type = byId('packageDiscountType')?.value || 'none';
     const input = byId('packageDiscountValue');
+    const status = byId('packageDiscountStatus');
     if (input) {
       input.disabled = type === 'none';
+      if (type === 'none') input.value = '0';
       input.placeholder = type === 'percent' ? 'مثال: 10' : 'مثال: 1500';
     }
+    const value = Number(input?.value || 0);
+    if (status) status.innerHTML = value > 0 && type !== 'none'
+      ? `<strong>الخصم مطبق على رسوم الباقة: ${esc(discountLabel(type, value))}</strong>`
+      : '<strong>لا يوجد خصم مطبق حاليًا.</strong>';
     if (refresh) renderProposal();
   }
 
