@@ -258,6 +258,16 @@
       font-size:13px;
       font-weight:700;
     }
+    .scope-discount-card{
+      margin:14px 0;
+      padding:16px;
+      border:2px solid rgba(231,189,82,.62);
+      border-radius:20px;
+      background:linear-gradient(135deg,rgba(231,189,82,.22),#fffdf8);
+      box-shadow:0 10px 24px rgba(10,76,62,.07);
+    }
+    .scope-discount-card h3{margin:0 0 4px;font-size:20px}
+    .scope-discount-card .micro{margin-bottom:10px}
     .scope-section-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
     .proposal-quality{
       margin-top:14px;
@@ -826,11 +836,6 @@
             <div class="field"><label>صلاحية العرض</label><input class="input" id="scopeValidity" value="7 أيام"></div>
           </div>
           <div class="field"><label>طريقة إظهار الأسعار</label><select id="scopePricingStyle" onchange="renderProposal()"><option value="catalog" selected>جدول تفصيلي حسب المراحل والخدمات</option><option value="total">إجمالي واحد للمشروع</option><option value="hidden">بدون أسعار داخل العرض</option></select></div>
-          <div class="two">
-            <div class="field"><label>خصم العميل</label><select id="scopeDiscountType" onchange="updateScopeDiscountControl()"><option value="none" selected>بدون خصم</option><option value="percent">نسبة مئوية</option><option value="fixed">قيمة ثابتة</option></select></div>
-            <div class="field"><label>قيمة الخصم</label><input class="input" id="scopeDiscountValue" type="number" min="0" step="1" value="0" disabled oninput="renderProposal()"></div>
-          </div>
-          <p class="micro">يُحتسب الخصم قبل الضريبة. النسبة تطبق على التأسيس والخدمات الشهرية، أما القيمة الثابتة فتخصم من التأسيس أو من الشهري عند عدم وجود تكلفة تأسيس.</p>
           <div class="field"><label>النص البديل للسعر غير المحدد</label><input class="input" id="scopePendingPriceLabel" value="حسب الاتفاق"></div>
           <label class="check"><input id="scopeVatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%</label>
           <div class="field"><label>جدول الدفعات</label><textarea id="scopePaymentSchedule">50% عند اعتماد العرض، و50% قبل التسليم النهائي.</textarea></div>
@@ -883,6 +888,15 @@
             <div class="catalog-totals">
               <div class="catalog-total"><small>إجمالي خدمات التأسيس قبل الضريبة</small><strong id="catalogOneTimeTotal">0 ريال</strong></div>
               <div class="catalog-total"><small>إجمالي الخدمات الشهرية قبل الضريبة</small><strong id="catalogMonthlyTotal">0 ريال</strong></div>
+            </div>
+            <div class="scope-discount-card scope-only" hidden>
+              <h3>خصم العميل</h3>
+              <p class="micro">اختياري. يظهر الخصم في صفحة التسعير وتُحتسب الضريبة بعده.</p>
+              <div class="two">
+                <div class="field"><label>نوع الخصم</label><select id="scopeDiscountType" onchange="updateScopeDiscountControl()"><option value="none" selected>بدون خصم</option><option value="percent">نسبة مئوية</option><option value="fixed">قيمة ثابتة</option></select></div>
+                <div class="field"><label>قيمة الخصم</label><input class="input" id="scopeDiscountValue" type="number" min="0" step="1" value="0" disabled oninput="renderProposal()"></div>
+              </div>
+              <p class="micro">النسبة تطبق على التأسيس والخدمات الشهرية. القيمة الثابتة تخصم من التأسيس، أو من الشهري إذا لم توجد تكلفة تأسيس.</p>
             </div>
           </div>
           <div class="field packages-only"><label>القنوات</label><div id="channels" class="check-grid"></div></div>
