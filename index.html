@@ -840,29 +840,6 @@
           <label class="check"><input id="scopeVatEnabled" type="checkbox" checked> احتساب ضريبة القيمة المضافة 15%</label>
           <div class="field"><label>جدول الدفعات</label><textarea id="scopePaymentSchedule">50% عند اعتماد العرض، و50% قبل التسليم النهائي.</textarea></div>
           <div class="field"><label>الافتراضات وآلية التغيير</label><textarea id="scopeChangeTerms">أي طلبات أو مخرجات إضافية خارج النطاق المتفق عليه يتم تسعيرها واعتمادها كتابيًا قبل التنفيذ.</textarea></div>
-          <div class="field">
-            <label>صفحات العرض</label>
-            <p class="micro">يمكنك إظهار أو إخفاء كل صفحة بشكل مستقل، بما فيها الغلاف وصفحات المراحل والأسعار.</p>
-            <div class="quick-row"><button class="quick" type="button" onclick="setPageOptions('scope', true)">تحديد كل الصفحات</button><button class="quick" type="button" onclick="setPageOptions('scope', false)">إلغاء كل الصفحات</button></div>
-            <div class="scope-section-grid">
-              <label class="check"><input id="scopeShowCover" type="checkbox" checked> الغلاف</label>
-              <label class="check"><input id="scopeShowAbout" type="checkbox" checked> من نحن</label>
-              <label class="check"><input id="scopeShowClients" type="checkbox" checked> عملاؤنا</label>
-              <label class="check"><input id="scopeShowWork" type="checkbox" checked> طريقة العمل</label>
-              <label class="check"><input id="scopeShowSummary" type="checkbox" checked> ملخص المشروع</label>
-              <label class="check"><input id="scopeShowStage_brand" type="checkbox" checked> مرحلة الهوية والعلامة</label>
-              <label class="check"><input id="scopeShowStage_storeContent" type="checkbox" checked> مرحلة المحتوى والمتجر</label>
-              <label class="check"><input id="scopeShowStage_performance" type="checkbox" checked> مرحلة التسويق بالأداء</label>
-              <label class="check"><input id="scopeShowStage_additional" type="checkbox" checked> الخدمات الإضافية</label>
-              <label class="check"><input id="scopeShowDeliverables" type="checkbox" checked> المخرجات الإضافية</label>
-              <label class="check"><input id="scopeShowTimeline" type="checkbox" checked> الجدول والمسؤوليات</label>
-              <label class="check"><input id="scopeShowExclusions" type="checkbox" checked> خارج النطاق</label>
-              <label class="check"><input id="scopeShowPricing" type="checkbox" checked> جدول تسعير الخدمات</label>
-              <label class="check"><input id="scopeShowPayments" type="checkbox" checked> الدفعات وصلاحية العرض</label>
-              <label class="check"><input id="scopeShowAcceptance" type="checkbox" checked> الاعتماد والتوقيع</label>
-              <label class="check"><input id="scopeShowClosing" type="checkbox" checked> الخاتمة</label>
-            </div>
-          </div>
           <div class="proposal-quality" id="scopeQuality" aria-live="polite"><strong>فحص جاهزية العرض</strong><span>سيتم فحص البيانات عند تحديث العرض.</span></div>
           <button class="btn btn-primary btn-block" type="button" onclick="renderProposal()">تحديث العرض من النطاق</button>
         </div>
@@ -967,7 +944,9 @@
               <div class="field"><label>1. نوع الخصم</label><select id="packageDiscountType" onchange="updatePackageDiscountControl()"><option value="percent" selected>نسبة مئوية</option><option value="fixed">قيمة ثابتة</option><option value="none">بدون خصم</option></select></div>
               <div class="field"><label>2. قيمة الخصم</label><input class="input" id="packageDiscountValue" type="number" min="0" step="1" value="0" oninput="updatePackageDiscountControl()"></div>
             </div>
+            <div class="field"><label>3. يطبق الخصم على</label><select id="packageDiscountTarget" onchange="updatePackageDiscountControl()"><option value="monthly" selected>رسوم الباقات الشهرية فقط</option><option value="oneTime">رسوم التأسيس فقط</option><option value="both">رسوم التأسيس والباقات الشهرية</option></select></div>
             <p class="micro" id="packageDiscountStatus"><strong>لا يوجد خصم مطبق حاليًا.</strong></p>
+            <p class="micro">عند اختيار الاثنين، تطبق النسبة أو القيمة على رسوم التأسيس ورسوم كل باقة بشكل مستقل. لا يشمل الخصم ميزانية الإعلانات أو رسوم إدارتها.</p>
           </div>
           <div class="field"><label>رسوم ربط مدير الحسابات وأدوات التتبع</label><input class="input" id="setupFee" type="number" value="1500"></div>
           <div class="field">
@@ -1054,6 +1033,32 @@
           <label class="check"><input id="showResults" type="checkbox" checked> صفحة النتائج المتوقعة</label>
           <label class="check"><input id="showAcceptance" type="checkbox" checked> صفحة اعتماد العرض</label>
           <label class="check"><input id="showClosing" type="checkbox" checked> صفحة الخاتمة</label>
+        </div>
+      </details>
+
+      <details class="panel" id="scopePagesPanel" open hidden>
+        <summary><span>08 صفحات العرض حسب الاتفاق</span></summary>
+        <div class="panel-body">
+          <p class="micro">فعّلي الصفحات المطلوبة فقط. يمكنك إظهار أو إخفاء كل صفحة بشكل مستقل، بما فيها الغلاف والمراحل والأسعار.</p>
+          <div class="quick-row"><button class="quick" type="button" onclick="setPageOptions('scope', true)">تحديد كل الصفحات</button><button class="quick" type="button" onclick="setPageOptions('scope', false)">إلغاء كل الصفحات</button></div>
+          <div class="scope-section-grid">
+            <label class="check"><input id="scopeShowCover" type="checkbox" checked> صفحة الغلاف</label>
+            <label class="check"><input id="scopeShowAbout" type="checkbox" checked> صفحة من نحن</label>
+            <label class="check"><input id="scopeShowClients" type="checkbox" checked> صفحة عملاؤنا</label>
+            <label class="check"><input id="scopeShowWork" type="checkbox" checked> صفحة طريقة العمل</label>
+            <label class="check"><input id="scopeShowSummary" type="checkbox" checked> صفحة ملخص المشروع</label>
+            <label class="check"><input id="scopeShowStage_brand" type="checkbox" checked> صفحة الهوية والعلامة</label>
+            <label class="check"><input id="scopeShowStage_storeContent" type="checkbox" checked> صفحة المحتوى والمتجر</label>
+            <label class="check"><input id="scopeShowStage_performance" type="checkbox" checked> صفحة التسويق بالأداء</label>
+            <label class="check"><input id="scopeShowStage_additional" type="checkbox" checked> صفحة الخدمات الإضافية</label>
+            <label class="check"><input id="scopeShowDeliverables" type="checkbox" checked> صفحة المخرجات الإضافية</label>
+            <label class="check"><input id="scopeShowTimeline" type="checkbox" checked> صفحة الجدول والمسؤوليات</label>
+            <label class="check"><input id="scopeShowExclusions" type="checkbox" checked> صفحة خارج النطاق</label>
+            <label class="check"><input id="scopeShowPricing" type="checkbox" checked> صفحة جدول تسعير الخدمات</label>
+            <label class="check"><input id="scopeShowPayments" type="checkbox" checked> صفحة الدفعات والصلاحية</label>
+            <label class="check"><input id="scopeShowAcceptance" type="checkbox" checked> صفحة الاعتماد والتوقيع</label>
+            <label class="check"><input id="scopeShowClosing" type="checkbox" checked> صفحة الخاتمة</label>
+          </div>
         </div>
       </details>
     </aside>
@@ -1463,7 +1468,8 @@
     const mgmt = Number(byId(`option${n}Mgmt`).value || 0);
     const discountType = byId('packageDiscountType')?.value || 'none';
     const discountValue = Number(byId('packageDiscountValue')?.value || 0);
-    const feeDiscount = discountAmount(fee, discountType, discountValue);
+    const discountTarget = byId('packageDiscountTarget')?.value || 'monthly';
+    const feeDiscount = discountTarget === 'oneTime' ? 0 : discountAmount(fee, discountType, discountValue);
     const discountedFee = fee - feeDiscount;
     const mediaTotal = ad + mgmt;
     const subtotal = discountedFee + mediaTotal;
@@ -1523,6 +1529,7 @@
   function updatePackageDiscountControl(refresh=true){
     const type = byId('packageDiscountType')?.value || 'none';
     const input = byId('packageDiscountValue');
+    const target = byId('packageDiscountTarget')?.value || 'monthly';
     const status = byId('packageDiscountStatus');
     if (input) {
       input.disabled = type === 'none';
@@ -1530,8 +1537,9 @@
       input.placeholder = type === 'percent' ? 'مثال: 10' : 'مثال: 1500';
     }
     const value = Number(input?.value || 0);
+    const targetLabel = target === 'oneTime' ? 'رسوم التأسيس فقط' : (target === 'both' ? 'رسوم التأسيس والباقات الشهرية' : 'رسوم الباقات الشهرية فقط');
     if (status) status.innerHTML = value > 0 && type !== 'none'
-      ? `<strong>الخصم مطبق على رسوم الباقة: ${esc(discountLabel(type, value))}</strong>`
+      ? `<strong>الخصم مطبق على ${targetLabel}: ${esc(discountLabel(type, value))}</strong>`
       : '<strong>لا يوجد خصم مطبق حاليًا.</strong>';
     if (refresh) renderProposal();
   }
@@ -1681,14 +1689,14 @@
     URL.revokeObjectURL(url);
   }
 
-  function normalizeImportedDiscount(data, typeId, valueId, targetId=''){
+  function normalizeImportedDiscount(data, typeId, valueId, targetId='', defaultTarget='oneTime'){
     const hasOwn = key => Object.prototype.hasOwnProperty.call(data || {}, key);
     const typeField = byId(typeId);
     const valueField = byId(valueId);
     if (!typeField || !valueField) return;
     if (!hasOwn(typeId)) typeField.value = 'percent';
     if (!hasOwn(valueId)) valueField.value = '0';
-    if (targetId && !hasOwn(targetId) && byId(targetId)) byId(targetId).value = 'oneTime';
+    if (targetId && !hasOwn(targetId) && byId(targetId)) byId(targetId).value = defaultTarget;
     const value = Number(valueField.value || 0);
     if (typeField.value === 'none' && value > 0) {
       typeField.value = value <= 100 ? 'percent' : 'fixed';
@@ -1709,7 +1717,7 @@
       else field.value = value;
     });
     normalizeImportedDiscount(data, 'scopeDiscountType', 'scopeDiscountValue', 'scopeDiscountTarget');
-    normalizeImportedDiscount(data, 'packageDiscountType', 'packageDiscountValue');
+    normalizeImportedDiscount(data, 'packageDiscountType', 'packageDiscountValue', 'packageDiscountTarget', 'monthly');
     if (Array.isArray(data.selectedServices)) {
       document.querySelectorAll('#services input').forEach(input => input.checked = data.selectedServices.includes(input.value));
     }
@@ -1825,10 +1833,11 @@
   function setProposalMode(mode){
     const isScope = mode === 'scope';
     document.querySelectorAll('.controls > details.panel').forEach((panel, index) => {
-      if (index === 0 || panel.id === 'scopeBuilderPanel' || panel.id === 'serviceCatalogPanel') return;
+      if (index === 0 || panel.id === 'scopeBuilderPanel' || panel.id === 'serviceCatalogPanel' || panel.id === 'scopePagesPanel') return;
       panel.hidden = isScope;
     });
     byId('scopeBuilderPanel').hidden = !isScope;
+    byId('scopePagesPanel').hidden = !isScope;
     if (isScope) byId('scopeBuilderPanel').open = true;
     document.querySelectorAll('.scope-only').forEach(element => element.hidden = !isScope);
     document.querySelectorAll('.packages-only').forEach(element => element.hidden = isScope);
@@ -2234,8 +2243,13 @@
     const singleServiceTotal = singleServicePrice + singleServiceVat;
     const singleServicePriceNote = byId('singleServicePriceNote').value;
     const setupFee = Number(byId('setupFee')?.value || 0);
-    const setupVat = byId('vatEnabled').checked ? setupFee * .15 : 0;
-    const setupTotal = setupFee + setupVat;
+    const packageDiscountType = byId('packageDiscountType')?.value || 'none';
+    const packageDiscountValue = Number(byId('packageDiscountValue')?.value || 0);
+    const packageDiscountTarget = byId('packageDiscountTarget')?.value || 'monthly';
+    const setupDiscount = packageDiscountTarget === 'monthly' ? 0 : discountAmount(setupFee, packageDiscountType, packageDiscountValue);
+    const discountedSetupFee = setupFee - setupDiscount;
+    const setupVat = byId('vatEnabled').checked ? discountedSetupFee * .15 : 0;
+    const setupTotal = discountedSetupFee + setupVat;
     const extraServices = additionalServices();
     const dist1 = distribution(channels,opt1.ad);
     const dist2 = distribution(channels,opt2.ad);
@@ -2248,10 +2262,14 @@
     const opt1ContractTotal = opt1.total * months + setupTotal;
     const opt2ContractTotal = opt2.total * months + setupTotal;
     const pricingTokens = {duration: durationLabel};
-    const packageDiscountText = (opt1.feeDiscount > 0 || opt2.feeDiscount > 0)
-      ? ` تم تطبيق خصم ${opt1.discountLabel || opt2.discountLabel} على رسوم الباقة فقط، ولا يشمل ميزانية الإعلانات أو رسوم إدارتها.`
+    const hasPackageDiscount = setupDiscount > 0 || opt1.feeDiscount > 0 || opt2.feeDiscount > 0;
+    const packageDiscountTargetLabel = packageDiscountTarget === 'oneTime' ? 'رسوم التأسيس فقط' : (packageDiscountTarget === 'both' ? 'رسوم التأسيس والباقات الشهرية' : 'رسوم الباقات الشهرية فقط');
+    const packageDiscountText = hasPackageDiscount
+      ? ` تم تطبيق خصم ${discountLabel(packageDiscountType, packageDiscountValue)} على ${packageDiscountTargetLabel}، ولا يشمل ميزانية الإعلانات أو رسوم إدارتها.`
       : '';
-    const pricingSetupNote = setupFee > 0 ? ` تشمل الإجماليات رسوم ربط مدير الحسابات وأدوات التتبع ${money(setupTotal)} شامل الضريبة كرسوم تُدفع مرة واحدة.` : '';
+    const pricingSetupNote = setupFee > 0
+      ? ` تشمل الإجماليات رسوم ربط مدير الحسابات وأدوات التتبع ${setupDiscount > 0 ? `${money(setupFee)} قبل الخصم، و${money(setupTotal)} بعد الخصم شامل الضريبة` : `${money(setupTotal)} شامل الضريبة`} كرسوم تُدفع مرة واحدة.`
+      : '';
 
     const pages = [];
 
@@ -2291,6 +2309,9 @@
       ${rowIf(esc(pricingLabelMediaTotal), opt1.subtotal, opt2.subtotal)}
       ${rowIf(esc(pricingLabelVat), opt1.vat, opt2.vat)}
       ${rowIf(`<strong>${esc(pricingLabelMonthlyTotal)}</strong>`, opt1.total, opt2.total)}
+      ${setupFee > 0 ? rowIf('رسوم التأسيس مرة واحدة', setupFee, setupFee) : ''}
+      ${setupDiscount > 0 ? rowIf('خصم رسوم التأسيس', -setupDiscount, -setupDiscount) : ''}
+      ${setupFee > 0 ? rowIf('رسوم التأسيس بعد الخصم شامل الضريبة', setupTotal, setupTotal) : ''}
       ${rowIf(`<strong>${esc(templateText(pricingLabelContractTotal, pricingTokens))}</strong>`, opt1ContractTotal, opt2ContractTotal)}
       </tbody></table>
       <div class="summary-box"><div class="money"><h3>${esc(templateText(pricingSummaryTotalPrefix, {...pricingTokens, plan: opt1.title}))}</h3><strong>${money(opt1ContractTotal)}</strong></div><div class="money yellow"><h3>${esc(pricingSummaryMonthlyLabel)}</h3><strong>${money(opt1.total)}</strong></div><div class="money"><h3>${esc(templateText(pricingSummaryTotalPrefix, {...pricingTokens, plan: opt2.title}))}</h3><strong>${money(opt2ContractTotal)}</strong></div><div class="money yellow"><h3>${esc(pricingSummaryMonthlyLabel)}</h3><strong>${money(opt2.total)}</strong></div></div>
@@ -2350,8 +2371,13 @@
     const duration = byId('duration').value;
     const o1 = optionData(1), o2 = optionData(2);
     const setupFee = Number(byId('setupFee')?.value || 0);
-    const setupVat = byId('vatEnabled').checked ? setupFee * .15 : 0;
-    const setupTotal = setupFee + setupVat;
+    const packageDiscountType = byId('packageDiscountType')?.value || 'none';
+    const packageDiscountValue = Number(byId('packageDiscountValue')?.value || 0);
+    const packageDiscountTarget = byId('packageDiscountTarget')?.value || 'monthly';
+    const setupDiscount = packageDiscountTarget === 'monthly' ? 0 : discountAmount(setupFee, packageDiscountType, packageDiscountValue);
+    const discountedSetupFee = setupFee - setupDiscount;
+    const setupVat = byId('vatEnabled').checked ? discountedSetupFee * .15 : 0;
+    const setupTotal = discountedSetupFee + setupVat;
     const months = durationMonths(duration);
     const durationLabel = months > 1 ? `${months} أشهر` : duration;
     const o1ContractTotal = o1.total * months + setupTotal;
@@ -2365,6 +2391,7 @@
       return group.selectedItems.map(item => `- ${catalogItemLabel(item)}: ${item.included ? 'مشمول في العرض' : money(item.price * item.quantity)} (${item.billing})`);
     });
     const catalogText = catalogRows.length ? `\n\nخدمات إطلاق العلامة المختارة:\n${catalogRows.join('\n')}\nإجمالي التأسيس: ${money(catalogTotals.oneTime)}\nالإجمالي الشهري: ${money(catalogTotals.monthly)}` : '';
+    const setupText = setupFee > 0 ? `\n\nرسوم التأسيس قبل الخصم: ${money(setupFee)}${setupDiscount > 0 ? `\nخصم رسوم التأسيس: ${money(setupDiscount)}\nرسوم التأسيس بعد الخصم شامل الضريبة: ${money(setupTotal)}` : `\nرسوم التأسيس شامل الضريبة: ${money(setupTotal)}`}` : '';
     const txt = `عرض تسويقي مقدم إلى ${client}
 مدة التعاقد المقترحة: ${duration}
 
@@ -2382,7 +2409,7 @@ ${o2.feeDiscount > 0 ? `رسوم الباقة قبل الخصم: ${money(o2.fee)
 رسوم الباقة بعد الخصم: ${money(o2.discountedFee)}` : `رسوم الباقة: ${money(o2.fee)}`}
 الإعلانات الممولة: ${money(o2.mediaTotal)}
 الدفعة الشهرية شامل الضريبة: ${money(o2.total)}
-إجمالي مدة التعاقد (${durationLabel}): ${money(o2ContractTotal)}${catalogText}`;
+إجمالي مدة التعاقد (${durationLabel}): ${money(o2ContractTotal)}${setupText}${catalogText}`;
     navigator.clipboard.writeText(txt);
     alert('تم نسخ ملخص العرض');
   }
