@@ -704,6 +704,54 @@
 
     :root{--pwp-white-logo:url('assets/pwp-white-long-logo.png');--clients-board-final:url('assets/clients-board.svg');}
     .cover:before{display:none!important;content:none!important}
+
+    .compact-page{background:#f7f3e9;padding:42px 46px;min-height:1122px}
+    .compact-page:before,.compact-page:after{display:none}
+    .compact-head{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;margin-bottom:20px}
+    .compact-logo{width:260px;height:auto;display:block}
+    .compact-meta{font-size:13px;color:var(--muted);text-align:left}
+    .compact-chip{display:inline-flex;align-items:center;gap:8px;background:#ecebe2;border-radius:999px;padding:7px 13px;color:var(--green);font-size:13px;font-weight:800;margin-bottom:8px}
+    .compact-chip:before{content:"";width:9px;height:9px;border-radius:50%;background:#f0a32f}
+    .compact-hero h2{font-size:42px;line-height:1.12;margin:4px 0 10px;color:#172a24;max-width:760px}
+    .compact-hero p{font-size:18px;line-height:1.6;color:var(--green);font-weight:700;margin:0 0 20px}
+    .compact-plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .compact-plan{background:white;border:1px solid #dcd9cd;border-radius:22px;padding:22px;min-height:310px}
+    .compact-plan .eyebrow{color:#e99e2c;font-weight:800;font-size:13px}
+    .compact-plan h3{margin:5px 0 10px;font-size:24px}
+    .compact-plan ul{list-style:none;padding:0;margin:0;display:grid;gap:7px}
+    .compact-plan li{font-size:14px;color:#263832;padding-right:16px;position:relative;line-height:1.45}
+    .compact-plan li:before{content:"";position:absolute;right:0;top:.55em;width:7px;height:7px;border-radius:50%;background:#f0a32f}
+    .compact-plan .fit{border-top:1px solid #dedbd1;margin-top:13px;padding-top:10px;color:var(--muted);font-size:13px}
+    .compact-investment{background:#155442;color:white;border-radius:24px;padding:24px;margin-top:18px}
+    .compact-investment h3{color:white;margin:0 0 3px;font-size:24px}
+    .compact-investment p{margin:0 0 13px;color:rgba(255,255,255,.72);font-size:13px}
+    .compact-price-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .compact-price{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);border-radius:18px;padding:17px;text-align:center}
+    .compact-price small{display:block;color:rgba(255,255,255,.75);font-weight:700}
+    .compact-price strong{display:block;color:#f4a62f;font-size:33px;line-height:1.2;margin:4px 0}
+    .compact-fee-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;font-size:13px}
+    .compact-fee-row div{padding-top:10px;border-top:1px solid rgba(255,255,255,.14)}
+    .compact-fee-row b{color:#f4a62f}
+    .compact-clients{margin-top:17px;background:#e9e7dc;border-radius:20px;padding:13px 18px}
+    .compact-clients h3{font-size:16px;margin:0 0 6px}
+    .compact-clients img{display:block;width:100%;max-height:105px;object-fit:contain}
+    .compact-title{font-size:38px;margin:0 0 4px;color:#172a24}
+    .compact-subtitle{font-size:14px;color:var(--muted);margin:0 0 17px}
+    .compact-table{border-radius:18px}
+    .compact-table th,.compact-table td{padding:10px 12px;font-size:12px;line-height:1.35}
+    .compact-table th{font-size:12px}
+    .compact-season-title{font-size:22px;margin:16px 0 9px}
+    .compact-season-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .compact-season{background:white;border:1px solid #dedbd1;border-radius:18px;padding:15px;text-align:center}
+    .compact-season b{display:block;color:var(--green);font-size:16px}
+    .compact-season strong{display:block;color:#172a24;font-size:20px;margin:4px 0}
+    .compact-season span{display:block;color:var(--muted);font-size:11px;line-height:1.45}
+    .compact-terms{margin-top:14px;background:white;border:1px solid #dedbd1;border-radius:18px;padding:15px 18px}
+    .compact-terms h3{font-size:19px;margin:0 0 7px}
+    .compact-terms ul{columns:2;column-gap:30px;margin:0;padding-right:18px}
+    .compact-terms li{font-size:12px;line-height:1.5;margin-bottom:5px}
+    .compact-cta{margin-top:16px;background:var(--green);color:white;border-radius:20px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800}
+    .compact-cta span{color:#f4a62f}
     .cover{background:linear-gradient(135deg,var(--green),#05372d 72%)!important;color:white!important;justify-content:space-between!important;}
     .cover .cover-top{justify-content:flex-start!important;}
     .cover .logo{width:170px!important;height:58px!important;border-radius:0!important;background:var(--pwp-white-logo) no-repeat left center / contain!important;color:transparent!important;box-shadow:none!important;}
@@ -750,6 +798,18 @@
         page-break-inside:avoid!important;
       }
       .page:last-child{break-after:auto!important;page-break-after:auto!important}
+      .compact-page{padding:10mm 11mm!important}
+      .compact-hero h2{font-size:30px!important}
+      .compact-plan{padding:5mm!important;min-height:74mm!important}
+      .compact-plan h3{font-size:19px!important;margin:2mm 0!important}
+      .compact-plan li{font-size:11px!important}
+      .compact-investment{padding:5mm!important;margin-top:4mm!important}
+      .compact-price strong{font-size:24px!important}
+      .compact-clients img{max-height:27mm!important}
+      .compact-table th,.compact-table td{padding:2.2mm!important;font-size:9.5px!important}
+      .compact-season{padding:3mm!important}
+      .compact-terms{padding:3mm 4mm!important}
+      .compact-terms li{font-size:9.5px!important}
       .cover .cover-top{justify-content:space-between!important}
       .cover .tag{display:inline-flex!important}
       .cover-logo{width:78mm!important;height:auto!important}
@@ -799,6 +859,7 @@
         <div class="panel-body">
           <div class="field"><label>اسم العميل</label><input class="input" id="clientName" value="اسم العميل"></div>
           <div class="field"><label>نوع العرض</label><select id="proposalMode" onchange="setProposalMode(this.value)"><option value="scope" selected>عرض مبني على نطاق عمل متفق عليه</option><option value="packages">عرض خطط تسويقية</option></select></div>
+          <div class="field packages-only"><label>شكل إخراج العرض</label><select id="proposalLayout" onchange="renderProposal()"><option value="detailed" selected>العرض التفصيلي متعدد الصفحات</option><option value="compact">عرض مختصر من صفحتين</option></select><p class="micro">القالب المختصر يجمع الخيارات والأسعار والمقارنة والشروط في صفحتين جاهزتين للإرسال.</p></div>
           <div class="two">
             <div class="field"><label>التاريخ</label><input class="input" id="proposalDate" type="date"></div>
             <div class="field"><label>مدة المشروع</label><input class="input" id="duration" value="6 أشهر - موصى به"></div>
@@ -2202,8 +2263,71 @@
     return true;
   }
 
+  function compactPlanItems(option, channels){
+    return [
+      option.designs > 0 ? `${option.designs} تصاميم شهريًا` : '',
+      option.videos > 0 ? `${option.videos} فيديوهات قصيرة شهريًا` : '',
+      option.ugc > 0 ? `${option.ugc} فيديوهات UGC` : '',
+      option.ai > 0 ? `${option.ai} فيديوهات بالذكاء الاصطناعي` : '',
+      channels.length ? `إدارة ${Math.min(option.platforms || channels.length, channels.length)} قنوات: ${channels.slice(0, option.platforms || channels.length).join('، ')}` : '',
+      'استراتيجية محتوى وتقرير أداء شهري',
+      option.mgmt > 0 ? 'إدارة الحملات الإعلانية ومتابعة الأداء' : ''
+    ].filter(Boolean);
+  }
+
+  function renderCompactProposal(){
+    const client = byId('clientName').value || 'اسم العميل';
+    const date = byId('proposalDate').value;
+    const duration = byId('duration').value || '3 أشهر';
+    const goal = byId('mainGoal').value;
+    const channels = selected('channels');
+    const opt1 = optionData(1);
+    const opt2 = optionData(2);
+    const setupFee = Number(byId('setupFee')?.value || 0);
+    const discountType = byId('packageDiscountType')?.value || 'none';
+    const discountValue = Number(byId('packageDiscountValue')?.value || 0);
+    const discountTarget = byId('packageDiscountTarget')?.value || 'monthly';
+    const setupDiscount = discountTarget === 'monthly' ? 0 : discountAmount(setupFee, discountType, discountValue);
+    const discountedSetupFee = setupFee - setupDiscount;
+    const setupVat = byId('vatEnabled').checked ? discountedSetupFee * .15 : 0;
+    const setupTotal = discountedSetupFee + setupVat;
+    const items1 = compactPlanItems(opt1, channels);
+    const items2 = compactPlanItems(opt2, channels);
+    const adStart = Math.max(5000, Math.min(opt1.ad || opt2.ad || 5000, 10000));
+    const adPeak = Math.max(adStart, opt2.ad || adStart);
+    const feeLabel1 = opt1.feeDiscount > 0 ? `${money(opt1.discountedFee)} بعد الخصم` : money(opt1.fee);
+    const feeLabel2 = opt2.feeDiscount > 0 ? `${money(opt2.discountedFee)} بعد الخصم` : money(opt2.fee);
+    const comparisonRows = [
+      ['الرسوم الشهرية', feeLabel1, feeLabel2],
+      ['القيادة التسويقية', 'فريق PWP يبني الاستراتيجية وينفذها', opt2.desc || 'إشراف أوسع وتحسين مستمر'],
+      ['الانطلاق', 'بناء الاستراتيجية وربط أدوات القياس', 'اجتماع انطلاق وخطة تشغيل ومراجعة الحسابات'],
+      ['القنوات', channels.slice(0, opt1.platforms || 3).join('، ') || 'حسب الخطة', channels.slice(0, opt2.platforms || 4).join('، ') || 'حسب الخطة'],
+      ['المحتوى الشهري', items1.slice(0,4).join('، '), items2.slice(0,4).join('، ')],
+      ['التخطيط', 'استراتيجية محتوى وتقويم حملات شهري', 'تقويم شهري متقدم وحملات موسمية'],
+      ['الإعلانات المدفوعة', opt1.mgmt > 0 ? `إدارة الحملات - ${money(opt1.mgmt)}` : 'حسب الاتفاق', opt2.mgmt > 0 ? `إدارة الحملات - ${money(opt2.mgmt)}` : 'حسب الاتفاق'],
+      ['التقارير', 'تقرير أداء شهري مع توصيات', 'ملخص أسبوعي وتقرير شهري']
+    ];
+    const page1 = addPage(`<div class="compact-head"><img class="compact-logo" src="assets/pwp-green-long-logo.png" alt="Post With Passion"><div class="compact-meta">عرض مقدم إلى ${esc(client)}<br>${esc(date)}</div></div>
+      <div class="compact-hero"><div class="compact-chip">خياران للتسويق لمدة ${esc(duration)}</div><h2>${esc(goal || `حضور يليق بـ${client}، وإعلانات تتبع المواسم.`)}</h2><p>خياران واضحان يجمعان المحتوى، التخطيط، والإعلانات ضمن عرض سهل المقارنة والاعتماد.</p></div>
+      <div class="compact-plan-grid">
+        <div class="compact-plan"><div class="eyebrow">الخيار الأول - ${feeLabel1} شهريًا</div><h3>${esc(opt1.title)}</h3><ul>${items1.map(item => `<li>${esc(item)}</li>`).join('')}</ul><div class="fit"><strong>يناسبكم إذا:</strong> احتجتم حجم محتوى مركزًا مع فريق ينفذ ويقيس.</div></div>
+        <div class="compact-plan"><div class="eyebrow">الخيار الثاني - ${feeLabel2} شهريًا</div><h3>${esc(opt2.title)}</h3><ul>${items2.map(item => `<li>${esc(item)}</li>`).join('')}</ul><div class="fit"><strong>يناسبكم إذا:</strong> احتجتم قيادة تسويقية أوسع ومتابعة أكثر قربًا.</div></div>
+      </div>
+      <div class="compact-investment"><h3>الاستثمار الشهري</h3><p>الأسعار قبل ضريبة القيمة المضافة، ولا تشمل ميزانية الإعلانات.</p><div class="compact-price-grid"><div class="compact-price"><small>الخيار الأول - ${esc(opt1.title)}</small><strong>${money(opt1.discountedFee)}</strong><small>شهريًا + الضريبة</small></div><div class="compact-price"><small>الخيار الثاني - ${esc(opt2.title)}</small><strong>${money(opt2.discountedFee)}</strong><small>شهريًا + الضريبة</small></div></div><div class="compact-fee-row"><div><strong>إدارة الحملات:</strong> ${opt1.mgmt || opt2.mgmt ? 'حسب الخطة أو نسبة الإنفاق المتفق عليها' : 'حسب الاتفاق'}</div><div><strong>رسوم التأسيس:</strong> <b>${setupFee > 0 ? money(setupTotal) : 'حسب الاتفاق'}</b> ${setupDiscount > 0 ? 'بعد الخصم شامل الضريبة' : 'شامل الضريبة'}</div></div></div>
+      <div class="compact-clients"><h3>علامات وثقت بنا</h3><img src="assets/clients-board.svg" alt="شعارات عملاء Post With Passion"></div>`,1,'compact-page');
+    const page2 = addPage(`<div class="compact-head"><img class="compact-logo" src="assets/pwp-green-long-logo.png" alt="Post With Passion"><div class="compact-meta">التفاصيل والشروط - ${esc(client)}</div></div><h2 class="compact-title">التفاصيل والشروط</h2><p class="compact-subtitle">تفصيل الخيارين والميزانية المقترحة وآلية العمل.</p>
+      <table class="compact-table"><thead><tr><th>البند</th><th>الخيار الأول: ${esc(opt1.title)}</th><th>الخيار الثاني: ${esc(opt2.title)}</th></tr></thead><tbody>${comparisonRows.map(row => `<tr><td><strong>${esc(row[0])}</strong></td><td>${esc(row[1])}</td><td>${esc(row[2])}</td></tr>`).join('')}</tbody></table>
+      <h3 class="compact-season-title">ميزانية الإعلانات حسب الموسم</h3><div class="compact-season-grid"><div class="compact-season"><b>نقطة البداية</b><strong>${money(adStart)} شهريًا</strong><span>ميزانية مقترحة للبدء وقياس الضيافة أو المنتج موسميًا.</span></div><div class="compact-season"><b>حسب الموسم</b><strong>نرفعها أو نخفضها</strong><span>وفق المواسم، الإجازات، المناسبات، ونتائج الحملات.</span></div><div class="compact-season"><b>باتفاق مسبق</b><strong>الرسوم تتبع الإنفاق</strong><span>تُراجع رسوم الإدارة عند رفع ميزانية الإعلانات إلى ${money(adPeak)} أو أكثر.</span></div></div>
+      <div class="compact-terms"><h3>الشروط</h3><ul><li>الحد الأدنى للتعاقد ${esc(duration)} أو حسب الاتفاق المكتوب.</li><li>الأسعار لا تشمل ضريبة القيمة المضافة 15%.</li><li>تُدفع الرسوم الشهرية مقدمًا قبل بداية شهر العمل.</li><li>${esc(byId('paymentNote').value)}</li><li>ميزانية الإعلانات تُدفع للمنصات مباشرة من حساب العميل.</li><li>${esc(byId('notes').value)}</li></ul></div>
+      <div class="compact-cta"><strong>إذا ناسبكم أحد الخيارين، نبدأ باجتماع الانطلاق بعد اعتماد العرض.</strong><span>ويسعدنا الرد على أي استفسار.</span></div>`,2,'compact-page');
+    byId('preview').innerHTML = page1 + page2;
+    renumberPreviewPages();
+    return true;
+  }
+
   function renderProposal(){
     if (byId('proposalMode')?.value === 'scope') return renderScopeProposal();
+    if (byId('proposalLayout')?.value === 'compact') return renderCompactProposal();
     const client = byId('clientName').value || 'اسم العميل';
     const date = byId('proposalDate').value;
     const duration = byId('duration').value;
